@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>项目启动中</title>
+    <style>
+      .icon.icon-loading {
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
+      }
+      
+      .icon.icon-loading .wrapper {
+        width: 20px;
+        height: 20px;
+      }
+
+      .icon.icon-loading .rotate {
+        animation: rotate 1s linear infinite;
+      }
+
+      @keyframes rotate {
+        to {
+          transform: rotate(1turn);
+        }
+      }
+
+      .app {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .app .content {
+        display: flex;
+        /* flex-flow: column nowrap; */
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="content">
+        <div class="icon icon-loading">
+          <svg class="wrapper" viewBox="-25 -25 50 50">
+            <circle cx="0" cy="0" r="20" stroke="#4197ff" fill="none" stroke-width="3px" style="opacity: 0.4"></circle>
+            <circle cx="0" cy="0" r="20" stroke="#4197ff" fill="none" stroke-width="3px" stroke-dasharray="20 150" class="rotate"></circle>
+          </svg>
+        </div>
+        <div class="description">
+          启动中，请稍后...
+        </div>
+      </div>
+    </div>
+    <script>
+      (async () => {
+        async function isReady() {
+          try {
+            const response = await fetch('/api/page/health');
+            return response.ok;
+          } catch (error) {
+            return false;
+          }
+        }
+
+        async function check() {
+          if (await isReady()) {
+            document.querySelector('.description').innerHTML = '服务即将启动完成...';
+            
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            setTimeout(check, 2000);
+          }
+        }
+
+        await check();
+      })();
+    </script>
+  </body>
+</html>

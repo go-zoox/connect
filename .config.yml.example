@@ -1,0 +1,25 @@
+port: 8080
+
+mode: production
+
+secret_key: go-zoox
+
+frontend:
+  host: 127.0.0.1
+  port: 8000
+
+backend:
+  host: 127.0.0.1
+  port: 8001
+
+oauth2:
+  name: 多啦A梦
+  auth_url: https://login.zcorky.com/authorize
+  token_url: https://login.zcorky.com/token
+  user_info_url: https://login.zcorky.com/user
+  logout_url: https://login.zcorky.com/logout
+  scope: openid profile email
+  id_attribute_name: email
+  client_id: <CLIENT_ID>
+  client_secret: <CLIENT_SECRET>
+  redirect_uri: http://127.0.0.1:8080/login/callback
