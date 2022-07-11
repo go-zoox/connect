@@ -3,10 +3,14 @@ package connect
 import (
 	"embed"
 	"fmt"
+	"net/http"
+	"time"
 
 	"github.com/go-zoox/connect/config"
 	captcha "github.com/go-zoox/connect/controllers/captcha"
 	"github.com/go-zoox/connect/middlewares/auth"
+	"github.com/go-zoox/connect/services"
+	jwtsigner "github.com/go-zoox/jwt"
 
 	apiApp "github.com/go-zoox/connect/controllers/api/app"
 	apiBackend "github.com/go-zoox/connect/controllers/api/backend"
@@ -64,23 +68,25 @@ func (e *Connect) handle(cfg *config.Config) {
 
 	e.core.Use(auth.New(cfg))
 
-	if e.staticHandler != nil {
-		e.cfg.Mode = "production"
+	// if e.staticHandler != nil {
+	// 	e.cfg.Mode = "production"
 
-		cfg.IndexHTML = e.staticHandler(e.core)
-	} else {
-		// indexHTML, _ := StaticFS.ReadFile("public/static/index.html")
-		// cfg.IndexHTML = string(indexHTML)
+	// 	cfg.IndexHTML = e.staticHandler(e.core)
+	// } else {
+	// 	// indexHTML, _ := StaticFS.ReadFile("public/static/index.html")
+	// 	// cfg.IndexHTML = string(indexHTML)
 
-		// staticfs, _ := fs.Sub(StaticFS, "public/static")
-		// e.core.StaticFS("/static/", http.FS(staticfs))
+	// 	// staticfs, _ := fs.Sub(StaticFS, "public/static")
+	// 	// e.core.StaticFS("/static/", http.FS(staticfs))
 
-		// dev mode will not use static
-	}
+	// 	// dev mode will not use static
+	// }
 
 	e.core.Get("/captcha", captcha.New(cfg))
 
 	pg := page.New(cfg)
+
+	jwt := jwtsigner.NewHS256(cfg.SecretKey)
 
 	// api
 	api := e.core.Group("/api")
@@ -95,7 +101,36 @@ func (e *Connect) handle(cfg *config.Config) {
 		api.Get("/page/health", pg.Health(cfg))
 		//
 		if e.apiHandler == nil {
-			api.Any("/*", apiBackend.New(cfg))
+			api.Any(
+				"/*",
+				func(ctx *zoox.Context) {
+					token := services.Token.Get(ctx)
+					user, err := services.User.Get(cfg, token)
+					if err != nil {
+						ctx.JSON(http.StatusUnauthorized, err)
+						return
+					}
+
+					timestamp := time.Now().UnixMilli()
+					jwt.Set("user", map[string]string{
+						"id":       user.ID,
+						"nickname": user.Nickname,
+						"avatar":   user.Avatar,
+						"email":    user.Email,
+					})
+					jwtToken, err := jwt.Sign()
+					if err != nil {
+						ctx.JSON(http.StatusInternalServerError, err)
+						return
+					}
+
+					ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
+					ctx.Request.Header.Set("X-Connect-Token", jwtToken)
+
+					ctx.Next()
+				},
+				apiBackend.New(cfg),
+			)
 		} else {
 			e.apiHandler(e.core)
 		}
