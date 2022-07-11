@@ -9,9 +9,9 @@ require (
 	github.com/go-zoox/fetch v1.2.6
 	github.com/go-zoox/jwt v1.0.0
 	github.com/go-zoox/kv v1.4.2
-	github.com/go-zoox/oauth2 v1.2.0
+	github.com/go-zoox/oauth2 v1.3.2
 	github.com/go-zoox/proxy v1.0.2
-	github.com/go-zoox/zoox v1.0.29
+	github.com/go-zoox/zoox v1.0.30
 )
 
 require (
@@ -44,8 +44,8 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/image v0.0.0-20220617043117-41969df76e82 // indirect
-	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
-	golang.org/x/sys v0.0.0-20220704084225-05e143d24a9e // indirect
+	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
+	golang.org/x/sys v0.0.0-20220708085239-5a0f0661e09d // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 )

@@ -22,7 +22,7 @@ import (
 //go:embed public
 var StaticFS embed.FS
 
-type connect struct {
+type Connect struct {
 	core *zoox.Application
 	cfg  *config.Config
 	//
@@ -30,23 +30,23 @@ type connect struct {
 	staticHandler func(*zoox.Application) string
 }
 
-func New() *connect {
+func New() *Connect {
 	app := z.Default()
 
-	return &connect{
+	return &Connect{
 		core: app,
 	}
 }
 
-func (e *connect) RegisterApi(fn func(*zoox.Application)) {
+func (e *Connect) RegisterApi(fn func(*zoox.Application)) {
 	e.apiHandler = fn
 }
 
-func (e *connect) RegisterStatic(fn func(*zoox.Application) string) {
+func (e *Connect) RegisterStatic(fn func(*zoox.Application) string) {
 	e.staticHandler = fn
 }
 
-func (e *connect) handle(cfg *config.Config) {
+func (e *Connect) handle(cfg *config.Config) {
 	// env
 	// if cfg.Mode != "" {
 	// 	e.config.Mode = cfg.Mode
@@ -104,7 +104,7 @@ func (e *connect) handle(cfg *config.Config) {
 	e.core.Fallback(pg.RenderPage())
 }
 
-func (e *connect) Start(cfg *config.Config) error {
+func (e *Connect) Start(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
 	}

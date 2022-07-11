@@ -16,7 +16,12 @@ func New(cfg *config.Config) zoox.HandlerFunc {
 	var client *oauth2.Client
 	var err error
 	if cfg.Auth.Mode == "oauth2" {
-		client, err = goaDoreamon.New(cfg.Auth.OAuth2.ClientID, cfg.Auth.OAuth2.ClientSecret, cfg.Auth.OAuth2.RedirectURI)
+		client, err = goaDoreamon.New(&goaDoreamon.DoreamonConfig{
+			ClientID:     cfg.Auth.OAuth2.ClientID,
+			ClientSecret: cfg.Auth.OAuth2.ClientSecret,
+			RedirectURI:  cfg.Auth.OAuth2.RedirectURI,
+			Scope:        cfg.Auth.OAuth2.Scope,
+		})
 		if err != nil {
 			panic(err)
 		}

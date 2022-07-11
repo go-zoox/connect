@@ -48,6 +48,7 @@ type ConfigPartAuthOAuth2 struct {
 	ClientID     string `config:"client_id"`
 	ClientSecret string `config:"client_secret"`
 	RedirectURI  string `config:"redirect_uri"`
+	Scope        string `config:"scope"`
 }
 
 type ConfigPartServices struct {
