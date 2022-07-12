@@ -38,4 +38,4 @@ ENV         GIN_MODE=release
 
 ENV         VERSION=${VERSION}
 
-ENTRYPOINT  ["/app/server"]
+CMD  ["/app/server", "-c", "/conf/config.yml"]

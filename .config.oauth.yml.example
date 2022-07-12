@@ -10,50 +10,18 @@ backend:
   host: 127.0.0.1
   port: 8001
 
-auth:
-  mode: oauth2 # password | oauth2
-  password:
-    mode: local
-    local:
-      username: admin
-      password: admin
-    service: http://127.0.0.1:8001/api/login # POST /login + { username, password, type } => { access_token: string }
-  oauth2:
+oauth2:
+  - name: doreamon
     client_id: <CLIENT_ID>
     client_secret: <CLIENT_SECRET>
-    redirect_uri: http://127.0.0.1:8080/login/callback
+    redirect_uri: http://127.0.0.1:8080/login/doreamon/callback
 
 services:
   app:
-    mode: local
-    local:
-      name: Eunomia
-      logo: https://avatars.githubusercontent.com/u/7463687?v=4
-      description: 研发效能平台 
-    service: https://api.example.com/oauth/app
+    service: https://api.zcorky.com/oauth/app
 
   user:
-    mode: local
-    local:
-      id: '0x01'
-      username: admin
-      nickname: 管理员
-      avatar: https://avatars.githubusercontent.com/u/7463687?v=4
-      permissions:
-        - /s/dns
-        - /s/docker
-    service: https://api.example.com/user # GET
+    service: https://api.zcorky.com/user
 
   menus:
-    mode: local
-    local:
-      - name: Workspace
-        path: /s
-        icon: appstore
-      - name: DNS 管理
-        path: /s/dns
-        icon: appstore
-      - name: Docker 管理
-        path: /s/docker
-        icon: appstore
-    service: https://api.example.com/menus # GET
+    service: https://api.zcorky.com/menus
