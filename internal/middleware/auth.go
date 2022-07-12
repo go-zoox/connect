@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 	"time"
 
@@ -74,15 +75,14 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 		token := service.GetToken(ctx)
 		if token == "" {
-			time.Sleep(3 * time.Second)
-			ctx.Redirect("/login")
+			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
 			return
 		} else if user, err := service.GetUser(cfg, token); err != nil && user == nil {
 			logger.Error("[middleware][auth] cannot get user: %v", err)
 
 			time.Sleep(3 * time.Second)
 
-			ctx.Redirect("/login")
+			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
 			return
 		}
 
