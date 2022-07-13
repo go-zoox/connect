@@ -2,6 +2,8 @@ port: 8080
 
 secret_key: go-zoox
 
+session_max_age: 86400000
+
 frontend:
   host: 127.0.0.1
   port: 8000

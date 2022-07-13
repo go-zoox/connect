@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/go-zoox/connect/internal/config"
@@ -42,11 +43,16 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 		if loginCallbackRegExp.MatchString(ctx.Path) {
 			code := ctx.Query("code")
 			state := ctx.Query("state")
+			provider := loginCallbackRegExp.FindStringSubmatch(ctx.Path)[1]
+
 			if ctx.Session.Get("oauth2_state") != state {
-				panic("oauth2_state is not match")
+				fmt.Printf("state not match: expect %s, but got %s", ctx.Session.Get("oauth2_state"), state)
+
+				// panic("oauth2_state is not match")
+				ctx.Redirect(fmt.Sprintf("/login/%s", provider))
+				return
 			}
 
-			provider := loginCallbackRegExp.FindStringSubmatch(ctx.Path)[1]
 			if clientCfg, err := oauth2.Get(provider); err != nil {
 				panic(err)
 			} else {

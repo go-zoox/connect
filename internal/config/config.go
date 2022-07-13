@@ -2,6 +2,9 @@ package config
 
 import (
 	"errors"
+	"net/url"
+	"os"
+	"strconv"
 	"time"
 
 	goconfig "github.com/go-zoox/config"
@@ -166,7 +169,70 @@ func Load() (*Config, error) {
 		cfg.Services.Menus.Mode = "service"
 	}
 
+	applyEnv()
+
 	// isLoaded = true
 
 	return &cfg, nil
+}
+
+func applyEnv() {
+	if os.Getenv("PORT") != "" {
+		v, err := strconv.Atoi(os.Getenv("PORT"))
+		if err == nil {
+			cfg.Port = int64(v)
+		}
+	}
+
+	if os.Getenv("MODE") != "" {
+		cfg.Mode = os.Getenv("MODE")
+	}
+
+	if os.Getenv("SECRET_KEY") != "" {
+		cfg.SecretKey = os.Getenv("SECRET_KEY")
+	}
+
+	if os.Getenv("SESSION_MAX_AGE") != "" {
+		v, err := strconv.Atoi(os.Getenv("SESSION_MAX_AGE"))
+		if err == nil {
+			cfg.SessionMaxAge = int64(v)
+		}
+	}
+
+	if os.Getenv("LOG_LEVEL") != "" {
+		cfg.LogLevel = os.Getenv("LOG_LEVEL")
+	}
+
+	if os.Getenv("AUTH_MODE") != "" {
+		cfg.Auth.Mode = os.Getenv("AUTH_MODE")
+	}
+
+	if os.Getenv("FRONTEND") != "" {
+		u, err := url.Parse(os.Getenv("FRONTEND"))
+		if err == nil {
+			panic("invalid FRONTEND service: " + os.Getenv("FRONTEND"))
+		}
+
+		port, _ := strconv.Atoi(u.Port())
+		cfg.Frontend = ConfigPartService{
+			Scheme: u.Scheme,
+			Host:   u.Hostname(),
+			Port:   int64(port),
+		}
+	}
+
+	if os.Getenv("BACKEND") != "" {
+		u, err := url.Parse(os.Getenv("BACKEND"))
+		if err == nil {
+			panic("invalid BACKEND service: " + os.Getenv("BACKEND"))
+		}
+
+		port, _ := strconv.Atoi(u.Port())
+		cfg.Frontend = ConfigPartService{
+			Scheme: u.Scheme,
+			Host:   u.Hostname(),
+			Port:   int64(port),
+		}
+	}
+
 }

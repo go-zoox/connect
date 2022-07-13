@@ -67,7 +67,8 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 	return func(ctx *zoox.Context) {
 		if cfg.Mode == "production" {
 			// ctx.Status(200)
-			ctx.String(200, cfg.IndexHTML)
+			// ctx.String(200, cfg.IndexHTML)
+			zoox.WrapH(proxy.NewSingleTarget(p.frontend))(ctx)
 			return
 		}
 
