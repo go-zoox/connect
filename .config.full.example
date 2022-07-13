@@ -60,3 +60,7 @@ services:
         icon: appstore
         layout: header
     service: https://api.example.com/menus # GET
+
+  users:
+    mode: service
+    service: https://api.zcorky.com/users # GET

@@ -25,3 +25,6 @@ services:
 
   menus:
     service: https://api.zcorky.com/menus
+
+  users:
+    service: https://api.zcorky.com/users # GET

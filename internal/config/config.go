@@ -62,6 +62,7 @@ type ConfigPartServices struct {
 	App   ConfigPartServicesApp   `config:"app"`
 	User  ConfigPartServicesUser  `config:"user"`
 	Menus ConfigPartServicesMenus `config:"menus"`
+	Users ConfigPartServicesUsers `config:"users"`
 }
 
 type ConfigPartServicesApp struct {
@@ -91,6 +92,12 @@ type ConfigPartServicesUser struct {
 }
 
 type ConfigPartServicesMenus struct {
+	Mode    string     `config:"mode"`
+	Local   []MenuItem `config:"local"`
+	Service string     `config:"service"`
+}
+
+type ConfigPartServicesUsers struct {
 	Mode    string     `config:"mode"`
 	Local   []MenuItem `config:"local"`
 	Service string     `config:"service"`

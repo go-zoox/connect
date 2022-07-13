@@ -50,6 +50,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 		api.Get("/app", apiApp.New(cfg))
 		api.Get("/user", apiUser.New(cfg))
 		api.Get("/menus", apiMenus.New(cfg))
+		api.Get("/users", apiUser.GetUsers(cfg))
 		api.Get("/config", apiConfig.New(cfg))
 		//
 		api.Post("/login", apiUser.Login(cfg))

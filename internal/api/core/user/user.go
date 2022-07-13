@@ -68,3 +68,42 @@ func Login(cfg *config.Config) zoox.HandlerFunc {
 		ctx.Status(200)
 	}
 }
+
+func GetUsers(cfg *config.Config) zoox.HandlerFunc {
+	return func(ctx *zoox.Context) {
+		page := ctx.Query("page")
+		pageSize := ctx.Query("pageSize")
+		if pageSize == "" {
+			pageSize = ctx.Query("page_size")
+		}
+		if page == "" {
+			page = "1"
+		}
+		if pageSize == "" {
+			pageSize = "10"
+		}
+
+		token := service.GetToken(ctx)
+		if token == "" {
+			ctx.Fail(errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
+			return
+		}
+
+		provider := service.GetProvider(ctx)
+		if provider == "" {
+			ctx.Fail(errors.FailedToGetOAuth2Provider.Code, errors.FailedToGetOAuth2Provider.Message)
+			return
+		}
+
+		data, total, err := service.GetUsers(cfg, provider, token, page, pageSize)
+		if err != nil {
+			ctx.Fail(errors.FailedToGetUsers.Code, errors.FailedToGetUsers.Message+": "+err.Error())
+			return
+		}
+
+		ctx.Success(zoox.H{
+			"data":  data,
+			"total": total,
+		})
+	}
+}
