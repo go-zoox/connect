@@ -67,12 +67,10 @@ func New(app *zoox.Application, cfg *config.Config) {
 				}
 
 				timestamp := time.Now().UnixMilli()
-				jwt.Set("user", map[string]string{
-					"id":       user.ID,
-					"nickname": user.Nickname,
-					"avatar":   user.Avatar,
-					"email":    user.Email,
-				})
+				jwt.Set("user_id", user.ID)
+				jwt.Set("user_nickname", user.Nickname)
+				jwt.Set("user_avatar", user.Avatar)
+				jwt.Set("user_email", user.Email)
 				jwtToken, err := jwt.Sign()
 				if err != nil {
 					ctx.JSON(http.StatusInternalServerError, err)
