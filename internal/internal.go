@@ -72,6 +72,7 @@ func (e *Connect) Start(cfg *config.Config) error {
 	}
 
 	e.handle(cfg)
+
 	e.core.Run(fmt.Sprintf(":%d", e.cfg.Port))
 
 	return nil

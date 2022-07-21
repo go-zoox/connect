@@ -1,8 +1,6 @@
 package main
 
 import (
-	_ "embed"
-
 	"github.com/go-zoox/connect/internal"
 	"github.com/go-zoox/connect/internal/config"
 )
