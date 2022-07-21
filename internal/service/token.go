@@ -36,26 +36,26 @@ func VerifyToken(cfg *config.Config, ctx *zoox.Context, token string) bool {
 }
 
 func GetToken(ctx *zoox.Context) string {
-	return ctx.Cookie.Get(tokenKey)
+	return ctx.Cookie().Get(tokenKey)
 }
 
 func SetToken(ctx *zoox.Context, cfg *config.Config, value string) {
-	ctx.Cookie.Set(tokenKey, value, cfg.SessionMaxAgeDuration)
+	ctx.Cookie().Set(tokenKey, value, cfg.SessionMaxAgeDuration)
 }
 
 func DelToken(ctx *zoox.Context) {
-	ctx.Cookie.Del(tokenKey)
+	ctx.Cookie().Del(tokenKey)
 }
 
 // @TODO
 func GetProvider(ctx *zoox.Context) string {
-	return ctx.Cookie.Get(providerKey)
+	return ctx.Cookie().Get(providerKey)
 }
 
 func SetProvider(ctx *zoox.Context, cfg *config.Config, value string) {
-	ctx.Cookie.Set(providerKey, value, cfg.SessionMaxAgeDuration)
+	ctx.Cookie().Set(providerKey, value, cfg.SessionMaxAgeDuration)
 }
 
 func DelProvider(ctx *zoox.Context) {
-	ctx.Cookie.Del(providerKey)
+	ctx.Cookie().Del(providerKey)
 }

@@ -20,9 +20,9 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		}
 
 		if ctx.Path == "/login" {
-			from := ctx.Query("from")
+			from := ctx.Query().Get("from")
 			if from != "" {
-				ctx.Session.Set("from", from)
+				ctx.Session().Set("from", from)
 			}
 
 			// auth mode from oauth2 => local password
@@ -36,7 +36,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			if token != "" {
 				if user, err := service.GetUser(cfg, token); err == nil && user != nil {
 					if from != "" {
-						ctx.Session.Del("from")
+						ctx.Session().Del("from")
 						ctx.Redirect(from)
 					} else {
 						ctx.Redirect("/")
@@ -58,9 +58,9 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		} else if ctx.Path == "/logout" {
 			service.DelToken(ctx)
 
-			from := ctx.Query("from")
+			from := ctx.Query().Get("from")
 			if from != "" {
-				ctx.Session.Set("from", from)
+				ctx.Session().Set("from", from)
 			}
 
 			ctx.Redirect(fmt.Sprintf("/login?from=%s", from))

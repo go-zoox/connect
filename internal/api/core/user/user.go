@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/go-zoox/connect/internal/config"
 	"github.com/go-zoox/connect/internal/errors"
 	"github.com/go-zoox/connect/internal/service"
@@ -11,13 +13,13 @@ func New(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
 		token := service.GetToken(ctx)
 		if token == "" {
-			ctx.Fail(errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
+			ctx.Fail(fmt.Errorf("token is missing"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
 			return
 		}
 
 		user, err := service.GetUser(cfg, token)
 		if err != nil {
-			ctx.Fail(errors.FailedToGetUser.Code, errors.FailedToGetUser.Message+": "+err.Error())
+			ctx.Fail(err, errors.FailedToGetUser.Code, errors.FailedToGetUser.Message)
 			return
 		}
 
@@ -40,14 +42,14 @@ func Login(cfg *config.Config) zoox.HandlerFunc {
 
 		var user UserDTO
 		if err := ctx.BindJSON(&user); err != nil {
-			ctx.Fail(errors.InvalidJSON.Code, errors.InvalidJSON.Message)
+			ctx.Fail(err, errors.InvalidJSON.Code, errors.InvalidJSON.Message)
 			return
 		}
 
 		// ctx.Logger.Info("Login User: %v", user)
 
 		if ok := service.ValidateCaptcha(cfg, ctx, user.Captcha); !ok {
-			ctx.Fail(errors.InvalidCaptcha.Code, errors.InvalidCaptcha.Message)
+			ctx.Fail(fmt.Errorf("invalid captcha"), errors.InvalidCaptcha.Code, errors.InvalidCaptcha.Message)
 			return
 		}
 
@@ -59,7 +61,7 @@ func Login(cfg *config.Config) zoox.HandlerFunc {
 			// 	"message": err.Error(),
 			// })
 
-			ctx.Fail(errors.UserLoginFailed.Code, errors.UserLoginFailed.Message+": "+err.Error())
+			ctx.Fail(err, errors.UserLoginFailed.Code, errors.UserLoginFailed.Message)
 			return
 		}
 
@@ -71,10 +73,10 @@ func Login(cfg *config.Config) zoox.HandlerFunc {
 
 func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
-		page := ctx.Query("page")
-		pageSize := ctx.Query("pageSize")
+		page := ctx.Query().Get("page")
+		pageSize := ctx.Query().Get("pageSize")
 		if pageSize == "" {
-			pageSize = ctx.Query("page_size")
+			pageSize = ctx.Query().Get("page_size")
 		}
 		if page == "" {
 			page = "1"
@@ -85,19 +87,19 @@ func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 
 		token := service.GetToken(ctx)
 		if token == "" {
-			ctx.Fail(errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
+			ctx.Fail(fmt.Errorf("token is missing"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
 			return
 		}
 
 		provider := service.GetProvider(ctx)
 		if provider == "" {
-			ctx.Fail(errors.FailedToGetOAuth2Provider.Code, errors.FailedToGetOAuth2Provider.Message)
+			ctx.Fail(fmt.Errorf("provider is missing"), errors.FailedToGetOAuth2Provider.Code, errors.FailedToGetOAuth2Provider.Message)
 			return
 		}
 
 		data, total, err := service.GetUsers(cfg, provider, token, page, pageSize)
 		if err != nil {
-			ctx.Fail(errors.FailedToGetUsers.Code, errors.FailedToGetUsers.Message+": "+err.Error())
+			ctx.Fail(err, errors.FailedToGetUsers.Code, errors.FailedToGetUsers.Message)
 			return
 		}
 

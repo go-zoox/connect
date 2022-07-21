@@ -30,7 +30,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 				service.SetProvider(ctx, cfg, provider)
 				state := random.String(8)
-				ctx.Session.Set("oauth2_state", state)
+				ctx.Session().Set("oauth2_state", state)
 
 				client.Authorize(state, func(loginURL string) {
 					ctx.Redirect(loginURL)
@@ -41,12 +41,12 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 		// login callback => /login/:provider/callback
 		if loginCallbackRegExp.MatchString(ctx.Path) {
-			code := ctx.Query("code")
-			state := ctx.Query("state")
+			code := ctx.Query().Get("code")
+			state := ctx.Query().Get("state")
 			provider := loginCallbackRegExp.FindStringSubmatch(ctx.Path)[1]
 
-			if ctx.Session.Get("oauth2_state") != state {
-				fmt.Printf("state not match: expect %s, but got %s", ctx.Session.Get("oauth2_state"), state)
+			if ctx.Session().Get("oauth2_state") != state {
+				fmt.Printf("state not match: expect %s, but got %s", ctx.Session().Get("oauth2_state"), state)
 
 				// panic("oauth2_state is not match")
 				ctx.Redirect(fmt.Sprintf("/login/%s", provider))
@@ -70,9 +70,9 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 					service.SetToken(ctx, cfg, token.AccessToken)
 
-					from := ctx.Session.Get("from")
+					from := ctx.Session().Get("from")
 					if from != "" {
-						ctx.Session.Del("from")
+						ctx.Session().Del("from")
 						ctx.Redirect(from)
 					} else {
 						ctx.Redirect("/")
@@ -103,11 +103,11 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 				// clear token
 				service.DelToken(ctx)
 				// clear provider
-				ctx.Session.Del("provider")
+				ctx.Session().Del("provider")
 
-				from := ctx.Query("from")
+				from := ctx.Query().Get("from")
 				if from != "" {
-					ctx.Session.Set("from", from)
+					ctx.Session().Set("from", from)
 				}
 
 				ctx.Redirect(logoutURL)
