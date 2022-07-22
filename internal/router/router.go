@@ -81,6 +81,9 @@ func New(app *zoox.Application, cfg *config.Config) {
 				ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
 				ctx.Request.Header.Set("X-Connect-Token", jwtToken)
 
+				// request id
+				ctx.Request.Header.Set(zoox.RequestIDHeader, ctx.RequestID())
+
 				ctx.Next()
 			},
 			apiBackend.New(cfg),

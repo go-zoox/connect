@@ -65,6 +65,9 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 	cfg := p.cfg
 
 	return func(ctx *zoox.Context) {
+		// request id
+		ctx.Request.Header.Set(zoox.RequestIDHeader, ctx.RequestID())
+
 		if cfg.Mode == "production" {
 			// ctx.Status(200)
 			// ctx.String(200, cfg.IndexHTML)
