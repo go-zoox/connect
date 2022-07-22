@@ -42,8 +42,6 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	pg := page.New(cfg)
 
-	jwt := jwtsigner.NewHS256(cfg.SecretKey)
-
 	// api
 	api := app.Group("/api")
 	{
@@ -60,6 +58,8 @@ func New(app *zoox.Application, cfg *config.Config) {
 		api.Any(
 			"/*",
 			func(ctx *zoox.Context) {
+				jwt := jwtsigner.NewHS256(cfg.SecretKey)
+
 				token := service.GetToken(ctx)
 				user, err := service.GetUser(cfg, token)
 				if err != nil {

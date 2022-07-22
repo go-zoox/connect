@@ -8,12 +8,12 @@ require (
 	github.com/go-zoox/crypto v1.0.3
 	github.com/go-zoox/fetch v1.3.5
 	github.com/go-zoox/jwt v1.0.0
-	github.com/go-zoox/kv v1.4.2
+	github.com/go-zoox/kv v1.4.3
 	github.com/go-zoox/logger v1.2.0
 	github.com/go-zoox/oauth2 v1.4.0
 	github.com/go-zoox/proxy v1.0.2
 	github.com/go-zoox/random v1.0.0
-	github.com/go-zoox/zoox v1.2.2
+	github.com/go-zoox/zoox v1.2.3
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-yaml/yaml v2.1.0+incompatible // indirect
 	github.com/go-zoox/chalk v1.0.1 // indirect
-	github.com/go-zoox/core-utils v1.0.12 // indirect
+	github.com/go-zoox/core-utils v1.0.13 // indirect
 	github.com/go-zoox/datetime v1.0.4 // indirect
 	github.com/go-zoox/encoding v1.0.7 // indirect
 	github.com/go-zoox/fs v1.2.5 // indirect
