@@ -95,12 +95,14 @@ func isIgnoreAuthoried(path string) bool {
 		"^/api/login$",
 		"^/api/app$",
 		"^/captcha$",
+		"^/favicon.ico",
 		"^/__umi_ping$",
-		"^//__umiDev/routes$",
+		"^/__umiDev/routes$",
 		"^/robots.txt$",
 		"^/sockjs-node",
 		"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map)$",
 		"\\.hot-update.json$",
+		"^/api/open/",
 	}
 	for _, exclude := range excludes {
 		matched, err := regexp.MatchString(exclude, path)

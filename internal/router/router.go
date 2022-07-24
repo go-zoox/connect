@@ -19,6 +19,9 @@ import (
 	apiConfig "github.com/go-zoox/connect/internal/api/core/config"
 	apiMenus "github.com/go-zoox/connect/internal/api/core/menus"
 	apiUser "github.com/go-zoox/connect/internal/api/core/user"
+
+	//
+	apiOpen "github.com/go-zoox/connect/internal/api/core/open"
 )
 
 func New(app *zoox.Application, cfg *config.Config) {
@@ -57,6 +60,8 @@ func New(app *zoox.Application, cfg *config.Config) {
 		api.Post("/login", apiUser.Login(cfg))
 		//
 		api.Get("/page/health", pg.Health(cfg))
+		// open
+		api.Any("/open/*", apiOpen.New(cfg))
 		//
 		api.Any(
 			"/*",
