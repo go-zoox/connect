@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-zoox/connect/internal/api/captcha"
+	"github.com/go-zoox/connect/internal/api/favicon"
 	"github.com/go-zoox/connect/internal/api/page"
 	"github.com/go-zoox/connect/internal/config"
 	"github.com/go-zoox/connect/internal/middleware"
@@ -37,6 +38,8 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	// 	// dev mode will not use static
 	// }
+
+	app.Get("/favicon.ico", favicon.Get(cfg))
 
 	app.Get("/captcha", captcha.New(cfg))
 
