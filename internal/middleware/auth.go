@@ -73,12 +73,21 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			service.DelToken(ctx)
 		}
 
+		provider := service.GetProvider(ctx)
+
 		token := service.GetToken(ctx)
 		if token == "" {
 			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
 			return
 		} else if user, err := service.GetUser(cfg, token); err != nil && user == nil {
 			logger.Error("[middleware][auth] cannot get user: %v", err)
+
+			time.Sleep(3 * time.Second)
+
+			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
+			return
+		} else if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
+			logger.Error("[middleware][auth] cannot get app: %v", err)
 
 			time.Sleep(3 * time.Second)
 
