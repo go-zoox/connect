@@ -40,7 +40,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    container: whatwewant/zmicro:v1.16
+    container: whatwewant/zmicro:v1
 
     steps:
       - name: Update zmicro to latest
@@ -54,7 +54,7 @@ jobs:
         with:
           fetch-depth: '0'
 
-       - name: Docker Meta
+      - name: Docker Meta
         id: meta
         run: |
           ACTION_IMAGE_NAME="connect-go" # $(echo $GITHUB_REPOSITORY | awk -F "/" '{print $2}')
