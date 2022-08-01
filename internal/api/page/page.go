@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-zoox/connect/internal/config"
 	"github.com/go-zoox/fetch"
+	"github.com/go-zoox/logger"
 	"github.com/go-zoox/proxy"
 	"github.com/go-zoox/zoox"
 )
@@ -46,11 +47,14 @@ func New(cfg *config.Config) *page {
 }
 
 func (p *page) isHealth() bool {
-	if response, err := fetch.Get(p.frontend, &fetch.Config{
+	response, err := fetch.Get(p.frontend, &fetch.Config{
 		Headers: map[string]string{
 			"accept": "text/html",
 		},
-	}); err != nil || response.Status != 200 {
+	})
+
+	if err != nil || response.Status != 200 {
+		logger.Debug("Check health: ", p.frontend, err)
 		return false
 	}
 
