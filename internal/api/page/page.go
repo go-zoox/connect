@@ -54,7 +54,7 @@ func (p *page) isHealth() bool {
 	})
 
 	if err != nil || response.Status != 200 {
-		logger.Debug("Check health: ", p.frontend, err)
+		logger.Debug("Check health: (URI: %s, error: %s)", p.frontend, err)
 		return false
 	}
 
