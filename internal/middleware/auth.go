@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"regexp"
 	"time"
@@ -64,6 +66,11 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			}
 
 			ctx.Redirect(fmt.Sprintf("/login?from=%s", from))
+			return
+		}
+
+		if ctx.AcceptJSON() {
+			ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
