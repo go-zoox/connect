@@ -1,41 +1,41 @@
 # Builder
 FROM golang:1.18-alpine as builder
 
-RUN         apk add gcc g++ make
+RUN apk add gcc g++ make
 
-WORKDIR     /app
+WORKDIR /app
 
-COPY        go.mod ./
+COPY go.mod ./
 
-COPY        go.sum ./
+COPY go.sum ./
 
-RUN         go mod download
+RUN go mod download
 
-COPY        . ./
+COPY . ./
 
 # RUN         CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -v -o server cmd/main.go
 
 # 'CGO_ENABLED=0', go-sqlite3 requires cgo to work.
 # RUN         go build -ldflags="-w -s" -v -o server cmd/main.go
 
-RUN         CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -v -o server main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -v -o server main.go
 
 # Server
 # FROM  scratch # x509: certificate signed by unknown authority
-FROM alpine:latest
+FROM whatwewant/alpine:v1.0.0
+
+LABEL MAINTAINER="Zero<tobewhatwewant@gmail.com>"
 
 WORKDIR /app
 
-LABEL       MAINTAINER="Zero<tobewhatwewant@gmail.com>"
+ARG VERSION=v1
 
-ARG         VERSION=v1
+COPY --from=builder /app/server /app/server
 
-COPY        --from=builder /app/server /app/server
+EXPOSE 8080
 
-EXPOSE      8080
+ENV GIN_MODE=release
 
-ENV         GIN_MODE=release
+ENV VERSION=${VERSION}
 
-ENV         VERSION=${VERSION}
-
-CMD  ["/app/server", "-c", "/conf/config.yml"]
+CMD ["/app/server", "-c", "/conf/config.yml"]
