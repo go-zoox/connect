@@ -69,15 +69,6 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		// @TODO
-		// sleep for a while to avoid too many requests
-		time.Sleep(time.Millisecond * 100)
-
-		if ctx.AcceptJSON() {
-			ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
 		// auth mode from oauth2 => local password
 		if cfg.Auth.Mode == "password" && service.GetProvider(ctx) != "" {
 			service.DelProvider(ctx)
@@ -88,19 +79,42 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 		token := service.GetToken(ctx)
 		if token == "" {
+			// @TODO
+			// sleep for a while to avoid too many requests
+			time.Sleep(time.Second * 1)
+
+			if ctx.AcceptJSON() {
+				ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
 			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
 			return
 		} else if user, err := service.GetUser(cfg, token); err != nil && user == nil {
-			logger.Error("[middleware][auth] cannot get user: %v", err)
+			// @TODO
+			// sleep for a while to avoid too many requests
+			time.Sleep(time.Second * 1)
 
-			time.Sleep(3 * time.Second)
+			if ctx.AcceptJSON() {
+				ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			logger.Error("[middleware][auth] cannot get user: %v", err)
 
 			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
 			return
 		} else if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
-			logger.Error("[middleware][auth] cannot get app: %v", err)
+			// @TODO
+			// sleep for a while to avoid too many requests
+			time.Sleep(time.Second * 1)
 
-			time.Sleep(3 * time.Second)
+			if ctx.AcceptJSON() {
+				ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			logger.Error("[middleware][auth] cannot get app: %v", err)
 
 			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
 			return
