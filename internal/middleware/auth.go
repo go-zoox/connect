@@ -69,6 +69,10 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
+		// @TODO
+		// sleep for a while to avoid too many requests
+		time.Sleep(time.Millisecond * 100)
+
 		if ctx.AcceptJSON() {
 			ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
 			return
