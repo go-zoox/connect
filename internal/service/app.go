@@ -18,7 +18,7 @@ type App struct {
 }
 
 type AppSettings struct {
-	Functions []string `json:"functions"`
+	Functions any `json:"functions"`
 }
 
 func GetApp(cfg *config.Config, provider string, token string) (a *App, err error) {

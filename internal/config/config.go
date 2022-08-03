@@ -75,7 +75,7 @@ type ConfigPartServicesApp struct {
 		Logo        string `config:"logo"`
 		Description string `config:"description"`
 		Settings    struct {
-			Functions []string `config:"functions"`
+			Functions any `config:"functions"`
 		} `config:"settings"`
 	} `config:"local"`
 	Service string `config:"service"`
