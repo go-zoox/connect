@@ -35,15 +35,15 @@ func main() {
 			// 	port = os.Getenv("PORT")
 			// }
 
-			config_file := c.String("config")
+			configFile := c.String("config")
 			if os.Getenv("CONFIG") != "" {
-				config_file = os.Getenv("CONFIG")
+				configFile = os.Getenv("CONFIG")
 			}
 
-			if config_file == "" {
+			if configFile == "" {
 				dotConfig := fs.JoinPath(fs.CurrentDir(), ".config.yml")
 				if fs.IsExist(dotConfig) {
-					config_file = dotConfig
+					configFile = dotConfig
 				} else {
 					panic("config file is required")
 				}
@@ -52,7 +52,7 @@ func main() {
 			app := internal.New()
 			var cfg *config.Config
 			var err error
-			if cfg, err = config.Load(config_file); err != nil {
+			if cfg, err = config.Load(configFile); err != nil {
 				panic(err)
 			}
 
