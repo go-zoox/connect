@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/go-zoox/captcha v1.0.3
+	github.com/go-zoox/cli v1.0.2
 	github.com/go-zoox/config v1.0.9
 	github.com/go-zoox/crypto v1.0.3
 	github.com/go-zoox/fetch v1.4.4
@@ -15,7 +16,6 @@ require (
 	github.com/go-zoox/proxy v1.2.1
 	github.com/go-zoox/random v1.0.0
 	github.com/go-zoox/zoox v1.2.7
-	github.com/urfave/cli/v2 v2.11.1
 )
 
 require (
@@ -47,6 +47,7 @@ require (
 	github.com/tidwall/gjson v1.14.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/urfave/cli/v2 v2.11.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/image v0.0.0-20220617043117-41969df76e82 // indirect
@@ -58,3 +59,4 @@ require (
 
 // replace github.com/go-zoox/zoox => ../zoox
 // replace github.com/go-zoox/oauth2 => ../oauth2
+// replace github.com/go-zoox/cli => ../cli
