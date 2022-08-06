@@ -30,12 +30,12 @@ WORKDIR /app
 
 ARG VERSION=v1
 
-COPY --from=builder /app/server /app/server
+COPY --from=builder /app/server /bin
 
 EXPOSE 8080
 
-ENV GIN_MODE=release
-
 ENV VERSION=${VERSION}
 
-CMD ["/app/server", "-c", "/conf/config.yml"]
+COPY ./entrypoint.sh /entrypoint.sh
+
+CMD /entrypoint.sh
