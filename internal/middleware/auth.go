@@ -21,6 +21,9 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
+		provider := service.GetProvider(ctx)
+		token := service.GetToken(ctx)
+
 		if ctx.Path == "/login" {
 			from := ctx.Query().Get("from")
 			if from != "" {
@@ -34,27 +37,32 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			}
 
 			// if user has login, redirect to from
-			token := service.GetToken(ctx)
+			// @1 check token
 			if token != "" {
+				// @2 check user
 				if user, err := service.GetUser(cfg, token); err == nil && user != nil {
-					if from != "" {
-						ctx.Session().Del("from")
-						ctx.Redirect(from)
-					} else {
-						ctx.Redirect("/")
-					}
+					// @3 check app
+					if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
+						if from != "" {
+							ctx.Session().Del("from")
+							ctx.Redirect(from)
+						} else {
+							ctx.Redirect("/")
+						}
 
-					return
+						return
+					}
 				}
 			}
 
-			// oauth2 login
+			// go to redirect login
+			// @login_1 oauth2 login
 			if cfg.Auth.Mode == "oauth2" {
 				ctx.Redirect(fmt.Sprintf("/login/%s", cfg.Auth.Provider))
 				return
 			}
 
-			// local login, fallback to login page render
+			// @login_2 local login, fallback to login page render
 			ctx.Next()
 			return
 		} else if ctx.Path == "/logout" {
@@ -65,7 +73,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 				ctx.Session().Set("from", from)
 			}
 
-			ctx.Redirect(fmt.Sprintf("/login?from=%s", from))
+			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from), "visit_logout"))
 			return
 		}
 
@@ -75,9 +83,8 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			service.DelToken(ctx)
 		}
 
-		provider := service.GetProvider(ctx)
-
-		token := service.GetToken(ctx)
+		// visit real path
+		// [visit real path] @1 check token
 		if token == "" {
 			// @TODO
 			// sleep for a while to avoid too many requests
@@ -88,9 +95,10 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 				return
 			}
 
-			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
+			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "token_not_found"))
 			return
 		} else if user, err := service.GetUser(cfg, token); err != nil && user == nil {
+			// [visit real path] @2 check user
 			// @TODO
 			// sleep for a while to avoid too many requests
 			time.Sleep(time.Second * 1)
@@ -102,9 +110,10 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 			logger.Error("[middleware][auth] cannot get user: %v", err)
 
-			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
+			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "user_expired"))
 			return
 		} else if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
+			// [visit real path] @2 check app
 			// @TODO
 			// sleep for a while to avoid too many requests
 			time.Sleep(time.Second * 1)
@@ -116,7 +125,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 			logger.Error("[middleware][auth] cannot get app: %v", err)
 
-			ctx.Redirect("/login?from=" + url.QueryEscape(ctx.Request.RequestURI))
+			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "app_expired"))
 			return
 		}
 

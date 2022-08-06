@@ -59,7 +59,7 @@ func GetApp(cfg *config.Config, provider string, token string) (a *App, err erro
 	}
 
 	if err := json.Unmarshal([]byte(response.Get("result").String()), &app); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshal app: %s (response: %s)", err, response.String())
 	}
 
 	cache.Set("app", app, cfg.SessionMaxAgeDuration)
