@@ -123,8 +123,10 @@ type MenuItem struct {
 // var isLoaded = false
 var cfg Config
 
-func Load() (*Config, error) {
-	if err := goconfig.Load(&cfg); err != nil {
+func Load(config_file string) (*Config, error) {
+	if err := goconfig.Load(&cfg, &goconfig.LoadOptions{
+		FilePath: config_file,
+	}); err != nil {
 		return nil, err
 	}
 

@@ -1,19 +1,68 @@
 package main
 
 import (
+	"os"
+
+	"github.com/go-zoox/cli"
 	"github.com/go-zoox/connect/internal"
 	"github.com/go-zoox/connect/internal/config"
+	"github.com/go-zoox/fs"
 )
 
 func main() {
-	app := internal.New()
-	var cfg *config.Config
-	var err error
-	if cfg, err = config.Load(); err != nil {
-		panic(err)
-	}
+	app := cli.NewSingleProgram(&cli.SingleProgramConfig{
+		Name:        "Serve",
+		Usage:       "The Serve",
+		Description: "Server static files",
+		// Version:     Version,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "port",
+				Value:   "8080",
+				Usage:   "The port to listen on",
+				Aliases: []string{"p"},
+			},
+			&cli.StringFlag{
+				Name:    "config",
+				Usage:   "The config file",
+				Aliases: []string{"c"},
+			},
+		},
+	})
 
-	if err := app.Start(cfg); err != nil {
-		panic(err)
-	}
+	app.Command(func(c *cli.Context) error {
+		// port := c.String("port")
+		// if os.Getenv("PORT") != "" {
+		// 	port = os.Getenv("PORT")
+		// }
+
+		configFile := c.String("config")
+		if os.Getenv("CONFIG") != "" {
+			configFile = os.Getenv("CONFIG")
+		}
+
+		if configFile == "" {
+			dotConfig := fs.JoinPath(fs.CurrentDir(), ".config.yml")
+			if fs.IsExist(dotConfig) {
+				configFile = dotConfig
+			} else {
+				panic("config file is required")
+			}
+		}
+
+		app := internal.New()
+		var cfg *config.Config
+		var err error
+		if cfg, err = config.Load(configFile); err != nil {
+			panic(err)
+		}
+
+		if err := app.Start(cfg); err != nil {
+			panic(err)
+		}
+
+		return nil
+	})
+
+	app.Run()
 }
