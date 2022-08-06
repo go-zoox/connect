@@ -36,7 +36,16 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 				service.DelToken(ctx)
 			}
 
-			// if user has login, redirect to from
+			// why visit /login
+			//	=> token_expired/user_expired/app_expired
+			//	=> it means you had checked the token + user + app
+			//	=> so why check again?
+			//	=> delete token before redirect to /login
+			// solution:
+			//	1. not check, go login
+			//	2. delete token before redirect to /login
+			//
+			// // if user has login, redirect to from
 			// @1 check token
 			if token != "" {
 				// @2 check user
@@ -66,13 +75,13 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			ctx.Next()
 			return
 		} else if ctx.Path == "/logout" {
-			service.DelToken(ctx)
-
 			from := ctx.Query().Get("from")
 			if from != "" {
 				ctx.Session().Set("from", from)
 			}
 
+			// delete token before
+			service.DelToken(ctx)
 			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from), "visit_logout"))
 			return
 		}
@@ -110,6 +119,8 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 			logger.Error("[middleware][auth] cannot get user: %v", err)
 
+			// remove token from session to avoid login check visit user again
+			service.DelToken(ctx)
 			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "user_expired"))
 			return
 		} else if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
@@ -125,6 +136,8 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 			logger.Error("[middleware][auth] cannot get app: %v", err)
 
+			// remove token from session to avoid login check visit user + app again
+			service.DelToken(ctx)
 			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "app_expired"))
 			return
 		}
