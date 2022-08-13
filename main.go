@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/go-zoox/cli"
@@ -46,7 +48,7 @@ func main() {
 			if fs.IsExist(dotConfig) {
 				configFile = dotConfig
 			} else {
-				panic("config file is required")
+				log.Fatal(fmt.Errorf("config file(.config.yml) not found"))
 			}
 		}
 
@@ -54,11 +56,11 @@ func main() {
 		var cfg *config.Config
 		var err error
 		if cfg, err = config.Load(configFile); err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("failed to load config (%s)", configFile))
 		}
 
 		if err := app.Start(cfg); err != nil {
-			panic(err)
+			log.Fatal(fmt.Errorf("failed to start server(err: %s)", err))
 		}
 
 		return nil

@@ -13,9 +13,9 @@ require (
 	github.com/go-zoox/kv v1.4.3
 	github.com/go-zoox/logger v1.2.0
 	github.com/go-zoox/oauth2 v1.4.0
-	github.com/go-zoox/proxy v1.2.1
+	github.com/go-zoox/proxy v1.2.3
 	github.com/go-zoox/random v1.0.0
-	github.com/go-zoox/zoox v1.2.7
+	github.com/go-zoox/zoox v1.3.0
 )
 
 require (
@@ -28,31 +28,33 @@ require (
 	github.com/go-zoox/chalk v1.0.1 // indirect
 	github.com/go-zoox/compress v1.0.1 // indirect
 	github.com/go-zoox/core-utils v1.0.13 // indirect
+	github.com/go-zoox/counter v1.0.1 // indirect
 	github.com/go-zoox/datetime v1.0.4 // indirect
 	github.com/go-zoox/debug v1.0.1 // indirect
 	github.com/go-zoox/encoding v1.0.7 // indirect
+	github.com/go-zoox/gzip v1.0.0 // indirect
+	github.com/go-zoox/ratelimit v1.0.1 // indirect
 	github.com/go-zoox/tag v1.1.0 // indirect
 	github.com/go-zoox/uuid v0.0.1 // indirect
 	github.com/goccy/go-yaml v1.9.5 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-sqlite3 v1.14.14 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/steambap/captcha v1.4.1 // indirect
-	github.com/tidwall/gjson v1.14.1 // indirect
+	github.com/tidwall/gjson v1.14.2 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.11.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/image v0.0.0-20220617043117-41969df76e82 // indirect
-	golang.org/x/net v0.0.0-20220728211354-c7608f3a8462 // indirect
-	golang.org/x/sys v0.0.0-20220731174439-a90be440212d // indirect
+	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
+	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 )
