@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/go-zoox/captcha v1.0.3
 	github.com/go-zoox/cli v1.0.2
-	github.com/go-zoox/config v1.0.9
+	github.com/go-zoox/config v1.1.0
 	github.com/go-zoox/crypto v1.0.3
 	github.com/go-zoox/fetch v1.4.4
 	github.com/go-zoox/fs v1.2.5
@@ -40,8 +40,8 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-sqlite3 v1.14.14 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
