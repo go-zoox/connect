@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/go-zoox/cli"
-	"github.com/go-zoox/connect/internal"
-	"github.com/go-zoox/connect/internal/config"
+	internal "github.com/go-zoox/connect/app"
+	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/fs"
 )
 
