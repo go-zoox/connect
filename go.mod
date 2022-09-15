@@ -9,7 +9,6 @@ require (
 	github.com/go-zoox/crypto v1.1.5
 	github.com/go-zoox/fetch v1.4.4
 	github.com/go-zoox/fs v1.2.5
-	github.com/go-zoox/jwt v1.0.0
 	github.com/go-zoox/kv v1.4.3
 	github.com/go-zoox/logger v1.2.0
 	github.com/go-zoox/oauth2 v1.4.0
@@ -33,6 +32,7 @@ require (
 	github.com/go-zoox/debug v1.0.1 // indirect
 	github.com/go-zoox/encoding v1.0.7 // indirect
 	github.com/go-zoox/gzip v1.0.0 // indirect
+	github.com/go-zoox/jwt v1.0.0 // indirect
 	github.com/go-zoox/ratelimit v1.0.1 // indirect
 	github.com/go-zoox/tag v1.1.0 // indirect
 	github.com/go-zoox/uuid v0.0.1 // indirect

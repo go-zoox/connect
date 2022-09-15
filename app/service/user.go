@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/pkg/cache"
+	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/fetch"
-	"github.com/go-zoox/jwt"
 )
 
 type User struct {
@@ -81,9 +81,10 @@ func Login(cfg *config.Config, typ string, username string, password string) (st
 			return "", fmt.Errorf("用户名或密码错误")
 		}
 
-		j := jwt.NewHS256(cfg.SecretKey)
-		j.Set("username", username)
-		token, err := j.Sign()
+		j := jwt.New(cfg.SecretKey)
+		token, err := j.Sign(map[string]interface{}{
+			"username": username,
+		})
 		if err != nil {
 			return "", err
 		}
