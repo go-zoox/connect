@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/go-zoox/connect/app/config"
-	"github.com/go-zoox/jwt"
+	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/zoox"
 )
 
@@ -10,12 +10,9 @@ var tokenKey = "gz_ut"
 var providerKey = "gz_provider"
 
 func GenerateToken(cfg *config.Config, data map[string]any) (string, error) {
-	j := jwt.NewHS256(cfg.SecretKey)
-	for k, v := range data {
-		j.Set(k, v)
-	}
+	j := jwt.New(cfg.SecretKey)
 
-	if token, err := j.Sign(); err != nil {
+	if token, err := j.Sign(data); err != nil {
 		return "", err
 	} else {
 		return token, nil
@@ -26,8 +23,8 @@ func VerifyToken(cfg *config.Config, ctx *zoox.Context, token string) bool {
 	if token := GetToken(ctx); token == "" {
 		return false
 	} else {
-		j := jwt.NewHS256(cfg.SecretKey)
-		if err := j.Verify(token); err != nil {
+		j := jwt.New(cfg.SecretKey)
+		if _, err := j.Verify(token); err != nil {
 			return false
 		} else {
 			return true

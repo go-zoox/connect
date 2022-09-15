@@ -6,7 +6,7 @@ require (
 	github.com/go-zoox/captcha v1.0.3
 	github.com/go-zoox/cli v1.0.2
 	github.com/go-zoox/config v1.1.1
-	github.com/go-zoox/crypto v1.0.3
+	github.com/go-zoox/crypto v1.1.5
 	github.com/go-zoox/fetch v1.4.4
 	github.com/go-zoox/fs v1.2.5
 	github.com/go-zoox/jwt v1.0.0

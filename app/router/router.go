@@ -11,7 +11,7 @@ import (
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/middleware"
 	"github.com/go-zoox/connect/app/service"
-	jwtsigner "github.com/go-zoox/jwt"
+	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/zoox"
 
 	apiApp "github.com/go-zoox/connect/app/api/core/app"
@@ -66,7 +66,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 		api.Any(
 			"/*",
 			func(ctx *zoox.Context) {
-				jwt := jwtsigner.NewHS256(cfg.SecretKey)
+				signer := jwt.New(cfg.SecretKey)
 
 				token := service.GetToken(ctx)
 				user, err := service.GetUser(cfg, token)
@@ -76,11 +76,12 @@ func New(app *zoox.Application, cfg *config.Config) {
 				}
 
 				timestamp := time.Now().UnixMilli()
-				jwt.Set("user_id", user.ID)
-				jwt.Set("user_nickname", user.Nickname)
-				jwt.Set("user_avatar", user.Avatar)
-				jwt.Set("user_email", user.Email)
-				jwtToken, err := jwt.Sign()
+				jwtToken, err := signer.Sign(map[string]interface{}{
+					"user_id":       user.ID,
+					"user_nickname": user.Nickname,
+					"user_avatar":   user.Avatar,
+					"user_email":    user.Email,
+				})
 				if err != nil {
 					ctx.JSON(http.StatusInternalServerError, err)
 					return
