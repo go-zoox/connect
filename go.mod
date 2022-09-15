@@ -6,7 +6,7 @@ require (
 	github.com/go-zoox/captcha v1.0.3
 	github.com/go-zoox/cli v1.0.2
 	github.com/go-zoox/config v1.1.1
-	github.com/go-zoox/crypto v1.1.5
+	github.com/go-zoox/crypto v1.1.7
 	github.com/go-zoox/fetch v1.4.7
 	github.com/go-zoox/fs v1.2.5
 	github.com/go-zoox/kv v1.4.3
@@ -14,7 +14,7 @@ require (
 	github.com/go-zoox/oauth2 v1.4.0
 	github.com/go-zoox/proxy v1.2.3
 	github.com/go-zoox/random v1.0.0
-	github.com/go-zoox/zoox v1.3.6
+	github.com/go-zoox/zoox v1.3.8
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	github.com/go-yaml/yaml v2.1.0+incompatible // indirect
 	github.com/go-zoox/chalk v1.0.2 // indirect
 	github.com/go-zoox/compress v1.0.1 // indirect
-	github.com/go-zoox/core-utils v1.0.13 // indirect
+	github.com/go-zoox/core-utils v1.1.0 // indirect
 	github.com/go-zoox/counter v1.0.1 // indirect
 	github.com/go-zoox/cron v1.0.4 // indirect
 	github.com/go-zoox/datetime v1.0.4 // indirect
@@ -35,7 +35,6 @@ require (
 	github.com/go-zoox/errors v1.0.2 // indirect
 	github.com/go-zoox/gzip v1.0.0 // indirect
 	github.com/go-zoox/jobqueue v1.0.0 // indirect
-	github.com/go-zoox/jwt v1.0.0 // indirect
 	github.com/go-zoox/ratelimit v1.0.1 // indirect
 	github.com/go-zoox/safe v1.0.1 // indirect
 	github.com/go-zoox/tag v1.1.0 // indirect
