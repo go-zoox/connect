@@ -18,6 +18,7 @@ import (
 	apiBackend "github.com/go-zoox/connect/app/api/core/backend"
 	apiConfig "github.com/go-zoox/connect/app/api/core/config"
 	apiMenus "github.com/go-zoox/connect/app/api/core/menus"
+	apiQRCode "github.com/go-zoox/connect/app/api/core/qrcode"
 	apiUser "github.com/go-zoox/connect/app/api/core/user"
 
 	//
@@ -56,6 +57,11 @@ func New(app *zoox.Application, cfg *config.Config) {
 		api.Get("/menus", apiMenus.New(cfg))
 		api.Get("/users", apiUser.GetUsers(cfg))
 		api.Get("/config", apiConfig.New(cfg))
+		// qrcode
+		api.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
+		api.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
+		api.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
+		api.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
 		//
 		api.Post("/login", apiUser.Login(cfg))
 		//

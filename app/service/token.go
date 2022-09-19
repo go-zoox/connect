@@ -33,7 +33,28 @@ func VerifyToken(cfg *config.Config, ctx *zoox.Context, token string) bool {
 }
 
 func GetToken(ctx *zoox.Context) string {
-	return ctx.Cookie().Get(tokenKey)
+	cookieToken := ctx.Cookie().Get(tokenKey)
+	if cookieToken != "" {
+		return cookieToken
+	}
+
+	headerToken := ctx.Get("authorization")
+	if headerToken != "" {
+		// Bear token
+		if len(headerToken) > 6 && headerToken[:6] == "Bearer" {
+			return headerToken[7:]
+		}
+
+		// not standard
+		return headerToken
+	}
+
+	queryToken := ctx.Query().Get("access_token")
+	if queryToken != "" {
+		return queryToken
+	}
+
+	return ""
 }
 
 func SetToken(ctx *zoox.Context, cfg *config.Config, value string) {

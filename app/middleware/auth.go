@@ -159,6 +159,7 @@ func isIgnoreAuthoried(path string) bool {
 		"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map)$",
 		"\\.hot-update.json$",
 		"^/api/open/",
+		"^/api/qrcode/",
 	}
 	for _, exclude := range excludes {
 		matched, err := regexp.MatchString(exclude, path)
