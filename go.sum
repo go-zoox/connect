@@ -104,8 +104,8 @@ github.com/go-zoox/testify v1.0.0 h1:zXuj+JMcudM/dWk8HgMfCKpGYDcyHbTUBGxH35SGubU
 github.com/go-zoox/uuid v0.0.1 h1:txqmDavRTq68gzzqWfJQLorFyUp9a7M2lmq2KcwPGPA=
 github.com/go-zoox/uuid v0.0.1/go.mod h1:0/F4LdfLqFdyqOf7aXoiYXRkXHU324JQ5DZEytXYBPM=
 github.com/go-zoox/zoox v1.2.19/go.mod h1:xk3S3L58ugJIDyuZMCYrj3qIGLSxddbkARwTRkpxPVE=
-github.com/go-zoox/zoox v1.3.11 h1:a+Upy1LRHlBNy7WrrVT5mD9BNP+xCDf5GGqmGdeA/uI=
-github.com/go-zoox/zoox v1.3.11/go.mod h1:4KNV8X5X+JvBxDYmrtn6JrJskc0rhJ04wr79XEjfF1k=
+github.com/go-zoox/zoox v1.3.12 h1:9uP0W/cGkEFOzTw3IDPYOjJvFTB3pLdQ151BNoMEokU=
+github.com/go-zoox/zoox v1.3.12/go.mod h1:4KNV8X5X+JvBxDYmrtn6JrJskc0rhJ04wr79XEjfF1k=
 github.com/goccy/go-yaml v1.9.5 h1:Eh/+3uk9kLxG4koCX6lRMAPS1OaMSAi+FJcya0INdB0=
 github.com/goccy/go-yaml v1.9.5/go.mod h1:U/jl18uSupI5rdI2jmuCswEA2htH9eXfferR3KfscvA=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 h1:DACJavvAHhabrF08vX0COfcOBJRhZ8lUbR+ZWIs0Y5g=
