@@ -33,9 +33,9 @@ type Config struct {
 }
 
 type ConfigPartService struct {
-	Scheme string `config:"scheme"`
-	Host   string `config:"host"`
-	Port   int64  `config:"port"`
+	Protocol string `config:"protocol"`
+	Host     string `config:"host"`
+	Port     int64  `config:"port"`
 }
 
 type ConfigPartAuth struct {
@@ -272,9 +272,9 @@ func applyEnv() {
 
 		port, _ := strconv.Atoi(u.Port())
 		cfg.Frontend = ConfigPartService{
-			Scheme: u.Scheme,
-			Host:   u.Hostname(),
-			Port:   int64(port),
+			Protocol: u.Scheme,
+			Host:     u.Hostname(),
+			Port:     int64(port),
 		}
 	}
 
@@ -286,9 +286,9 @@ func applyEnv() {
 
 		port, _ := strconv.Atoi(u.Port())
 		cfg.Frontend = ConfigPartService{
-			Scheme: u.Scheme,
-			Host:   u.Hostname(),
-			Port:   int64(port),
+			Protocol: u.Scheme,
+			Host:     u.Hostname(),
+			Port:     int64(port),
 		}
 	}
 }
