@@ -18,12 +18,12 @@ type page struct {
 }
 
 func New(cfg *config.Config) *page {
-	scheme := cfg.Frontend.Scheme
+	protocol := cfg.Frontend.Protocol
 	host := cfg.Frontend.Host
 	port := cfg.Frontend.Port
 
-	if scheme == "" {
-		scheme = "http"
+	if protocol == "" {
+		protocol = "http"
 	}
 
 	if host == "" {
@@ -35,7 +35,7 @@ func New(cfg *config.Config) *page {
 	}
 	frontend := fmt.Sprintf(
 		"%s://%s:%d",
-		scheme,
+		protocol,
 		host,
 		port,
 	)

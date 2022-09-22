@@ -9,12 +9,12 @@ import (
 )
 
 func New(cfg *config.Config) func(*zoox.Context) {
-	scheme := cfg.Backend.Scheme
+	protocol := cfg.Backend.Protocol
 	host := cfg.Backend.Host
 	port := cfg.Backend.Port
 
-	if scheme == "" {
-		scheme = "http"
+	if protocol == "" {
+		protocol = "http"
 	}
 
 	if host == "" {
@@ -27,7 +27,7 @@ func New(cfg *config.Config) func(*zoox.Context) {
 
 	backend := fmt.Sprintf(
 		"%s://%s:%d",
-		scheme,
+		protocol,
 		host,
 		port,
 	)
