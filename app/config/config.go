@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"net/url"
 	"os"
 	"strconv"
@@ -182,7 +181,8 @@ func Load(config_file string) (*Config, error) {
 func LoadFromService(fn func() (string, error)) (*Config, error) {
 	var cfg Config
 	if err := goconfig.LoadFromService(&cfg, fn); err != nil {
-		return nil, fmt.Errorf("load config from service error: %s", err)
+		// return nil, fmt.Errorf("load config from service error: %s", err)
+		return nil, err
 	}
 
 	if cfg.SecretKey == "" {
