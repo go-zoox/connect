@@ -56,7 +56,7 @@ func main() {
 		var cfg *config.Config
 		var err error
 		if cfg, err = config.Load(configFile); err != nil {
-			log.Fatal(fmt.Errorf("failed to load config (%s)", configFile))
+			log.Fatal(fmt.Errorf("failed to load config (%s, %s)", configFile, err))
 		}
 
 		if err := app.Start(cfg); err != nil {
