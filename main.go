@@ -44,11 +44,11 @@ func main() {
 		}
 
 		if configFile == "" {
-			dotConfig := fs.JoinPath(fs.CurrentDir(), ".config.yml")
+			dotConfig := fs.JoinPath(fs.CurrentDir(), "conf/config.yml")
 			if fs.IsExist(dotConfig) {
 				configFile = dotConfig
 			} else {
-				log.Fatal(fmt.Errorf("config file(.config.yml) not found"))
+				log.Fatal(fmt.Errorf("config file(conf/config.yml) not found"))
 			}
 		}
 

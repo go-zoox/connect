@@ -23,4 +23,7 @@ main
 .config.yml
 .config.yml.bak
 
+conf/config.yml
+*.bak
+
 connect
