@@ -17,7 +17,7 @@ func New(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		user, err := service.GetUser(cfg, token)
+		user, err := service.GetUser(ctx, cfg, token)
 		if err != nil {
 			ctx.Fail(err, errors.FailedToGetUser.Code, errors.FailedToGetUser.Message)
 			return

@@ -62,10 +62,11 @@ type ConfigPartAuthOAuth2 struct {
 }
 
 type ConfigPartServices struct {
-	App   ConfigPartServicesApp   `config:"app"`
-	User  ConfigPartServicesUser  `config:"user"`
-	Menus ConfigPartServicesMenus `config:"menus"`
-	Users ConfigPartServicesUsers `config:"users"`
+	App    ConfigPartServicesApp    `config:"app"`
+	User   ConfigPartServicesUser   `config:"user"`
+	Menus  ConfigPartServicesMenus  `config:"menus"`
+	Users  ConfigPartServicesUsers  `config:"users"`
+	OpenID ConfigPartServicesOpenID `config:"open_id"`
 }
 
 type ConfigPartServicesApp struct {
@@ -104,6 +105,14 @@ type ConfigPartServicesUsers struct {
 	Mode    string     `config:"mode"`
 	Local   []MenuItem `config:"local"`
 	Service string     `config:"service"`
+}
+
+type ConfigPartServicesOpenID struct {
+	Mode  string `config:"mode"`
+	Local struct {
+		OpenID string `config:"open_id"`
+	} `config:"local"`
+	Service string `config:"service"`
 }
 
 type MenuItem struct {

@@ -67,5 +67,6 @@ require (
 )
 
 // replace github.com/go-zoox/zoox => ../zoox
-// replace github.com/go-zoox/oauth2 => ../oauth2
+replace github.com/go-zoox/oauth2 => ../oauth2
+
 // replace github.com/go-zoox/cli => ../cli

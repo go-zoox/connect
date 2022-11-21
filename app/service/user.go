@@ -9,6 +9,7 @@ import (
 	"github.com/go-zoox/connect/pkg/cache"
 	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/fetch"
+	"github.com/go-zoox/zoox"
 )
 
 type User struct {
@@ -18,9 +19,11 @@ type User struct {
 	Avatar      string   `json:"avatar"`
 	Email       string   `json:"email"`
 	Permissions []string `json:"permissions"`
+	//
+	FeishuOpenID string `json:"feishu_open_id"`
 }
 
-func GetUser(cfg *config.Config, token string) (*User, error) {
+func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error) {
 	cacheKey := fmt.Sprintf("user:%s", token)
 
 	user := new(User)
@@ -59,6 +62,14 @@ func GetUser(cfg *config.Config, token string) (*User, error) {
 	}
 	if user.ID == "" {
 		user.ID = response.Get("result._id").String()
+	}
+
+	// Get OpenID: feishu
+	user.FeishuOpenID, err = GetOpenID(ctx, cfg, "feishu", user.Email)
+	if err != nil {
+		time.Sleep(3 * time.Second)
+		// return nil, fmt.Errorf("get feishu open id error: %#v", err)
+		ctx.Logger.Warn("[service.user] failed to get feishu open id: %#v", err)
 	}
 
 	if len(user.Permissions) != 0 {

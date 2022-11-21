@@ -75,7 +75,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 				signer := jwt.New(cfg.SecretKey)
 
 				token := service.GetToken(ctx)
-				user, err := service.GetUser(cfg, token)
+				user, err := service.GetUser(ctx, cfg, token)
 				if err != nil {
 					ctx.JSON(http.StatusUnauthorized, err)
 					return
@@ -83,10 +83,11 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 				timestamp := time.Now().UnixMilli()
 				jwtToken, err := signer.Sign(map[string]interface{}{
-					"user_id":       user.ID,
-					"user_nickname": user.Nickname,
-					"user_avatar":   user.Avatar,
-					"user_email":    user.Email,
+					"user_id":             user.ID,
+					"user_nickname":       user.Nickname,
+					"user_avatar":         user.Avatar,
+					"user_email":          user.Email,
+					"user_feishu_open_id": user.FeishuOpenID,
 				})
 				if err != nil {
 					ctx.JSON(http.StatusInternalServerError, err)

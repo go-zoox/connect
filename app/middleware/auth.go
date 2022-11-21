@@ -49,7 +49,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			// @1 check token
 			if token != "" {
 				// @2 check user
-				if user, err := service.GetUser(cfg, token); err == nil && user != nil {
+				if user, err := service.GetUser(ctx, cfg, token); err == nil && user != nil {
 					// @3 check app
 					if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
 						if from != "" {
@@ -106,7 +106,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "token_not_found"))
 			return
-		} else if user, err := service.GetUser(cfg, token); err != nil && user == nil {
+		} else if user, err := service.GetUser(ctx, cfg, token); err != nil && user == nil {
 			// [visit real path] @2 check user
 			// @TODO
 			// sleep for a while to avoid too many requests
