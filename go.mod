@@ -9,12 +9,12 @@ require (
 	github.com/go-zoox/crypto v1.1.7
 	github.com/go-zoox/fetch v1.4.7
 	github.com/go-zoox/fs v1.3.0
-	github.com/go-zoox/kv v1.4.3
-	github.com/go-zoox/logger v1.2.0
+	github.com/go-zoox/kv v1.5.0
+	github.com/go-zoox/logger v1.3.2
 	github.com/go-zoox/oauth2 v1.4.0
-	github.com/go-zoox/proxy v1.2.3
+	github.com/go-zoox/proxy v1.3.2
 	github.com/go-zoox/random v1.0.0
-	github.com/go-zoox/zoox v1.3.13
+	github.com/go-zoox/zoox v1.6.8
 )
 
 require (
@@ -29,8 +29,8 @@ require (
 	github.com/go-zoox/compress v1.0.1 // indirect
 	github.com/go-zoox/core-utils v1.1.0 // indirect
 	github.com/go-zoox/counter v1.0.1 // indirect
-	github.com/go-zoox/cron v1.0.4 // indirect
-	github.com/go-zoox/datetime v1.0.4 // indirect
+	github.com/go-zoox/cron v1.1.1 // indirect
+	github.com/go-zoox/datetime v1.1.1 // indirect
 	github.com/go-zoox/debug v1.0.1 // indirect
 	github.com/go-zoox/encoding v1.0.7 // indirect
 	github.com/go-zoox/errors v1.0.2 // indirect
@@ -47,7 +47,6 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
-	github.com/mattn/go-sqlite3 v1.14.14 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect

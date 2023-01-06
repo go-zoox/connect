@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/proxy"
+	"github.com/go-zoox/proxy/utils/rewriter"
 	"github.com/go-zoox/zoox"
 )
 
@@ -33,8 +34,14 @@ func New(cfg *config.Config) func(*zoox.Context) {
 	)
 
 	return zoox.WrapH(proxy.NewSingleTarget(backend, &proxy.SingleTargetConfig{
-		Rewrites: map[string]string{
-			"^/api/(.*)": "/$1",
+		// Rewrites: map[string]string{
+		// 	"^/api/(.*)": "/$1",
+		// },
+		Rewrites: rewriter.Rewriters{
+			{
+				From: "^/api/(.*)",
+				To:   "/$1",
+			},
 		},
 		// OnResponse: func(res *http.Response) error {
 		// 	if res.ContentLength == 0 {

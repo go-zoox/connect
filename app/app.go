@@ -9,7 +9,7 @@ import (
 	"github.com/go-zoox/oauth2"
 
 	"github.com/go-zoox/zoox"
-	z "github.com/go-zoox/zoox/default"
+	"github.com/go-zoox/zoox/defaults"
 )
 
 //go:embed web
@@ -24,7 +24,7 @@ type Connect struct {
 }
 
 func New() *Connect {
-	app := z.Default()
+	app := defaults.Application()
 
 	// @TODO Test with api docs at 127.0.0.1
 	// app.Use(middleware.CORS())
