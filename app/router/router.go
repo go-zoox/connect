@@ -8,6 +8,7 @@ import (
 	"github.com/go-zoox/connect/app/api/captcha"
 	"github.com/go-zoox/connect/app/api/favicon"
 	"github.com/go-zoox/connect/app/api/page"
+	"github.com/go-zoox/connect/app/api/upstream"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/middleware"
 	"github.com/go-zoox/connect/app/service"
@@ -66,7 +67,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	// @TODO
 	if cfg.Upstream.Host != "" {
-		pg := page.New(cfg)
+		pg := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {
 			signer := jwt.New(cfg.SecretKey)
 
