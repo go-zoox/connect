@@ -13,6 +13,7 @@ func New(cfg *config.Config) func(*zoox.Context) {
 	protocol := cfg.Backend.Protocol
 	host := cfg.Backend.Host
 	port := cfg.Backend.Port
+	prefix := cfg.Backend.Prefix
 
 	if protocol == "" {
 		protocol = "http"
@@ -40,7 +41,7 @@ func New(cfg *config.Config) func(*zoox.Context) {
 		Rewrites: rewriter.Rewriters{
 			{
 				From: "^/api/open/(.*)",
-				To:   "/open/$1",
+				To:   fmt.Sprintf("%s/open/$1", prefix),
 			},
 		},
 		// OnRequest: func(req *http.Request) error {

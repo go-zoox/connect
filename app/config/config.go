@@ -35,6 +35,8 @@ type ConfigPartService struct {
 	Protocol string `config:"protocol"`
 	Host     string `config:"host"`
 	Port     int64  `config:"port"`
+	// Prefix is the backend prefix, default: empty string
+	Prefix string `config:"prefix"`
 }
 
 type ConfigPartAuth struct {
@@ -128,7 +130,6 @@ type MenuItem struct {
 	Redirect   string `config:"redirect"`
 }
 
-//
 // var isLoaded = false
 var cfg Config
 
