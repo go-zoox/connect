@@ -147,13 +147,6 @@ func Load(config_file string) (*Config, error) {
 		return nil, errors.New("secret_key is empty")
 	}
 
-	if cfg.SessionMaxAge == 0 {
-		// cfg.SessionMaxAge = 7200 * 1000 // 2 hours
-		cfg.SessionMaxAgeDuration = 2 * time.Hour
-	} else {
-		cfg.SessionMaxAgeDuration = time.Duration(cfg.SessionMaxAge) * time.Millisecond
-	}
-
 	if cfg.Port == 0 {
 		cfg.Port = 8080
 	}
@@ -200,13 +193,6 @@ func LoadFromService(fn func() (string, error)) (*Config, error) {
 
 	if cfg.SecretKey == "" {
 		return nil, errors.New("secret_key is empty")
-	}
-
-	if cfg.SessionMaxAge == 0 {
-		// cfg.SessionMaxAge = 7200 * 1000 // 2 hours
-		cfg.SessionMaxAgeDuration = 2 * time.Hour
-	} else {
-		cfg.SessionMaxAgeDuration = time.Duration(cfg.SessionMaxAge) * time.Millisecond
 	}
 
 	if cfg.Port == 0 {

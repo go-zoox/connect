@@ -3,6 +3,7 @@ package app
 import (
 	"embed"
 	"fmt"
+	"time"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
@@ -60,6 +61,13 @@ func (e *Connect) registerOauth2() {
 
 func (e *Connect) handle(cfg *config.Config) {
 	e.cfg = cfg
+
+	if cfg.SessionMaxAge == 0 {
+		// cfg.SessionMaxAge = 7200 * 1000 // 2 hours
+		cfg.SessionMaxAgeDuration = 2 * time.Hour
+	} else {
+		cfg.SessionMaxAgeDuration = time.Duration(cfg.SessionMaxAge) * time.Millisecond
+	}
 
 	// 1. register loading
 	e.registerLoading()
