@@ -97,7 +97,7 @@ func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		data, total, err := service.GetUsers(cfg, provider, token, page, pageSize)
+		data, total, err := service.GetUsers(cfg, provider, token, page.String(), pageSize.String())
 		if err != nil {
 			ctx.Fail(err, errors.FailedToGetUsers.Code, errors.FailedToGetUsers.Message)
 			return

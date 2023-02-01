@@ -27,7 +27,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		if ctx.Path == "/login" {
 			from := ctx.Query().Get("from")
 			if from != "" {
-				ctx.Session().Set("from", from)
+				ctx.Session().Set("from", from.String(), cfg.SessionMaxAgeDuration)
 			}
 
 			// auth mode from oauth2 => local password
@@ -54,7 +54,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 					if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
 						if from != "" {
 							ctx.Session().Del("from")
-							ctx.Redirect(from)
+							ctx.Redirect(from.String())
 						} else {
 							ctx.Redirect("/")
 						}
@@ -77,12 +77,12 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		} else if ctx.Path == "/logout" {
 			from := ctx.Query().Get("from")
 			if from != "" {
-				ctx.Session().Set("from", from)
+				ctx.Session().Set("from", from.String(), cfg.SessionMaxAgeDuration)
 			}
 
 			// delete token before
 			service.DelToken(ctx)
-			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from), "visit_logout"))
+			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from.String()), "visit_logout"))
 			return
 		}
 

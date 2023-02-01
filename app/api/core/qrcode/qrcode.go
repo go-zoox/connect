@@ -19,8 +19,8 @@ func GenerateDeviceUUID(cfg *config.Config) zoox.HandlerFunc {
 				"Accept": "application/json",
 			},
 			Query: fetch.Query{
-				"client_id":     ctx.Query().Get("client_id"),
-				"redirect_uri":  ctx.Query().Get("redirect_uri"),
+				"client_id":     ctx.Query().Get("client_id").String(),
+				"redirect_uri":  ctx.Query().Get("redirect_uri").String(),
 				"response_type": "code",
 				"state":         "_",
 				"scope":         "qrcode",
@@ -47,7 +47,7 @@ func GetDeviceStatus(cfg *config.Config) zoox.HandlerFunc {
 				"Accept": "application/json",
 			},
 			Query: fetch.Query{
-				"uuid": ctx.Query().Get("uuid"),
+				"uuid": ctx.Query().Get("uuid").String(),
 			},
 		})
 		if err != nil {

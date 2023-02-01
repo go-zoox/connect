@@ -22,7 +22,7 @@ func GenerateCaptcha(cfg *config.Config, ctx *zoox.Context) {
 		panic(err)
 	}
 
-	ctx.Session().Set(captchCookieKey, string(encrypted))
+	ctx.Session().Set(captchCookieKey, string(encrypted), cfg.SessionMaxAgeDuration)
 
 	ctx.Status(200)
 

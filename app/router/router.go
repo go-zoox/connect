@@ -13,6 +13,7 @@ import (
 	"github.com/go-zoox/connect/app/middleware"
 	"github.com/go-zoox/connect/app/service"
 	"github.com/go-zoox/crypto/jwt"
+	"github.com/go-zoox/headers"
 	"github.com/go-zoox/zoox"
 
 	apiApp "github.com/go-zoox/connect/app/api/core/app"
@@ -95,7 +96,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
 
 			// request id
-			ctx.Request.Header.Set(zoox.RequestIDHeader, ctx.RequestID())
+			ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
 			pg.RenderPage()(ctx)
 		})
@@ -138,7 +139,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
 
 			// request id
-			ctx.Request.Header.Set(zoox.RequestIDHeader, ctx.RequestID())
+			ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
 			ctx.Next()
 		},

@@ -30,7 +30,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 				service.SetProvider(ctx, cfg, provider)
 				state := random.String(8)
-				ctx.Session().Set("oauth2_state", state)
+				ctx.Session().Set("oauth2_state", state, cfg.SessionMaxAgeDuration)
 
 				client.Authorize(state, func(loginURL string) {
 					ctx.Redirect(loginURL)
@@ -41,8 +41,8 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 		// login callback => /login/:provider/callback
 		if loginCallbackRegExp.MatchString(ctx.Path) {
-			code := ctx.Query().Get("code")
-			state := ctx.Query().Get("state")
+			code := ctx.Query().Get("code").String()
+			state := ctx.Query().Get("state").String()
 			provider := loginCallbackRegExp.FindStringSubmatch(ctx.Path)[1]
 
 			if ctx.Session().Get("oauth2_state") != state {
@@ -105,9 +105,9 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 				// clear provider
 				ctx.Session().Del("provider")
 
-				from := ctx.Query().Get("from")
+				from := ctx.Query().Get("from").String()
 				if from != "" {
-					ctx.Session().Set("from", from)
+					ctx.Session().Set("from", from, cfg.SessionMaxAgeDuration)
 				}
 
 				ctx.Redirect(logoutURL)

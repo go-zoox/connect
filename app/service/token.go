@@ -49,7 +49,7 @@ func GetToken(ctx *zoox.Context) string {
 		return headerToken
 	}
 
-	queryToken := ctx.Query().Get("access_token")
+	queryToken := ctx.Query().Get("access_token").String()
 	if queryToken != "" {
 		return queryToken
 	}
