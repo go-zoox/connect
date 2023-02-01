@@ -65,4 +65,8 @@ services:
 
   users:
     mode: service
-    service: https://api.zcorky.com/users # GET
+    service: https://api.example.com/users # GET
+
+  open_id:
+    mode: service
+    service: https://api.example.com/oauth/app/user/open_id # GET

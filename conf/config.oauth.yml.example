@@ -20,13 +20,17 @@ oauth2:
 
 services:
   app:
-    service: https://api.zcorky.com/oauth/app
+    service: https://api.example.com/oauth/app
 
   user:
-    service: https://api.zcorky.com/user
+    service: https://api.example.com/user
 
   menus:
-    service: https://api.zcorky.com/menus
+    service: https://api.example.com/menus
 
   users:
-    service: https://api.zcorky.com/users # GET
+    service: https://api.example.com/users # GET
+
+  open_id:
+    mode: service
+    service: https://api.example.com/oauth/app/user/open_id # GET
