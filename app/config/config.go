@@ -16,9 +16,12 @@ type Config struct {
 	SecretKey             string `config:"secret_key"`
 	SessionMaxAge         int64  `config:"session_max_age"`
 	SessionMaxAgeDuration time.Duration
-	LogLevel              string            `config:"log_level"`
-	Frontend              ConfigPartService `config:"frontend"`
-	Backend               ConfigPartService `config:"backend"`
+	LogLevel              string `config:"log_level"`
+	// S1: Connect => Frontend + Backend
+	Frontend ConfigPartService `config:"frontend"`
+	Backend  ConfigPartService `config:"backend"`
+	// S2: Connect => Upstream
+	Upstream ConfigPartService `config:"upstream"`
 	//
 	OAuth2   []ConfigPartAuthOAuth2 `config:"oauth2"`
 	Password ConfigPartAuthPassword `config:"password"`

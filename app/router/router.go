@@ -47,8 +47,6 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	app.Get("/captcha", captcha.New(cfg))
 
-	pg := page.New(cfg)
-
 	// api
 	api := app.Group("/api")
 	{
@@ -64,47 +62,87 @@ func New(app *zoox.Application, cfg *config.Config) {
 		api.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
 		//
 		api.Post("/login", apiUser.Login(cfg))
-		//
-		api.Get("/page/health", pg.Health(cfg))
-		// open
-		api.Any("/open/*", apiOpen.New(cfg))
-		//
-		api.Any(
-			"/*",
-			func(ctx *zoox.Context) {
-				signer := jwt.New(cfg.SecretKey)
-
-				token := service.GetToken(ctx)
-				user, err := service.GetUser(ctx, cfg, token)
-				if err != nil {
-					ctx.JSON(http.StatusUnauthorized, err)
-					return
-				}
-
-				timestamp := time.Now().UnixMilli()
-				jwtToken, err := signer.Sign(map[string]interface{}{
-					"user_id":             user.ID,
-					"user_nickname":       user.Nickname,
-					"user_avatar":         user.Avatar,
-					"user_email":          user.Email,
-					"user_feishu_open_id": user.FeishuOpenID,
-				})
-				if err != nil {
-					ctx.JSON(http.StatusInternalServerError, err)
-					return
-				}
-
-				ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
-				ctx.Request.Header.Set("X-Connect-Token", jwtToken)
-
-				// request id
-				ctx.Request.Header.Set(zoox.RequestIDHeader, ctx.RequestID())
-
-				ctx.Next()
-			},
-			apiBackend.New(cfg),
-		)
 	}
 
+	// @TODO
+	if cfg.Upstream.Host != "" {
+		pg := page.New(cfg)
+		app.Fallback(func(ctx *zoox.Context) {
+			signer := jwt.New(cfg.SecretKey)
+
+			token := service.GetToken(ctx)
+			user, err := service.GetUser(ctx, cfg, token)
+			if err != nil {
+				ctx.JSON(http.StatusUnauthorized, err)
+				return
+			}
+
+			timestamp := time.Now().UnixMilli()
+			jwtToken, err := signer.Sign(map[string]interface{}{
+				"user_id":             user.ID,
+				"user_nickname":       user.Nickname,
+				"user_avatar":         user.Avatar,
+				"user_email":          user.Email,
+				"user_feishu_open_id": user.FeishuOpenID,
+			})
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, err)
+				return
+			}
+
+			ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
+			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
+
+			// request id
+			ctx.Request.Header.Set(zoox.RequestIDHeader, ctx.RequestID())
+
+			pg.RenderPage()(ctx)
+		})
+		return
+	}
+
+	// proxy pass
+	pg := page.New(cfg)
+	// proxy pass => backend
+	//
+	api.Get("/page/health", pg.Health(cfg))
+	// open
+	api.Any("/open/*", apiOpen.New(cfg))
+	api.Any(
+		"/*",
+		func(ctx *zoox.Context) {
+			signer := jwt.New(cfg.SecretKey)
+
+			token := service.GetToken(ctx)
+			user, err := service.GetUser(ctx, cfg, token)
+			if err != nil {
+				ctx.JSON(http.StatusUnauthorized, err)
+				return
+			}
+
+			timestamp := time.Now().UnixMilli()
+			jwtToken, err := signer.Sign(map[string]interface{}{
+				"user_id":             user.ID,
+				"user_nickname":       user.Nickname,
+				"user_avatar":         user.Avatar,
+				"user_email":          user.Email,
+				"user_feishu_open_id": user.FeishuOpenID,
+			})
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, err)
+				return
+			}
+
+			ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
+			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
+
+			// request id
+			ctx.Request.Header.Set(zoox.RequestIDHeader, ctx.RequestID())
+
+			ctx.Next()
+		},
+		apiBackend.New(cfg),
+	)
+	// proxy pass => frontend
 	app.Fallback(pg.RenderPage())
 }
