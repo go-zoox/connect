@@ -69,6 +69,9 @@ func (e *Connect) handle(cfg *config.Config) {
 		cfg.SessionMaxAgeDuration = time.Duration(cfg.SessionMaxAge) * time.Millisecond
 	}
 
+	e.core.SecretKey = cfg.SecretKey
+	e.core.SessionMaxAge = cfg.SessionMaxAgeDuration
+
 	// 1. register loading
 	e.registerLoading()
 	// 2. register oauth2

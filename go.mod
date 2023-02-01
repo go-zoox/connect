@@ -15,7 +15,7 @@ require (
 	github.com/go-zoox/oauth2 v1.4.5
 	github.com/go-zoox/proxy v1.3.6
 	github.com/go-zoox/random v1.0.2
-	github.com/go-zoox/zoox v1.7.3
+	github.com/go-zoox/zoox v1.7.5
 )
 
 require (
@@ -42,7 +42,7 @@ require (
 	github.com/go-zoox/jwt v1.2.0 // indirect
 	github.com/go-zoox/ratelimit v1.0.1 // indirect
 	github.com/go-zoox/safe v1.0.1 // indirect
-	github.com/go-zoox/session v1.0.5 // indirect
+	github.com/go-zoox/session v1.0.6 // indirect
 	github.com/go-zoox/tag v1.2.0 // indirect
 	github.com/go-zoox/uuid v0.0.1 // indirect
 	github.com/goccy/go-yaml v1.9.8 // indirect

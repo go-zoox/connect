@@ -30,7 +30,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 				service.SetProvider(ctx, cfg, provider)
 				state := random.String(8)
-				ctx.Session().Set("oauth2_state", state, cfg.SessionMaxAgeDuration)
+				ctx.Session().Set("oauth2_state", state)
 
 				client.Authorize(state, func(loginURL string) {
 					ctx.Redirect(loginURL)
@@ -107,7 +107,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 				from := ctx.Query().Get("from").String()
 				if from != "" {
-					ctx.Session().Set("from", from, cfg.SessionMaxAgeDuration)
+					ctx.Session().Set("from", from)
 				}
 
 				ctx.Redirect(logoutURL)
