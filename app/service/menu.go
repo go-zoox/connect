@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/go-zoox/connect/app/config"
-	"github.com/go-zoox/connect/pkg/cache"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/oauth2"
+	"github.com/go-zoox/zoox"
 )
 
 type MenuItem struct {
@@ -24,11 +24,11 @@ type MenuItem struct {
 	Redirect   string `json:"redirect"`
 }
 
-func GetMenu(cfg *config.Config, provider string, token string) ([]MenuItem, error) {
+func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token string) ([]MenuItem, error) {
 	cacheKey := fmt.Sprintf("menus:%s", token)
 
 	var menus []MenuItem
-	if err := cache.Get(cacheKey, &menus); err == nil {
+	if err := ctx.Cache().Get(cacheKey, &menus); err == nil {
 		return menus, nil
 	}
 
@@ -48,7 +48,7 @@ func GetMenu(cfg *config.Config, provider string, token string) ([]MenuItem, err
 			})
 		}
 
-		cache.Set(cacheKey, &menus, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, &menus, cfg.SessionMaxAgeDuration)
 		return menus, nil
 	}
 
@@ -74,10 +74,10 @@ func GetMenu(cfg *config.Config, provider string, token string) ([]MenuItem, err
 	}
 
 	if len(menus) != 0 {
-		cache.Set(cacheKey, &menus, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, &menus, cfg.SessionMaxAgeDuration)
 	} else {
 		// no menus => 403 => cache 30s
-		cache.Set(cacheKey, &menus, 30*time.Second)
+		ctx.Cache().Set(cacheKey, &menus, 30*time.Second)
 	}
 
 	return menus, nil

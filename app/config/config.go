@@ -8,6 +8,7 @@ import (
 	"time"
 
 	goconfig "github.com/go-zoox/config"
+	"github.com/go-zoox/random"
 )
 
 type Config struct {
@@ -271,6 +272,9 @@ func applyEnv() {
 
 	if os.Getenv("SECRET_KEY") != "" {
 		cfg.SecretKey = os.Getenv("SECRET_KEY")
+	}
+	if cfg.SecretKey == "" {
+		cfg.SecretKey = random.String(16)
 	}
 
 	if os.Getenv("SESSION_MAX_AGE") != "" {

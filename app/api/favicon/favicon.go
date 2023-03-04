@@ -25,7 +25,7 @@ func Get(cfg *config.Config) func(*zoox.Context) {
 			return
 		}
 
-		app, err := service.GetApp(cfg, provider, token)
+		app, err := service.GetApp(ctx, cfg, provider, token)
 		if err != nil {
 			ctx.Fail(err, errors.FailedToGetApps.Code, errors.FailedToGetApps.Message)
 			return

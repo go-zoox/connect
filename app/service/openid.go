@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/go-zoox/connect/app/config"
-	"github.com/go-zoox/connect/pkg/cache"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/logger"
 	"github.com/go-zoox/oauth2"
@@ -20,7 +19,7 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 	cacheKey := fmt.Sprintf("open_id:%s", email)
 
 	var instance = new(OpenID)
-	if err := cache.Get(cacheKey, instance); err == nil {
+	if err := ctx.Cache().Get(cacheKey, instance); err == nil {
 		return instance.OpenID, nil
 	}
 
@@ -31,7 +30,7 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 			OpenID: appD.OpenID,
 		}
 
-		cache.Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
 		return instance.OpenID, nil
 	}
 
@@ -67,6 +66,6 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 	}
 
 	logger.Info("[service.GetOpenID][%s: %s] open_id: %s", email, provider, response.String())
-	cache.Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
+	ctx.Cache().Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
 	return instance.OpenID, nil
 }

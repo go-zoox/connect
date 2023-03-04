@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/go-zoox/connect/app/config"
-	"github.com/go-zoox/connect/pkg/cache"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/oauth2"
+	"github.com/go-zoox/zoox"
 )
 
 type App struct {
@@ -21,9 +21,9 @@ type AppSettings struct {
 	Functions any `json:"functions"`
 }
 
-func GetApp(cfg *config.Config, provider string, token string) (a *App, err error) {
+func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string) (a *App, err error) {
 	var app = new(App)
-	if err = cache.Get("app", app); err == nil {
+	if err = ctx.Cache().Get("app", app); err == nil {
 		return app, nil
 	}
 
@@ -37,7 +37,7 @@ func GetApp(cfg *config.Config, provider string, token string) (a *App, err erro
 			Settings:    AppSettings(appD.Settings),
 		}
 
-		cache.Set("app", app, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set("app", app, cfg.SessionMaxAgeDuration)
 		return app, nil
 	}
 
@@ -62,6 +62,6 @@ func GetApp(cfg *config.Config, provider string, token string) (a *App, err erro
 		return nil, fmt.Errorf("unmarshal app: %s (response: %s)", err, response.String())
 	}
 
-	cache.Set("app", app, cfg.SessionMaxAgeDuration)
+	ctx.Cache().Set("app", app, cfg.SessionMaxAgeDuration)
 	return app, nil
 }

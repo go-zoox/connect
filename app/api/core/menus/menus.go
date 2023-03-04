@@ -23,7 +23,7 @@ func New(cfg *config.Config) func(*zoox.Context) {
 			return
 		}
 
-		menus, err := service.GetMenu(cfg, provider, token)
+		menus, err := service.GetMenu(ctx, cfg, provider, token)
 		if err != nil {
 			ctx.Fail(err, errors.FailedToGetMenus.Code, errors.FailedToGetMenus.Message)
 			return

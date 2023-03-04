@@ -51,7 +51,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 				// @2 check user
 				if user, err := service.GetUser(ctx, cfg, token); err == nil && user != nil {
 					// @3 check app
-					if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
+					if app, err := service.GetApp(ctx, cfg, provider, token); err != nil && app == nil {
 						if from != "" {
 							ctx.Session().Del("from")
 							ctx.Redirect(from.String())
@@ -123,7 +123,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			service.DelToken(ctx)
 			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "user_expired"))
 			return
-		} else if app, err := service.GetApp(cfg, provider, token); err != nil && app == nil {
+		} else if app, err := service.GetApp(ctx, cfg, provider, token); err != nil && app == nil {
 			// [visit real path] @2 check app
 			// @TODO
 			// sleep for a while to avoid too many requests

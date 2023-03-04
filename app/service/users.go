@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/go-zoox/connect/app/config"
-	"github.com/go-zoox/connect/pkg/cache"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/oauth2"
+	"github.com/go-zoox/zoox"
 )
 
 type UserX struct {
@@ -20,7 +20,7 @@ type UserX struct {
 	Email    string `json:"email"`
 }
 
-func GetUsers(cfg *config.Config, provider string, token string, page, pageSize string) ([]*User, int64, error) {
+func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token string, page, pageSize string) ([]*User, int64, error) {
 	key := fmt.Sprintf("users:%s:%s:%s:%s", provider, token, page, pageSize)
 
 	var users []*User
@@ -71,7 +71,7 @@ func GetUsers(cfg *config.Config, provider string, token string, page, pageSize 
 	}
 
 	// cache.Set(key, &users, cfg.SessionMaxAgeDuration)
-	cache.Set(key, &users, 10*time.Second)
+	ctx.Cache().Set(key, &users, 10*time.Second)
 
 	return users, total, nil
 }

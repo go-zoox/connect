@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-zoox/connect/app/config"
-	"github.com/go-zoox/connect/pkg/cache"
 	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/zoox"
@@ -27,7 +26,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 	cacheKey := fmt.Sprintf("user:%s", token)
 
 	user := new(User)
-	if err := cache.Get(cacheKey, user); err == nil {
+	if err := ctx.Cache().Get(cacheKey, user); err == nil {
 		return user, nil
 	}
 
@@ -42,7 +41,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 			Permissions: userD.Permissions,
 		}
 
-		cache.Set(cacheKey, user, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
 		return user, nil
 	}
 
@@ -73,10 +72,10 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 	}
 
 	if len(user.Permissions) != 0 {
-		cache.Set(cacheKey, user, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
 	} else {
 		// no permission => 403 => cache 30s
-		cache.Set(cacheKey, user, 30*time.Second)
+		ctx.Cache().Set(cacheKey, user, 30*time.Second)
 	}
 	return user, nil
 }
