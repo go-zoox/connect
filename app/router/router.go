@@ -12,9 +12,10 @@ import (
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/middleware"
 	"github.com/go-zoox/connect/app/service"
-	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/headers"
+	"github.com/go-zoox/jwt"
 	"github.com/go-zoox/zoox"
+	zm "github.com/go-zoox/zoox/middleware"
 
 	apiApp "github.com/go-zoox/connect/app/api/core/app"
 	apiBackend "github.com/go-zoox/connect/app/api/core/backend"
@@ -50,21 +51,25 @@ func New(app *zoox.Application, cfg *config.Config) {
 	app.Get("/captcha", captcha.New(cfg))
 
 	// api
-	api := app.Group("/api")
-	{
-		api.Get("/app", apiApp.New(cfg))
-		api.Get("/user", apiUser.New(cfg))
-		api.Get("/menus", apiMenus.New(cfg))
-		api.Get("/users", apiUser.GetUsers(cfg))
-		api.Get("/config", apiConfig.New(cfg))
+	api := app.Group("/api", func(group *zoox.RouterGroup) {
+		group.Use(zm.CacheControl(&zm.CacheControlConfig{
+			Paths:  []string{"^/api/(app|user|menus|users|config)$"},
+			MaxAge: 24 * time.Hour,
+		}))
+
+		group.Get("/app", apiApp.New(cfg))
+		group.Get("/user", apiUser.New(cfg))
+		group.Get("/menus", apiMenus.New(cfg))
+		group.Get("/users", apiUser.GetUsers(cfg))
+		group.Get("/config", apiConfig.New(cfg))
 		// qrcode
-		api.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
-		api.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
-		api.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
-		api.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
+		group.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
+		group.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
+		group.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
+		group.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
 		//
-		api.Post("/login", apiUser.Login(cfg))
-	}
+		group.Post("/login", apiUser.Login(cfg))
+	})
 
 	// @TODO
 	if cfg.Upstream.Host != "" {
