@@ -170,11 +170,36 @@ func Load(config_file string) (*Config, error) {
 	if cfg.Services.App.Mode == "" {
 		cfg.Services.App.Mode = "service"
 	}
+	if cfg.Services.App.Service == "" {
+		cfg.Services.App.Service = "https://api.zcorky.com/oauth/app"
+	}
+
 	if cfg.Services.User.Mode == "" {
 		cfg.Services.User.Mode = "service"
 	}
+	if cfg.Services.User.Service == "" {
+		cfg.Services.User.Service = "https://api.zcorky.com/user"
+	}
+
 	if cfg.Services.Menus.Mode == "" {
 		cfg.Services.Menus.Mode = "service"
+	}
+	if cfg.Services.Menus.Service == "" {
+		cfg.Services.Menus.Service = "https://api.zcorky.com/menus"
+	}
+
+	if cfg.Services.Users.Mode == "" {
+		cfg.Services.Users.Mode = "service"
+	}
+	if cfg.Services.Users.Service == "" {
+		cfg.Services.Users.Service = "https://api.zcorky.com/users"
+	}
+
+	if cfg.Services.OpenID.Mode == "" {
+		cfg.Services.OpenID.Mode = "service"
+	}
+	if cfg.Services.OpenID.Service == "" {
+		cfg.Services.OpenID.Service = "https://api.zcorky.com/oauth/app/user/open_id"
 	}
 
 	applyEnv()
