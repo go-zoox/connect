@@ -17,20 +17,3 @@ oauth2:
     client_id: <CLIENT_ID>
     client_secret: <CLIENT_SECRET>
     redirect_uri: http://127.0.0.1:8080/login/doreamon/callback
-
-services:
-  app:
-    service: https://api.example.com/oauth/app
-
-  user:
-    service: https://api.example.com/user
-
-  menus:
-    service: https://api.example.com/menus
-
-  users:
-    service: https://api.example.com/users # GET
-
-  open_id:
-    mode: service
-    service: https://api.example.com/oauth/app/user/open_id # GET
