@@ -80,7 +80,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 	return user, nil
 }
 
-func Login(cfg *config.Config, typ string, username string, password string) (string, error) {
+func Login(ctx *zoox.Context, cfg *config.Config, typ string, username string, password string) (string, error) {
 	if cfg.Auth.Mode != "password" {
 		panic("unsupported auth mode in login service")
 	}
@@ -104,6 +104,9 @@ func Login(cfg *config.Config, typ string, username string, password string) (st
 
 	response, err := fetch.Post(cfg.Password.Service, &fetch.Config{
 		Headers: map[string]string{
+			"x-real-ip":       ctx.Get("x-forwarded-for"),
+			"x-forwarded-for": ctx.Get("x-forwarded-for"),
+			//
 			"accept":       "application/json",
 			"content-type": "application/json",
 		},

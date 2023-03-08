@@ -53,7 +53,7 @@ func Login(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		token, err := service.Login(cfg, user.Type, user.Username, user.Password)
+		token, err := service.Login(ctx, cfg, user.Type, user.Username, user.Password)
 		if err != nil {
 			// panic(errors.Wrap(err, "user login service failed"))
 			// ctx.JSON(400, zoox.H{

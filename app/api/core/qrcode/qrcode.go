@@ -16,6 +16,9 @@ func GenerateDeviceUUID(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
 		response, err := fetch.Get(fmt.Sprintf("%s/api/qrcode/device/uuid", QRCODE_SERVER), &fetch.Config{
 			Headers: fetch.Headers{
+				"x-real-ip":       ctx.Get("x-forwarded-for"),
+				"x-forwarded-for": ctx.Get("x-forwarded-for"),
+				//
 				"Accept": "application/json",
 			},
 			Query: fetch.Query{
@@ -44,6 +47,9 @@ func GetDeviceStatus(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
 		response, err := fetch.Get(fmt.Sprintf("%s/api/qrcode/device/status", QRCODE_SERVER), &fetch.Config{
 			Headers: fetch.Headers{
+				"x-real-ip":       ctx.Get("x-forwarded-for"),
+				"x-forwarded-for": ctx.Get("x-forwarded-for"),
+				//
 				"Accept": "application/json",
 			},
 			Query: fetch.Query{
@@ -127,6 +133,9 @@ func GetDeviceToken(cfg *config.Config) zoox.HandlerFunc {
 
 		response, err := fetch.Post(fmt.Sprintf("%s/api/qrcode/device/token", QRCODE_SERVER), &fetch.Config{
 			Headers: fetch.Headers{
+				"x-real-ip":       ctx.Get("x-forwarded-for"),
+				"x-forwarded-for": ctx.Get("x-forwarded-for"),
+				//
 				"Accept": "application/json",
 			},
 			Body: map[string]string{

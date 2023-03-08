@@ -48,6 +48,9 @@ func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string
 
 	response, err := fetch.Get(cfg.Services.App.Service, &fetch.Config{
 		Headers: map[string]string{
+			"x-real-ip":       ctx.Get("x-forwarded-for"),
+			"x-forwarded-for": ctx.Get("x-forwarded-for"),
+			//
 			"accept":          "application/json",
 			"authorization":   fmt.Sprintf("Bearer %s", token),
 			"x-client-id":     clientCfg.ClientID,

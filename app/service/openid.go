@@ -46,6 +46,9 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 
 	response, err := fetch.Get(cfg.Services.OpenID.Service, &fetch.Config{
 		Headers: map[string]string{
+			"x-real-ip":       ctx.Get("x-forwarded-for"),
+			"x-forwarded-for": ctx.Get("x-forwarded-for"),
+			//
 			"Accept":          "application/json",
 			"X-Client-ID":     clientCfg.ClientID,
 			"X-Client-Secret": clientCfg.ClientSecret,
