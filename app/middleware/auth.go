@@ -158,7 +158,7 @@ func isIgnoreAuthoried(path string) bool {
 		"^/sockjs-node",
 		"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map)$",
 		"\\.hot-update.json$",
-		"^/api/open/",
+		"^/api/open/(.*)",
 		"^/api/qrcode/",
 	}
 	for _, exclude := range excludes {

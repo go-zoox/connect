@@ -83,7 +83,9 @@ func New(app *zoox.Application, cfg *config.Config) {
 			token := service.GetToken(ctx)
 			user, err := service.GetUser(ctx, cfg, token)
 			if err != nil {
-				ctx.JSON(http.StatusUnauthorized, err)
+				// ctx.Logger.Errorf(err)
+				fmt.Println("failed to get user:", err)
+				ctx.Fail(err, 401002, "user not found", http.StatusUnauthorized)
 				return
 			}
 
