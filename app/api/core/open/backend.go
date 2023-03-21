@@ -15,6 +15,14 @@ func New(cfg *config.Config) func(*zoox.Context) {
 	port := cfg.Backend.Port
 	prefix := cfg.Backend.Prefix
 
+	// @TODO
+	if cfg.Upstream.Host != "" {
+		protocol = cfg.Upstream.Protocol
+		host = cfg.Upstream.Host
+		port = cfg.Upstream.Port
+		prefix = cfg.Upstream.Prefix
+	}
+
 	if protocol == "" {
 		protocol = "http"
 	}

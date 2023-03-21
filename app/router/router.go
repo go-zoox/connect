@@ -71,6 +71,9 @@ func New(app *zoox.Application, cfg *config.Config) {
 		group.Post("/login", apiUser.Login(cfg))
 	})
 
+	// open
+	api.Any("/open/*", apiOpen.New(cfg))
+
 	// @TODO
 	if cfg.Upstream.Host != "" {
 		pg := upstream.New(cfg)
@@ -113,8 +116,6 @@ func New(app *zoox.Application, cfg *config.Config) {
 	// proxy pass => backend
 	//
 	api.Get("/page/health", pg.Health(cfg))
-	// open
-	api.Any("/open/*", apiOpen.New(cfg))
 	api.Any(
 		"/*",
 		func(ctx *zoox.Context) {
