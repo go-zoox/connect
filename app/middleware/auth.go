@@ -25,9 +25,9 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		token := service.GetToken(ctx)
 
 		if ctx.Path == "/login" {
-			from := ctx.Query().Get("from")
+			from := ctx.Query().Get("from").String()
 			if from != "" {
-				ctx.Session().Set("from", from.String())
+				ctx.Session().Set("from", from)
 			}
 
 			// auth mode from oauth2 => local password
@@ -54,7 +54,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 					if app, err := service.GetApp(ctx, cfg, provider, token); err != nil && app == nil {
 						if from != "" {
 							ctx.Session().Del("from")
-							ctx.Redirect(from.String())
+							ctx.Redirect(from)
 						} else {
 							ctx.Redirect("/")
 						}
@@ -75,14 +75,14 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			ctx.Next()
 			return
 		} else if ctx.Path == "/logout" {
-			from := ctx.Query().Get("from")
+			from := ctx.Query().Get("from").String()
 			if from != "" {
-				ctx.Session().Set("from", from.String())
+				ctx.Session().Set("from", from)
 			}
 
 			// delete token before
 			service.DelToken(ctx)
-			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from.String()), "visit_logout"))
+			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from), "visit_logout"))
 			return
 		}
 
@@ -123,7 +123,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			service.DelToken(ctx)
 			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(ctx.Request.RequestURI), "user_expired"))
 			return
-		} else if app, err := service.GetApp(ctx, cfg, provider, token); err != nil && app == nil {
+		} else if app, err := service.GetApp(ctx, cfg, provider, token); err != nil || app == nil {
 			// [visit real path] @2 check app
 			// @TODO
 			// sleep for a while to avoid too many requests

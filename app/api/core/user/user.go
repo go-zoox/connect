@@ -73,10 +73,10 @@ func Login(cfg *config.Config) zoox.HandlerFunc {
 
 func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
-		page := ctx.Query().Get("page")
-		pageSize := ctx.Query().Get("pageSize")
+		page := ctx.Query().Get("page").String()
+		pageSize := ctx.Query().Get("pageSize").String()
 		if pageSize == "" {
-			pageSize = ctx.Query().Get("page_size")
+			pageSize = ctx.Query().Get("page_size").String()
 		}
 		if page == "" {
 			page = "1"
@@ -97,7 +97,7 @@ func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		data, total, err := service.GetUsers(ctx, cfg, provider, token, page.String(), pageSize.String())
+		data, total, err := service.GetUsers(ctx, cfg, provider, token, page, pageSize)
 		if err != nil {
 			ctx.Fail(err, errors.FailedToGetUsers.Code, errors.FailedToGetUsers.Message)
 			return
