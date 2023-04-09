@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-zoox/captcha v1.0.3
-	github.com/go-zoox/cli v1.0.10
+	github.com/go-zoox/cli v1.2.1
 	github.com/go-zoox/config v1.2.3
 	github.com/go-zoox/core-utils v1.2.7
 	github.com/go-zoox/crypto v1.1.8
@@ -34,6 +34,7 @@ require (
 	github.com/go-zoox/counter v1.2.0 // indirect
 	github.com/go-zoox/cron v1.1.2 // indirect
 	github.com/go-zoox/datetime v1.1.1 // indirect
+	github.com/go-zoox/dotenv v1.2.3 // indirect
 	github.com/go-zoox/encoding v1.2.1 // indirect
 	github.com/go-zoox/errors v1.0.2 // indirect
 	github.com/go-zoox/gzip v1.0.0 // indirect
@@ -49,6 +50,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
@@ -60,7 +62,7 @@ require (
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
-	github.com/urfave/cli/v2 v2.24.2 // indirect
+	github.com/urfave/cli/v2 v2.25.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/crypto v0.8.0 // indirect
 	golang.org/x/image v0.3.0 // indirect
