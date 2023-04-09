@@ -75,7 +75,9 @@ func New(app *zoox.Application, cfg *config.Config) {
 	api.Any("/open/*", apiOpen.New(cfg))
 
 	// @TODO
-	if cfg.Upstream.Host != "" {
+	if cfg.Upstream.IsValid() {
+		app.Logger.Infof("mode: upstream, upstream: %s", cfg.Upstream.String())
+
 		pg := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {
 			signer := jwt.New(cfg.SecretKey)
@@ -112,6 +114,10 @@ func New(app *zoox.Application, cfg *config.Config) {
 		})
 		return
 	}
+
+	app.Logger.Infof("mode: frontend + backend")
+	app.Logger.Infof("frontend: %s", cfg.Frontend.String())
+	app.Logger.Infof("backend: %s", cfg.Backend.String())
 
 	// proxy pass
 	pg := page.New(cfg)

@@ -16,7 +16,7 @@ func main() {
 		Name:        "Serve",
 		Usage:       "The Serve",
 		Description: "Server static files",
-		// Version:     Version,
+		Version:     Version,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "port",
@@ -33,11 +33,6 @@ func main() {
 	})
 
 	app.Command(func(c *cli.Context) error {
-		// port := c.String("port")
-		// if os.Getenv("PORT") != "" {
-		// 	port = os.Getenv("PORT")
-		// }
-
 		configFile := c.String("config")
 		if os.Getenv("CONFIG") != "" {
 			configFile = os.Getenv("CONFIG")

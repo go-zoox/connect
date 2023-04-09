@@ -1,8 +1,6 @@
 package upstream
 
 import (
-	"fmt"
-
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/headers"
@@ -19,30 +17,8 @@ type upstream struct {
 }
 
 func New(cfg *config.Config) *upstream {
-	protocol := cfg.Upstream.Protocol
-	host := cfg.Upstream.Host
-	port := cfg.Upstream.Port
-
-	if protocol == "" {
-		protocol = "http"
-	}
-
-	if host == "" {
-		host = "127.0.0.1"
-	}
-
-	if port == 0 {
-		port = 8000
-	}
-	target := fmt.Sprintf(
-		"%s://%s:%d",
-		protocol,
-		host,
-		port,
-	)
-
 	return &upstream{
-		upstream: target,
+		upstream: cfg.Upstream.String(),
 		cfg:      cfg,
 	}
 }
@@ -74,21 +50,22 @@ func (p *upstream) RenderPage() func(ctx *zoox.Context) {
 		ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
 		if cfg.Mode == "production" {
-			// ctx.Status(200)
-			// ctx.String(200, cfg.IndexHTML)
-			zoox.WrapH(proxy.NewSingleTarget(p.upstream))(ctx)
+			zoox.WrapH(proxy.NewSingleTarget(p.upstream, &proxy.SingleTargetConfig{
+				ChangeOrigin: cfg.Upstream.ChangeOrigin,
+			}))(ctx)
 			return
 		}
 
 		if !p.isHealth() {
-			// ctx.Render(200, "loading.html", nil)
 			ctx.String(200, cfg.LoadingHTML)
 			return
 		}
 
 		ctx.Request.Header.Set("cache-control", "no-cache")
 
-		zoox.WrapH(proxy.NewSingleTarget(p.upstream))(ctx)
+		zoox.WrapH(proxy.NewSingleTarget(p.upstream, &proxy.SingleTargetConfig{
+			ChangeOrigin: cfg.Upstream.ChangeOrigin,
+		}))(ctx)
 	}
 }
 
