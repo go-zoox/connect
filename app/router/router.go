@@ -53,7 +53,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 	// api
 	api := app.Group("/api", func(group *zoox.RouterGroup) {
 		group.Use(zm.CacheControl(&zm.CacheControlConfig{
-			Paths:  []string{"^/api/(app|user|menus|users|config)$"},
+			Paths:  []string{"^/api/(app|menus|users|config)$"},
 			MaxAge: 24 * time.Hour,
 		}))
 
