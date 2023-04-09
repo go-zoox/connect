@@ -15,6 +15,38 @@ import (
 )
 
 func Auth(cfg *config.Config) zoox.HandlerFunc {
+	excludes := []string{
+		"^/captcha$",
+		"^/favicon.ico",
+		"^/__umi_ping$",
+		"^/__umiDev/routes$",
+		"^/robots.txt$",
+		"^/sockjs-node",
+		"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map|webmanifest)$",
+		"\\.hot-update.json$",
+		"^/manifest.json$",
+		//
+		"^/api/login$",
+		"^/api/app$",
+		"^/api/open/(.*)",
+		"^/api/qrcode/",
+	}
+	excludesRe := []*regexp.Regexp{}
+	for _, exclude := range excludes {
+		excludesRe = append(excludesRe, regexp.MustCompile(exclude))
+	}
+
+	isIgnoreAuthoried := func(path string) bool {
+		for _, exclude := range excludesRe {
+			matched := exclude.MatchString(path)
+			if matched {
+				return true
+			}
+		}
+
+		return false
+	}
+
 	return func(ctx *zoox.Context) {
 		if isIgnoreAuthoried(ctx.Path) {
 			ctx.Next()
@@ -148,29 +180,4 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 		ctx.Next()
 	}
-}
-
-func isIgnoreAuthoried(path string) bool {
-	excludes := []string{
-		"^/api/login$",
-		"^/api/app$",
-		"^/captcha$",
-		"^/favicon.ico",
-		"^/__umi_ping$",
-		"^/__umiDev/routes$",
-		"^/robots.txt$",
-		"^/sockjs-node",
-		"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map)$",
-		"\\.hot-update.json$",
-		"^/api/open/(.*)",
-		"^/api/qrcode/",
-	}
-	for _, exclude := range excludes {
-		matched, err := regexp.MatchString(exclude, path)
-		if err == nil && matched {
-			return true
-		}
-	}
-
-	return false
 }
