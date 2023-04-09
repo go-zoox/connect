@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -223,7 +222,6 @@ func (s *ConfigUpstreamService) IsValid() bool {
 	return s.Host != "" && s.Port != 0
 }
 
-// var isLoaded = false
 var cfg Config
 
 func Load(config_file string) (*Config, error) {
@@ -232,75 +230,6 @@ func Load(config_file string) (*Config, error) {
 	}); err != nil {
 		return nil, err
 	}
-
-	if cfg.SecretKey == "" {
-		return nil, errors.New("secret_key is empty")
-	}
-
-	if cfg.SessionMaxAge == 0 {
-		cfg.SessionMaxAge = 86400
-	}
-
-	cfg.SessionMaxAgeDuration = time.Duration(cfg.SessionMaxAge) * time.Second
-
-	if cfg.Port == 0 {
-		cfg.Port = 8080
-	}
-	if cfg.LogLevel == "" {
-		cfg.LogLevel = "ERROR"
-	}
-	if cfg.Mode == "" {
-		cfg.Mode = "development"
-	}
-
-	// default auth mode => oauth2
-	if cfg.Auth.Mode == "" {
-		cfg.Auth.Mode = "oauth2"
-	}
-	// default oauth2 provider => doreamon
-	if cfg.Auth.Provider == "" {
-		cfg.Auth.Provider = "doreamon"
-	}
-
-	// default services mode => service
-	if cfg.Services.App.Mode == "" {
-		cfg.Services.App.Mode = "service"
-	}
-	if cfg.Services.App.Service == "" {
-		cfg.Services.App.Service = "https://api.zcorky.com/oauth/app"
-	}
-
-	if cfg.Services.User.Mode == "" {
-		cfg.Services.User.Mode = "service"
-	}
-	if cfg.Services.User.Service == "" {
-		cfg.Services.User.Service = "https://api.zcorky.com/user"
-	}
-
-	if cfg.Services.Menus.Mode == "" {
-		cfg.Services.Menus.Mode = "service"
-	}
-	if cfg.Services.Menus.Service == "" {
-		cfg.Services.Menus.Service = "https://api.zcorky.com/menus"
-	}
-
-	if cfg.Services.Users.Mode == "" {
-		cfg.Services.Users.Mode = "service"
-	}
-	if cfg.Services.Users.Service == "" {
-		cfg.Services.Users.Service = "https://api.zcorky.com/users"
-	}
-
-	if cfg.Services.OpenID.Mode == "" {
-		cfg.Services.OpenID.Mode = "service"
-	}
-	if cfg.Services.OpenID.Service == "" {
-		cfg.Services.OpenID.Service = "https://api.zcorky.com/oauth/app/user/open_id"
-	}
-
-	applyEnv()
-
-	// isLoaded = true
 
 	return &cfg, nil
 }
@@ -312,77 +241,41 @@ func LoadFromService(fn func() (string, error)) (*Config, error) {
 		return nil, err
 	}
 
-	if cfg.SecretKey == "" {
-		return nil, errors.New("secret_key is empty")
-	}
-
-	if cfg.Port == 0 {
-		cfg.Port = 8080
-	}
-	if cfg.LogLevel == "" {
-		cfg.LogLevel = "ERROR"
-	}
-	if cfg.Mode == "" {
-		cfg.Mode = "development"
-	}
-
-	// default auth mode => oauth2
-	if cfg.Auth.Mode == "" {
-		cfg.Auth.Mode = "oauth2"
-	}
-	// default oauth2 provider => doreamon
-	if cfg.Auth.Provider == "" {
-		cfg.Auth.Provider = "doreamon"
-	}
-
-	// default services mode => service
-	if cfg.Services.App.Mode == "" {
-		cfg.Services.App.Mode = "service"
-	}
-	if cfg.Services.User.Mode == "" {
-		cfg.Services.User.Mode = "service"
-	}
-	if cfg.Services.Menus.Mode == "" {
-		cfg.Services.Menus.Mode = "service"
-	}
-
-	applyEnv()
-
 	return &cfg, nil
 }
 
-func applyEnv() {
+func (c *Config) ApplyDefault() {
 	if os.Getenv("PORT") != "" {
 		v, err := strconv.Atoi(os.Getenv("PORT"))
 		if err == nil {
-			cfg.Port = int64(v)
+			c.Port = int64(v)
 		}
 	}
 
 	if os.Getenv("MODE") != "" {
-		cfg.Mode = os.Getenv("MODE")
+		c.Mode = os.Getenv("MODE")
 	}
 
 	if os.Getenv("SECRET_KEY") != "" {
-		cfg.SecretKey = os.Getenv("SECRET_KEY")
+		c.SecretKey = os.Getenv("SECRET_KEY")
 	}
-	if cfg.SecretKey == "" {
-		cfg.SecretKey = random.String(16)
+	if c.SecretKey == "" {
+		c.SecretKey = random.String(16)
 	}
 
 	if os.Getenv("SESSION_MAX_AGE") != "" {
 		v, err := strconv.Atoi(os.Getenv("SESSION_MAX_AGE"))
 		if err == nil {
-			cfg.SessionMaxAge = int64(v)
+			c.SessionMaxAge = int64(v)
 		}
 	}
 
 	if os.Getenv("LOG_LEVEL") != "" {
-		cfg.LogLevel = os.Getenv("LOG_LEVEL")
+		c.LogLevel = os.Getenv("LOG_LEVEL")
 	}
 
 	if os.Getenv("AUTH_MODE") != "" {
-		cfg.Auth.Mode = os.Getenv("AUTH_MODE")
+		c.Auth.Mode = os.Getenv("AUTH_MODE")
 	}
 
 	if os.Getenv("FRONTEND") != "" {
@@ -392,14 +285,14 @@ func applyEnv() {
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		cfg.Frontend = ConfigFrontendService{
+		c.Frontend = ConfigFrontendService{
 			Protocol: u.Scheme,
 			Host:     u.Hostname(),
 			Port:     int64(port),
 		}
 
-		if cfg.Frontend.Protocol == "https" && cfg.Frontend.Port == 0 {
-			cfg.Frontend.Port = 443
+		if c.Frontend.Protocol == "https" && c.Frontend.Port == 0 {
+			c.Frontend.Port = 443
 		}
 	}
 
@@ -410,7 +303,7 @@ func applyEnv() {
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		cfg.Backend = ConfigBackendService{
+		c.Backend = ConfigBackendService{
 			Protocol:               u.Scheme,
 			Host:                   u.Hostname(),
 			Port:                   int64(port),
@@ -418,8 +311,8 @@ func applyEnv() {
 			IsDisablePrefixRewrite: true,
 		}
 
-		if cfg.Backend.Protocol == "https" && cfg.Backend.Port == 0 {
-			cfg.Backend.Port = 443
+		if c.Backend.Protocol == "https" && c.Backend.Port == 0 {
+			c.Backend.Port = 443
 		}
 	}
 
@@ -430,14 +323,75 @@ func applyEnv() {
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		cfg.Upstream = ConfigUpstreamService{
+		c.Upstream = ConfigUpstreamService{
 			Protocol: u.Scheme,
 			Host:     u.Hostname(),
 			Port:     int64(port),
 		}
 
-		if cfg.Upstream.Protocol == "https" && cfg.Upstream.Port == 0 {
-			cfg.Upstream.Port = 443
+		if c.Upstream.Protocol == "https" && c.Upstream.Port == 0 {
+			c.Upstream.Port = 443
 		}
 	}
+
+	if c.Port == 0 {
+		c.Port = 8080
+	}
+	if c.LogLevel == "" {
+		c.LogLevel = "ERROR"
+	}
+	if c.Mode == "" {
+		c.Mode = "development"
+	}
+
+	// default auth mode => oauth2
+	if c.Auth.Mode == "" {
+		c.Auth.Mode = "oauth2"
+	}
+	// default oauth2 provider => doreamon
+	if c.Auth.Provider == "" {
+		c.Auth.Provider = "doreamon"
+	}
+
+	// default services mode => service
+	if c.Services.App.Mode == "" {
+		c.Services.App.Mode = "service"
+	}
+	if c.Services.App.Service == "" {
+		c.Services.App.Service = "https://api.zcorky.com/oauth/app"
+	}
+
+	if c.Services.User.Mode == "" {
+		c.Services.User.Mode = "service"
+	}
+	if c.Services.User.Service == "" {
+		c.Services.User.Service = "https://api.zcorky.com/user"
+	}
+
+	if c.Services.Menus.Mode == "" {
+		c.Services.Menus.Mode = "service"
+	}
+	if c.Services.Menus.Service == "" {
+		c.Services.Menus.Service = "https://api.zcorky.com/menus"
+	}
+
+	if c.Services.Users.Mode == "" {
+		c.Services.Users.Mode = "service"
+	}
+	if c.Services.Users.Service == "" {
+		c.Services.Users.Service = "https://api.zcorky.com/users"
+	}
+
+	if c.Services.OpenID.Mode == "" {
+		c.Services.OpenID.Mode = "service"
+	}
+	if c.Services.OpenID.Service == "" {
+		c.Services.OpenID.Service = "https://api.zcorky.com/oauth/app/user/open_id"
+	}
+
+	if c.SessionMaxAge == 0 {
+		c.SessionMaxAge = 86400
+	}
+
+	c.SessionMaxAgeDuration = time.Duration(c.SessionMaxAge) * time.Second
 }

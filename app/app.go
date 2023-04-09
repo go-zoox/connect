@@ -57,6 +57,13 @@ func (e *Connect) registerOauth2() {
 }
 
 func (e *Connect) handle(cfg *config.Config) {
+	// @TODO
+	cfg.ApplyDefault()
+
+	if debug.IsDebugMode() {
+		fmt.PrintJSON("connect config:", cfg)
+	}
+
 	e.cfg = cfg
 
 	e.core.LogLevel = cfg.LogLevel
@@ -76,10 +83,6 @@ func (e *Connect) handle(cfg *config.Config) {
 func (e *Connect) Start(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
-	}
-
-	if debug.IsDebugMode() {
-		fmt.PrintJSON("connect config:", cfg)
 	}
 
 	e.handle(cfg)
