@@ -12,10 +12,11 @@ import (
 )
 
 type Config struct {
-	Port                  int64  `config:"port"`
-	Mode                  string `config:"mode"`
-	SecretKey             string `config:"secret_key"`
-	SessionMaxAge         int64  `config:"session_max_age"`
+	Port      int64  `config:"port"`
+	Mode      string `config:"mode"`
+	SecretKey string `config:"secret_key"`
+	// SessionMaxAge is the max age of session, unit: second, default: 86400
+	SessionMaxAge         int64 `config:"session_max_age"`
 	SessionMaxAgeDuration time.Duration
 	LogLevel              string `config:"log_level"`
 	// S1: Connect => Frontend + Backend
@@ -147,6 +148,12 @@ func Load(config_file string) (*Config, error) {
 	if cfg.SecretKey == "" {
 		return nil, errors.New("secret_key is empty")
 	}
+
+	if cfg.SessionMaxAge == 0 {
+		cfg.SessionMaxAge = 86400
+	}
+
+	cfg.SessionMaxAgeDuration = time.Duration(cfg.SessionMaxAge) * time.Second
 
 	if cfg.Port == 0 {
 		cfg.Port = 8080
