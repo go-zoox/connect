@@ -76,7 +76,8 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	// @TODO
 	if cfg.Upstream.IsValid() {
-		app.Logger.Infof("mode: upstream, upstream: %s", cfg.Upstream.String())
+		app.Logger.Infof("mode: upstream")
+		app.Logger.Infof("upstream: %s", cfg.Upstream.String())
 
 		pg := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {

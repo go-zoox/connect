@@ -6,7 +6,9 @@ require (
 	github.com/go-zoox/captcha v1.0.3
 	github.com/go-zoox/cli v1.0.10
 	github.com/go-zoox/config v1.2.3
+	github.com/go-zoox/core-utils v1.2.7
 	github.com/go-zoox/crypto v1.1.8
+	github.com/go-zoox/debug v1.0.1
 	github.com/go-zoox/fetch v1.7.6
 	github.com/go-zoox/fs v1.3.9
 	github.com/go-zoox/headers v1.0.6
@@ -29,11 +31,9 @@ require (
 	github.com/go-zoox/chalk v1.0.2 // indirect
 	github.com/go-zoox/compress v1.0.1 // indirect
 	github.com/go-zoox/cookie v1.0.2 // indirect
-	github.com/go-zoox/core-utils v1.2.7 // indirect
 	github.com/go-zoox/counter v1.2.0 // indirect
 	github.com/go-zoox/cron v1.1.2 // indirect
 	github.com/go-zoox/datetime v1.1.1 // indirect
-	github.com/go-zoox/debug v1.0.1 // indirect
 	github.com/go-zoox/encoding v1.2.1 // indirect
 	github.com/go-zoox/errors v1.0.2 // indirect
 	github.com/go-zoox/gzip v1.0.0 // indirect

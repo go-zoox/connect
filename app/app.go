@@ -2,10 +2,11 @@ package app
 
 import (
 	"embed"
-	"fmt"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
+	"github.com/go-zoox/core-utils/fmt"
+	"github.com/go-zoox/debug"
 	"github.com/go-zoox/oauth2"
 
 	"github.com/go-zoox/zoox"
@@ -75,6 +76,10 @@ func (e *Connect) handle(cfg *config.Config) {
 func (e *Connect) Start(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
+	}
+
+	if debug.IsDebugMode() {
+		fmt.PrintJSON("connect config:", cfg)
 	}
 
 	e.handle(cfg)
