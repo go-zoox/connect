@@ -8,6 +8,7 @@ import (
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/fetch"
+	"github.com/go-zoox/logger"
 	"github.com/go-zoox/zoox"
 )
 
@@ -57,7 +58,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 
 	userStr := response.Get("result").String()
 	if err := json.Unmarshal([]byte(userStr), &user); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unmarshal user(%s): %s", response.String(), err)
 	}
 	if user.ID == "" {
 		user.ID = response.Get("result._id").String()
@@ -70,12 +71,16 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 		ctx.Logger.Warn("[service.user] failed to get feishu open id: %#v", err)
 	}
 
-	if len(user.Permissions) != 0 {
-		ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
-	} else {
-		// no permission => 403 => cache 30s
-		ctx.Cache().Set(cacheKey, user, 30*time.Second)
-	}
+	// if len(user.Permissions) != 0 {
+	// 	ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
+	// } else {
+	// 	// no permission => 403 => cache 30s
+	// 	ctx.Cache().Set(cacheKey, user, 30*time.Second)
+	// }
+
+	logger.Info("[service.GetUser] user: %s(%s)", user.Nickname, user.Email)
+	ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
+
 	return user, nil
 }
 
