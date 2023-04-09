@@ -168,6 +168,10 @@ func (s *ConfigFrontendService) String() string {
 		s.Port = 8000
 	}
 
+	if cfg.Upstream.Protocol == "https" && cfg.Upstream.Port == 0 {
+		cfg.Upstream.Port = 443
+	}
+
 	if s.Protocol == "https" && s.Port == 443 {
 		return fmt.Sprintf("%s://%s", s.Protocol, s.Host)
 	}
@@ -188,6 +192,10 @@ func (s *ConfigBackendService) String() string {
 		s.Port = 8001
 	}
 
+	if cfg.Upstream.Protocol == "https" && cfg.Upstream.Port == 0 {
+		cfg.Upstream.Port = 443
+	}
+
 	if s.Protocol == "https" && s.Port == 443 {
 		return fmt.Sprintf("%s://%s", s.Protocol, s.Host)
 	}
@@ -198,6 +206,10 @@ func (s *ConfigBackendService) String() string {
 func (s *ConfigUpstreamService) String() string {
 	if s.Protocol == "" {
 		s.Protocol = "http"
+	}
+
+	if cfg.Upstream.Protocol == "https" && cfg.Upstream.Port == 0 {
+		cfg.Upstream.Port = 443
 	}
 
 	if s.Protocol == "https" && s.Port == 443 {
