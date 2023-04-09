@@ -29,29 +29,13 @@ func New(cfg *config.Config) func(*zoox.Context) {
 	}
 
 	return zoox.WrapH(proxy.NewSingleTarget(backend, &proxy.SingleTargetConfig{
-		// Rewrites: map[string]string{
-		// 	"^/api/open/(.*)": "/open/$1",
-		// },
 		// Rewrites: rewriter.Rewriters{
 		// 	{
 		// 		From: "^/api/open/(.*)",
 		// 		To:   fmt.Sprintf("%s/open/$1", prefix),
 		// 	},
 		// },
-		Rewrites: rewrites,
-		// OnRequest: func(req *http.Request) error {
-		// 	fmt.Println("open:", req.URL.Path)
-		// 	return nil
-		// },
-		// OnResponse: func(res *http.Response) error {
-		// 	if res.ContentLength == 0 {
-		// 		if strings.Contains(res.Request.Header.Get("Accept"), "application/json") {
-		// 			res.Header.Set("Content-Type", "application/json")
-		// 		}
-		// 	}
-
-		// 	return nil
-		// },
+		Rewrites:     rewrites,
 		ChangeOrigin: cfg.Backend.ChangeOrigin,
 	}))
 }

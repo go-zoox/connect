@@ -37,7 +37,6 @@ func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token stri
 		return nil, 0, err
 	}
 
-	// response, err := fetch.Get(cfg.Services.App.Service, &fetch.Config{
 	response, err := fetch.Get(cfg.Services.Users.Service, &fetch.Config{
 		Headers: map[string]string{
 			"x-real-ip":       ctx.Get("x-forwarded-for"),
@@ -73,7 +72,6 @@ func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token stri
 		})
 	}
 
-	// cache.Set(key, &users, cfg.SessionMaxAgeDuration)
 	ctx.Cache().Set(key, &users, 10*time.Second)
 
 	return users, total, nil

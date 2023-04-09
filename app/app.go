@@ -26,9 +26,6 @@ type Connect struct {
 func New() *Connect {
 	app := defaults.Application()
 
-	// @TODO Test with api docs at 127.0.0.1
-	// app.Use(middleware.CORS())
-
 	return &Connect{
 		core: app,
 	}

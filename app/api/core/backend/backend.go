@@ -25,16 +25,7 @@ func New(cfg *config.Config) func(*zoox.Context) {
 		// Rewrites: map[string]string{
 		// 	"^/api/(.*)": "/$1",
 		// },
-		Rewrites: rewrites,
-		// OnResponse: func(res *http.Response) error {
-		// 	if res.ContentLength == 0 {
-		// 		if strings.Contains(res.Request.Header.Get("Accept"), "application/json") {
-		// 			res.Header.Set("Content-Type", "application/json")
-		// 		}
-		// 	}
-
-		// 	return nil
-		// },
+		Rewrites:     rewrites,
 		ChangeOrigin: cfg.Backend.ChangeOrigin,
 	}))
 }

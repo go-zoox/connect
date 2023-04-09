@@ -36,7 +36,6 @@ func ValidateCaptcha(cfg *config.Config, ctx *zoox.Context, input string) bool {
 		panic(err)
 	}
 
-	// ctx.Cookie.Del(captchCookieKey)
 	ctx.Session().Del(captchCookieKey)
 
 	if len(cap) != 0 {

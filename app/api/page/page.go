@@ -9,8 +9,6 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
-// var Page = New()
-
 type page struct {
 	frontend string
 	cfg      *config.Config
@@ -52,8 +50,6 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 		ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
 		if cfg.Mode == "production" {
-			// ctx.Status(200)
-			// ctx.String(200, cfg.IndexHTML)
 			zoox.WrapH(proxy.NewSingleTarget(p.frontend, &proxy.SingleTargetConfig{
 				ChangeOrigin: cfg.Frontend.ChangeOrigin,
 			}))(ctx)
@@ -61,7 +57,6 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 		}
 
 		if !p.isHealth() {
-			// ctx.Render(200, "loading.html", nil)
 			ctx.String(200, cfg.LoadingHTML)
 			return
 		}

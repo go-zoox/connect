@@ -50,8 +50,6 @@ func (p *upstream) RenderPage() func(ctx *zoox.Context) {
 		ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
 		if cfg.Mode == "production" {
-			// ctx.Status(200)
-			// ctx.String(200, cfg.IndexHTML)
 			zoox.WrapH(proxy.NewSingleTarget(p.upstream, &proxy.SingleTargetConfig{
 				ChangeOrigin: cfg.Upstream.ChangeOrigin,
 			}))(ctx)
@@ -59,7 +57,6 @@ func (p *upstream) RenderPage() func(ctx *zoox.Context) {
 		}
 
 		if !p.isHealth() {
-			// ctx.Render(200, "loading.html", nil)
 			ctx.String(200, cfg.LoadingHTML)
 			return
 		}

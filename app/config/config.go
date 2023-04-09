@@ -336,8 +336,6 @@ func LoadFromService(fn func() (string, error)) (*Config, error) {
 
 	applyEnv()
 
-	// isLoaded = true
-
 	return &cfg, nil
 }
 

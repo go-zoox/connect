@@ -67,7 +67,6 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 	user.FeishuOpenID, err = GetOpenID(ctx, cfg, "feishu", user.Email)
 	if err != nil {
 		time.Sleep(3 * time.Second)
-		// return nil, fmt.Errorf("get feishu open id error: %#v", err)
 		ctx.Logger.Warn("[service.user] failed to get feishu open id: %#v", err)
 	}
 
@@ -87,7 +86,6 @@ func Login(ctx *zoox.Context, cfg *config.Config, typ string, username string, p
 
 	if cfg.Password.Mode == "local" {
 		if username != cfg.Password.Local.Username || password != cfg.Password.Local.Password {
-			// return "", fmt.Errorf("username or password are not matched")
 			return "", fmt.Errorf("用户名或密码错误")
 		}
 
