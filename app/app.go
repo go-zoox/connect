@@ -61,6 +61,8 @@ func (e *Connect) registerOauth2() {
 func (e *Connect) handle(cfg *config.Config) {
 	e.cfg = cfg
 
+	e.core.LogLevel = cfg.LogLevel
+
 	e.core.SecretKey = cfg.SecretKey
 
 	e.core.SessionMaxAge = cfg.SessionMaxAgeDuration

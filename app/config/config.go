@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"os"
 	"strconv"
@@ -20,10 +21,10 @@ type Config struct {
 	SessionMaxAgeDuration time.Duration
 	LogLevel              string `config:"log_level"`
 	// S1: Connect => Frontend + Backend
-	Frontend ConfigPartService `config:"frontend"`
-	Backend  ConfigPartService `config:"backend"`
+	Frontend ConfigFrontendService `config:"frontend"`
+	Backend  ConfigBackendService  `config:"backend"`
 	// S2: Connect => Upstream
-	Upstream ConfigPartService `config:"upstream"`
+	Upstream ConfigUpstreamService `config:"upstream"`
 	//
 	OAuth2   []ConfigPartAuthOAuth2 `config:"oauth2"`
 	Password ConfigPartAuthPassword `config:"password"`
@@ -36,12 +37,31 @@ type Config struct {
 	IndexHTML   string `config:"index_html"`
 }
 
-type ConfigPartService struct {
+type ConfigFrontendService struct {
 	Protocol string `config:"protocol"`
 	Host     string `config:"host"`
 	Port     int64  `config:"port"`
-	// Prefix is the backend prefix, default: empty string
-	Prefix string `config:"prefix"`
+	//
+	ChangeOrigin bool `config:"change_origin"`
+}
+
+type ConfigBackendService struct {
+	Protocol string `config:"protocol"`
+	Host     string `config:"host"`
+	Port     int64  `config:"port"`
+	// Prefix is the backend prefix, default: /api
+	Prefix                 string `config:"prefix,default=/api"`
+	IsDisablePrefixRewrite bool   `config:"is_prefix_rewrite,default=false"`
+	//
+	ChangeOrigin bool `config:"change_origin"`
+}
+
+type ConfigUpstreamService struct {
+	Protocol string `config:"protocol"`
+	Host     string `config:"host"`
+	Port     int64  `config:"port"`
+	//
+	ChangeOrigin bool `config:"change_origin"`
 }
 
 type ConfigPartAuth struct {
@@ -133,6 +153,62 @@ type MenuItem struct {
 	Layout     string `config:"layout"`
 	IFrame     string `config:"iframe"`
 	Redirect   string `config:"redirect"`
+}
+
+func (s *ConfigFrontendService) String() string {
+	if s.Protocol == "" {
+		s.Protocol = "http"
+	}
+
+	if s.Host == "" {
+		s.Host = "127.0.0.1"
+	}
+
+	if s.Port == 0 {
+		s.Port = 8000
+	}
+
+	if s.Protocol == "https" && s.Port == 443 {
+		return fmt.Sprintf("%s://%s", s.Protocol, s.Host)
+	}
+
+	return fmt.Sprintf("%s://%s:%d", s.Protocol, s.Host, s.Port)
+}
+
+func (s *ConfigBackendService) String() string {
+	if s.Protocol == "" {
+		s.Protocol = "http"
+	}
+
+	if s.Host == "" {
+		s.Host = "127.0.0.1"
+	}
+
+	if s.Port == 0 {
+		s.Port = 8001
+	}
+
+	if s.Protocol == "https" && s.Port == 443 {
+		return fmt.Sprintf("%s://%s", s.Protocol, s.Host)
+	}
+
+	return fmt.Sprintf("%s://%s:%d", s.Protocol, s.Host, s.Port)
+}
+
+func (s *ConfigUpstreamService) String() string {
+	if s.Protocol == "" {
+		s.Protocol = "http"
+	}
+
+	if s.Protocol == "https" && s.Port == 443 {
+		return fmt.Sprintf("%s://%s", s.Protocol, s.Host)
+	}
+
+	return fmt.Sprintf("%s://%s:%d", s.Protocol, s.Host, s.Port)
+}
+
+func (s *ConfigUpstreamService) IsValid() bool {
+	return s.Host != "" && s.Port != 0
 }
 
 // var isLoaded = false
@@ -301,29 +377,57 @@ func applyEnv() {
 
 	if os.Getenv("FRONTEND") != "" {
 		u, err := url.Parse(os.Getenv("FRONTEND"))
-		if err == nil {
-			panic("invalid FRONTEND service: " + os.Getenv("FRONTEND"))
+		if err != nil {
+			panic(fmt.Sprintf("invalid FRONTEND service(%s): %s", os.Getenv("FRONTEND"), err.Error()))
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		cfg.Frontend = ConfigPartService{
+		cfg.Frontend = ConfigFrontendService{
 			Protocol: u.Scheme,
 			Host:     u.Hostname(),
 			Port:     int64(port),
+		}
+
+		if cfg.Frontend.Protocol == "https" && cfg.Frontend.Port == 0 {
+			cfg.Frontend.Port = 443
 		}
 	}
 
 	if os.Getenv("BACKEND") != "" {
 		u, err := url.Parse(os.Getenv("BACKEND"))
-		if err == nil {
-			panic("invalid BACKEND service: " + os.Getenv("BACKEND"))
+		if err != nil {
+			panic(fmt.Sprintf("invalid BACKEND service(%s): %s", os.Getenv("BACKEND"), err.Error()))
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		cfg.Frontend = ConfigPartService{
+		cfg.Backend = ConfigBackendService{
+			Protocol:               u.Scheme,
+			Host:                   u.Hostname(),
+			Port:                   int64(port),
+			Prefix:                 "/api",
+			IsDisablePrefixRewrite: true,
+		}
+
+		if cfg.Backend.Protocol == "https" && cfg.Backend.Port == 0 {
+			cfg.Backend.Port = 443
+		}
+	}
+
+	if os.Getenv("UPSTREAM") != "" {
+		u, err := url.Parse(os.Getenv("UPSTREAM"))
+		if err != nil {
+			panic(fmt.Sprintf("invalid UPSTREAM service(%s): %s", os.Getenv("UPSTREAM"), err.Error()))
+		}
+
+		port, _ := strconv.Atoi(u.Port())
+		cfg.Upstream = ConfigUpstreamService{
 			Protocol: u.Scheme,
 			Host:     u.Hostname(),
 			Port:     int64(port),
+		}
+
+		if cfg.Upstream.Protocol == "https" && cfg.Upstream.Port == 0 {
+			cfg.Upstream.Port = 443
 		}
 	}
 }

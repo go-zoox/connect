@@ -10,48 +10,35 @@ import (
 )
 
 func New(cfg *config.Config) func(*zoox.Context) {
-	protocol := cfg.Backend.Protocol
-	host := cfg.Backend.Host
-	port := cfg.Backend.Port
-	prefix := cfg.Backend.Prefix
-
 	// @TODO
-	if cfg.Upstream.Host != "" {
-		protocol = cfg.Upstream.Protocol
-		host = cfg.Upstream.Host
-		port = cfg.Upstream.Port
-		prefix = cfg.Upstream.Prefix
+	if cfg.Upstream.IsValid() {
+		cfg.Backend.Protocol = cfg.Upstream.Protocol
+		cfg.Backend.Host = cfg.Upstream.Host
+		cfg.Backend.Port = cfg.Upstream.Port
 	}
 
-	if protocol == "" {
-		protocol = "http"
+	backend := cfg.Backend.String()
+	rewrites := rewriter.Rewriters{}
+	if !cfg.Backend.IsDisablePrefixRewrite {
+		rewrites = rewriter.Rewriters{
+			{
+				From: fmt.Sprintf("^%s/open/(.*)", cfg.Backend.Prefix),
+				To:   "/open/$1",
+			},
+		}
 	}
-
-	if host == "" {
-		host = "127.0.0.1"
-	}
-
-	if port == 0 {
-		port = 8001
-	}
-
-	backend := fmt.Sprintf(
-		"%s://%s:%d",
-		protocol,
-		host,
-		port,
-	)
 
 	return zoox.WrapH(proxy.NewSingleTarget(backend, &proxy.SingleTargetConfig{
 		// Rewrites: map[string]string{
 		// 	"^/api/open/(.*)": "/open/$1",
 		// },
-		Rewrites: rewriter.Rewriters{
-			{
-				From: "^/api/open/(.*)",
-				To:   fmt.Sprintf("%s/open/$1", prefix),
-			},
-		},
+		// Rewrites: rewriter.Rewriters{
+		// 	{
+		// 		From: "^/api/open/(.*)",
+		// 		To:   fmt.Sprintf("%s/open/$1", prefix),
+		// 	},
+		// },
+		Rewrites: rewrites,
 		// OnRequest: func(req *http.Request) error {
 		// 	fmt.Println("open:", req.URL.Path)
 		// 	return nil
@@ -65,5 +52,6 @@ func New(cfg *config.Config) func(*zoox.Context) {
 
 		// 	return nil
 		// },
+		ChangeOrigin: cfg.Backend.ChangeOrigin,
 	}))
 }

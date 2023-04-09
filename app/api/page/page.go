@@ -1,8 +1,6 @@
 package page
 
 import (
-	"fmt"
-
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/headers"
@@ -19,27 +17,7 @@ type page struct {
 }
 
 func New(cfg *config.Config) *page {
-	protocol := cfg.Frontend.Protocol
-	host := cfg.Frontend.Host
-	port := cfg.Frontend.Port
-
-	if protocol == "" {
-		protocol = "http"
-	}
-
-	if host == "" {
-		host = "127.0.0.1"
-	}
-
-	if port == 0 {
-		port = 8000
-	}
-	frontend := fmt.Sprintf(
-		"%s://%s:%d",
-		protocol,
-		host,
-		port,
-	)
+	frontend := cfg.Frontend.String()
 
 	return &page{
 		frontend: frontend,
@@ -76,7 +54,9 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 		if cfg.Mode == "production" {
 			// ctx.Status(200)
 			// ctx.String(200, cfg.IndexHTML)
-			zoox.WrapH(proxy.NewSingleTarget(p.frontend))(ctx)
+			zoox.WrapH(proxy.NewSingleTarget(p.frontend, &proxy.SingleTargetConfig{
+				ChangeOrigin: cfg.Frontend.ChangeOrigin,
+			}))(ctx)
 			return
 		}
 
@@ -88,7 +68,9 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 
 		ctx.Request.Header.Set("cache-control", "no-cache")
 
-		zoox.WrapH(proxy.NewSingleTarget(p.frontend))(ctx)
+		zoox.WrapH(proxy.NewSingleTarget(p.frontend, &proxy.SingleTargetConfig{
+			ChangeOrigin: cfg.Frontend.ChangeOrigin,
+		}))(ctx)
 	}
 }
 
