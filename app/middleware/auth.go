@@ -82,7 +82,11 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 			// delete token before
 			service.DelToken(ctx)
-			ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from), "visit_logout"))
+			if provider != "" {
+				ctx.Redirect(fmt.Sprintf("/logout/%s", provider))
+			} else {
+				ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from), "visit_logout"))
+			}
 			return
 		}
 

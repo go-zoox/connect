@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/service"
+	"github.com/go-zoox/logger"
 	"github.com/go-zoox/oauth2"
 	oc "github.com/go-zoox/oauth2/create"
 	"github.com/go-zoox/random"
@@ -14,6 +15,7 @@ import (
 
 func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 	loginRegExp := regexp.MustCompile("^/login/([^/]+)$")
+	logoutRegExp := regexp.MustCompile("^/logout/([^/]+)$")
 	loginCallbackRegExp := regexp.MustCompile("^/login/([^/]+)/callback$")
 
 	return func(ctx *zoox.Context) {
@@ -46,7 +48,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 			provider := loginCallbackRegExp.FindStringSubmatch(ctx.Path)[1]
 
 			if ctx.Session().Get("oauth2_state") != state {
-				fmt.Printf("state not match: expect %s, but got %s", ctx.Session().Get("oauth2_state"), state)
+				logger.Infof("state not match: expect %s, but got %s", ctx.Session().Get("oauth2_state"), state)
 
 				// panic("oauth2_state is not match")
 				ctx.Redirect(fmt.Sprintf("/login/%s", provider))
@@ -82,10 +84,11 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		if ctx.Path == "/logout" {
+		// logout => /logout/:provider
+		if logoutRegExp.MatchString(ctx.Path) {
 			provider := service.GetProvider(ctx)
 			// cannot get provider mean not oauth2
-			if provider != "" {
+			if provider == "" {
 				ctx.Next()
 				return
 			}
