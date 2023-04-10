@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-zoox/core-utils/strings"
+
 	goconfig "github.com/go-zoox/config"
 	"github.com/go-zoox/random"
 )
@@ -279,7 +281,8 @@ func (c *Config) ApplyDefault() {
 	}
 
 	if os.Getenv("FRONTEND") != "" {
-		u, err := url.Parse(os.Getenv("FRONTEND"))
+		v := fixUpstream(os.Getenv("FRONTEND"))
+		u, err := url.Parse(v)
 		if err != nil {
 			panic(fmt.Sprintf("invalid FRONTEND service(%s): %s", os.Getenv("FRONTEND"), err.Error()))
 		}
@@ -297,7 +300,8 @@ func (c *Config) ApplyDefault() {
 	}
 
 	if os.Getenv("BACKEND") != "" {
-		u, err := url.Parse(os.Getenv("BACKEND"))
+		v := fixUpstream(os.Getenv("BACKEND"))
+		u, err := url.Parse(v)
 		if err != nil {
 			panic(fmt.Sprintf("invalid BACKEND service(%s): %s", os.Getenv("BACKEND"), err.Error()))
 		}
@@ -317,7 +321,8 @@ func (c *Config) ApplyDefault() {
 	}
 
 	if os.Getenv("UPSTREAM") != "" {
-		u, err := url.Parse(os.Getenv("UPSTREAM"))
+		v := fixUpstream(os.Getenv("UPSTREAM"))
+		u, err := url.Parse(v)
 		if err != nil {
 			panic(fmt.Sprintf("invalid UPSTREAM service(%s): %s", os.Getenv("UPSTREAM"), err.Error()))
 		}
@@ -394,4 +399,15 @@ func (c *Config) ApplyDefault() {
 	}
 
 	c.SessionMaxAgeDuration = time.Duration(c.SessionMaxAge) * time.Second
+}
+
+// fixUpstream fix upstream url
+// e.g: localhost:8080 => http://localhost:8080
+func fixUpstream(upstream string) string {
+	parts := strings.Split(upstream, ":")
+	if len(parts) <= 2 {
+		return "http://" + upstream
+	}
+
+	return upstream
 }
