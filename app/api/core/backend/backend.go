@@ -11,12 +11,19 @@ import (
 
 func New(cfg *config.Config) func(*zoox.Context) {
 	backend := cfg.Backend.String()
-	rewrites := rewriter.Rewriters{}
+	var rewrites rewriter.Rewriters
 	if !cfg.Backend.IsDisablePrefixRewrite {
 		rewrites = rewriter.Rewriters{
 			{
 				From: fmt.Sprintf("^%s/(.*)", cfg.Backend.Prefix),
 				To:   "/$1",
+			},
+		}
+	} else {
+		rewrites = rewriter.Rewriters{
+			{
+				From: fmt.Sprintf("^%s/(.*)", cfg.Backend.Prefix),
+				To:   fmt.Sprintf("%s/$1", cfg.Backend.Prefix),
 			},
 		}
 	}

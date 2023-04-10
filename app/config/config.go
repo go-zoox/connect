@@ -53,7 +53,6 @@ type ConfigBackendService struct {
 	// Prefix is the backend prefix, default: /api
 	Prefix                 string `config:"prefix"`
 	IsDisablePrefixRewrite bool   `config:"is_disable_prefix_rewrite"`
-	IsDiablePrefix         bool   `config:"is_disable_prefix"`
 	//
 	ChangeOrigin bool `config:"change_origin"`
 }
@@ -340,6 +339,10 @@ func (c *Config) ApplyDefault() {
 		}
 	}
 
+	if os.Getenv("DISABLE_PREFIX_REWRITE") != "" {
+		c.Backend.IsDisablePrefixRewrite = true
+	}
+
 	if c.Port == 0 {
 		c.Port = 8080
 	}
@@ -401,8 +404,6 @@ func (c *Config) ApplyDefault() {
 
 	if c.Backend.Prefix == "" {
 		c.Backend.Prefix = "/api"
-	} else if c.Backend.IsDiablePrefix {
-		c.Backend.Prefix = ""
 	}
 
 	c.SessionMaxAgeDuration = time.Duration(c.SessionMaxAge) * time.Second
