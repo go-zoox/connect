@@ -51,8 +51,9 @@ type ConfigBackendService struct {
 	Host     string `config:"host"`
 	Port     int64  `config:"port"`
 	// Prefix is the backend prefix, default: /api
-	Prefix                 string `config:"prefix,default=/api"`
-	IsDisablePrefixRewrite bool   `config:"is_prefix_rewrite,default=false"`
+	Prefix                 string `config:"prefix"`
+	IsDisablePrefixRewrite bool   `config:"is_disable_prefix_rewrite"`
+	IsDiablePrefix         bool   `config:"is_disable_prefix"`
 	//
 	ChangeOrigin bool `config:"change_origin"`
 }
@@ -312,7 +313,7 @@ func (c *Config) ApplyDefault() {
 			Host:                   u.Hostname(),
 			Port:                   int64(port),
 			Prefix:                 "/api",
-			IsDisablePrefixRewrite: true,
+			IsDisablePrefixRewrite: false,
 		}
 
 		if c.Backend.Protocol == "https" && c.Backend.Port == 0 {
@@ -400,6 +401,8 @@ func (c *Config) ApplyDefault() {
 
 	if c.Backend.Prefix == "" {
 		c.Backend.Prefix = "/api"
+	} else if c.Backend.IsDiablePrefix {
+		c.Backend.Prefix = ""
 	}
 
 	c.SessionMaxAgeDuration = time.Duration(c.SessionMaxAge) * time.Second
