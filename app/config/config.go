@@ -398,6 +398,10 @@ func (c *Config) ApplyDefault() {
 		c.SessionMaxAge = 86400
 	}
 
+	if c.Backend.Prefix == "" {
+		c.Backend.Prefix = "/api"
+	}
+
 	c.SessionMaxAgeDuration = time.Duration(c.SessionMaxAge) * time.Second
 }
 
