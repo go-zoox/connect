@@ -1,0 +1,165 @@
+package router
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/go-zoox/connect/internal/api/captcha"
+	"github.com/go-zoox/connect/internal/api/favicon"
+	"github.com/go-zoox/connect/internal/api/page"
+	"github.com/go-zoox/connect/internal/api/upstream"
+	"github.com/go-zoox/connect/internal/config"
+	"github.com/go-zoox/connect/internal/middleware"
+	"github.com/go-zoox/connect/internal/service"
+	"github.com/go-zoox/headers"
+	"github.com/go-zoox/jwt"
+	"github.com/go-zoox/zoox"
+	zm "github.com/go-zoox/zoox/middleware"
+
+	apiApp "github.com/go-zoox/connect/internal/api/core/app"
+	apiBackend "github.com/go-zoox/connect/internal/api/core/backend"
+	apiConfig "github.com/go-zoox/connect/internal/api/core/config"
+	apiMenus "github.com/go-zoox/connect/internal/api/core/menus"
+	apiQRCode "github.com/go-zoox/connect/internal/api/core/qrcode"
+	apiUser "github.com/go-zoox/connect/internal/api/core/user"
+
+	//
+	apiOpen "github.com/go-zoox/connect/internal/api/core/open"
+)
+
+func New(app *zoox.Application, cfg *config.Config) {
+	app.Use(middleware.OAuth2(cfg))
+	app.Use(middleware.Auth(cfg))
+
+	// if e.staticHandler != nil {
+	// 	e.cfg.Mode = "production"
+
+	// 	cfg.IndexHTML = e.staticHandler(app)
+	// } else {
+	// 	// indexHTML, _ := StaticFS.ReadFile("web/static/index.html")
+	// 	// cfg.IndexHTML = string(indexHTML)
+
+	// 	// staticfs, _ := fs.Sub(StaticFS, "web/static")
+	// 	// app.StaticFS("/static/", http.FS(staticfs))
+
+	// 	// dev mode will not use static
+	// }
+
+	app.Get("/favicon.ico", favicon.Get(cfg))
+
+	app.Get("/captcha", captcha.New(cfg))
+
+	// api
+	api := app.Group("/api", func(group *zoox.RouterGroup) {
+		group.Use(zm.CacheControl(&zm.CacheControlConfig{
+			Paths:  []string{"^/api/(app|menus|users|config)$"},
+			MaxAge: 30 * time.Second,
+		}))
+
+		group.Get("/app", apiApp.New(cfg))
+		group.Get("/user", apiUser.New(cfg))
+		group.Get("/menus", apiMenus.New(cfg))
+		group.Get("/users", apiUser.GetUsers(cfg))
+		group.Get("/config", apiConfig.New(cfg))
+		// qrcode
+		group.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
+		group.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
+		group.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
+		group.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
+		//
+		group.Post("/login", apiUser.Login(cfg))
+	})
+
+	// open
+	api.Any("/open/*", apiOpen.New(cfg))
+
+	// @TODO
+	if cfg.Upstream.IsValid() {
+		app.Logger.Infof("mode: upstream")
+		app.Logger.Infof("upstream: %s", cfg.Upstream.String())
+
+		pg := upstream.New(cfg)
+		app.Fallback(func(ctx *zoox.Context) {
+			signer := jwt.New(cfg.SecretKey)
+
+			token := service.GetToken(ctx)
+			user, err := service.GetUser(ctx, cfg, token)
+			if err != nil {
+				// ctx.Logger.Errorf(err)
+				fmt.Println("failed to get user:", err)
+				ctx.Fail(err, 401002, "user not found", http.StatusUnauthorized)
+				return
+			}
+
+			timestamp := time.Now().UnixMilli()
+			jwtToken, err := signer.Sign(map[string]interface{}{
+				"user_id":             user.ID,
+				"user_nickname":       user.Nickname,
+				"user_avatar":         user.Avatar,
+				"user_email":          user.Email,
+				"user_feishu_open_id": user.FeishuOpenID,
+			})
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, err)
+				return
+			}
+
+			ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
+			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
+
+			// request id
+			ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+
+			pg.RenderPage()(ctx)
+		})
+		return
+	}
+
+	app.Logger.Infof("mode: frontend + backend")
+	app.Logger.Infof("frontend: %s", cfg.Frontend.String())
+	app.Logger.Infof("backend: %s", cfg.Backend.String())
+
+	// proxy pass
+	pg := page.New(cfg)
+	// proxy pass => backend
+	//
+	api.Get("/page/health", pg.Health(cfg))
+	api.Any(
+		"/*",
+		func(ctx *zoox.Context) {
+			signer := jwt.New(cfg.SecretKey)
+
+			token := service.GetToken(ctx)
+			user, err := service.GetUser(ctx, cfg, token)
+			if err != nil {
+				ctx.JSON(http.StatusUnauthorized, err)
+				return
+			}
+
+			timestamp := time.Now().UnixMilli()
+			jwtToken, err := signer.Sign(map[string]interface{}{
+				"user_id":             user.ID,
+				"user_nickname":       user.Nickname,
+				"user_avatar":         user.Avatar,
+				"user_email":          user.Email,
+				"user_feishu_open_id": user.FeishuOpenID,
+			})
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, err)
+				return
+			}
+
+			ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
+			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
+
+			// request id
+			ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+
+			ctx.Next()
+		},
+		apiBackend.New(cfg),
+	)
+	// proxy pass => frontend
+	app.Fallback(pg.RenderPage())
+}

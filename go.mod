@@ -17,7 +17,9 @@ require (
 	github.com/go-zoox/oauth2 v1.4.5
 	github.com/go-zoox/proxy v1.4.0
 	github.com/go-zoox/random v1.0.3
+	github.com/go-zoox/testify v1.0.0
 	github.com/go-zoox/zoox v1.9.4
+	github.com/spf13/cast v1.5.0
 )
 
 require (
@@ -57,11 +59,11 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/spf13/cast v1.5.0 // indirect
 	github.com/steambap/captcha v1.4.1 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/ttacon/chalk v0.0.0-20160626202418-22c06c80ed31 // indirect
 	github.com/urfave/cli/v2 v2.25.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/crypto v0.8.0 // indirect

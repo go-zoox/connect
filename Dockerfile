@@ -18,7 +18,7 @@ COPY . ./
 # 'CGO_ENABLED=0', go-sqlite3 requires cgo to work.
 # RUN         go build -ldflags="-w -s" -v -o server cmd/main.go
 
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -v -o server
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -v -o server cmd/main.go
 
 # Server
 # FROM  scratch # x509: certificate signed by unknown authority
