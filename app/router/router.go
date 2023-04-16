@@ -79,7 +79,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 		app.Logger.Infof("mode: upstream")
 		app.Logger.Infof("upstream: %s", cfg.Upstream.String())
 
-		pg := upstream.New(cfg)
+		up := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {
 			signer := jwt.New(cfg.SecretKey)
 
@@ -111,7 +111,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			// request id
 			ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
-			pg.RenderPage()(ctx)
+			up.Handle(ctx)
 		})
 		return
 	}
