@@ -20,8 +20,9 @@ type UserX struct {
 	Email    string `json:"email"`
 }
 
-func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token string, page, pageSize string) ([]*User, int64, error) {
+func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token string, page, pageSize string) ([]*User, int64, int, error) {
 	key := fmt.Sprintf("users:%s:%s:%s:%s", provider, token, page, pageSize)
+	statusCode := 200
 
 	var users []*User
 	// if err = cache.Get(key, &users); err == nil {
@@ -29,12 +30,13 @@ func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token stri
 	// }
 
 	if cfg.Services.App.Mode == "local" {
-		return nil, 0, errors.New("unsupport in local mode")
+		return nil, 0, statusCode, errors.New("unsupport in local mode")
 	}
 
 	clientCfg, err := oauth2.Get(provider)
 	if err != nil {
-		return nil, 0, err
+		statusCode = 500
+		return nil, 0, statusCode, err
 	}
 
 	response, err := fetch.Get(cfg.Services.Users.Service, &fetch.Config{
@@ -53,13 +55,21 @@ func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token stri
 		},
 	})
 	if err != nil {
-		return nil, 0, err
+		statusCode = 500
+		return nil, 0, statusCode, err
+	}
+
+	if response.Status != 200 {
+		statusCode := response.Status
+		return nil, 0, statusCode, fmt.Errorf("failed to get users: (status: %d, response: %s)", response.Status, response.String())
 	}
 
 	var usersX []*UserX
 	if err := json.Unmarshal([]byte(response.Get("result.data").String()), &usersX); err != nil {
-		return nil, 0, err
+		statusCode := 500
+		return nil, 0, statusCode, fmt.Errorf("failed to parse menus with response.result.data: %v(response: %s)", err, response.String())
 	}
+
 	total := response.Get("result.total").Int()
 
 	for _, u := range usersX {
@@ -74,5 +84,5 @@ func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token stri
 
 	ctx.Cache().Set(key, &users, 10*time.Second)
 
-	return users, total, nil
+	return users, total, statusCode, nil
 }

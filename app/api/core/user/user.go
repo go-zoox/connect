@@ -17,7 +17,7 @@ func New(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		user, err := service.GetUser(ctx, cfg, token)
+		user, _, err := service.GetUser(ctx, cfg, token)
 		if err != nil {
 			ctx.Fail(err, errors.FailedToGetUser.Code, errors.FailedToGetUser.Message)
 			return
@@ -97,7 +97,7 @@ func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		data, total, err := service.GetUsers(ctx, cfg, provider, token, page, pageSize)
+		data, total, _, err := service.GetUsers(ctx, cfg, provider, token, page, pageSize)
 		if err != nil {
 			ctx.Fail(err, errors.FailedToGetUsers.Code, errors.FailedToGetUsers.Message)
 			return

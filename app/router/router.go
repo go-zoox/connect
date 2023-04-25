@@ -84,7 +84,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			signer := jwt.New(cfg.SecretKey)
 
 			token := service.GetToken(ctx)
-			user, err := service.GetUser(ctx, cfg, token)
+			user, _, err := service.GetUser(ctx, cfg, token)
 			if err != nil {
 				// ctx.Logger.Errorf(err)
 				fmt.Println("failed to get user:", err)
@@ -131,7 +131,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			signer := jwt.New(cfg.SecretKey)
 
 			token := service.GetToken(ctx)
-			user, err := service.GetUser(ctx, cfg, token)
+			user, _, err := service.GetUser(ctx, cfg, token)
 			if err != nil {
 				ctx.JSON(http.StatusUnauthorized, err)
 				return
