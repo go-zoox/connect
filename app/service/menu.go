@@ -24,12 +24,13 @@ type MenuItem struct {
 	Redirect   string `json:"redirect"`
 }
 
-func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token string) ([]MenuItem, error) {
+func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token string) ([]MenuItem, int, error) {
 	cacheKey := fmt.Sprintf("menus:%s", token)
+	statusCode := 200
 
 	var menus []MenuItem
 	if err := ctx.Cache().Get(cacheKey, &menus); err == nil {
-		return menus, nil
+		return menus, statusCode, nil
 	}
 
 	if cfg.Services.Menus.Mode == "local" {
@@ -49,12 +50,13 @@ func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token strin
 		}
 
 		ctx.Cache().Set(cacheKey, &menus, cfg.SessionMaxAgeDuration)
-		return menus, nil
+		return menus, statusCode, nil
 	}
 
 	clientCfg, err := oauth2.Get(provider)
 	if err != nil {
-		return nil, err
+		statusCode := 500
+		return nil, statusCode, err
 	}
 
 	response, err := fetch.Get(cfg.Services.Menus.Service, &fetch.Config{
@@ -69,11 +71,18 @@ func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token strin
 		},
 	})
 	if err != nil {
-		return nil, err
+		statusCode := 500
+		return nil, statusCode, err
+	}
+
+	if response.Status != 200 {
+		statusCode := response.Status
+		return nil, statusCode, fmt.Errorf("failed to get menus: (status: %d, response: %s)", response.Status, response.String())
 	}
 
 	if err := json.Unmarshal([]byte(response.Get("result").String()), &menus); err != nil {
-		return nil, err
+		statusCode := 500
+		return nil, statusCode, fmt.Errorf("failed to parse menus with response.result: %v(response: %s)", err, response.String())
 	}
 
 	if len(menus) != 0 {
@@ -83,5 +92,5 @@ func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token strin
 		ctx.Cache().Set(cacheKey, &menus, 30*time.Second)
 	}
 
-	return menus, nil
+	return menus, statusCode, nil
 }

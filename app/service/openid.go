@@ -15,12 +15,13 @@ type OpenID struct {
 	OpenID string `json:"openID"`
 }
 
-func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email string) (string, error) {
+func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email string) (string, int, error) {
 	cacheKey := fmt.Sprintf("open_id:%s", email)
+	statusCode := 200
 
 	var instance = new(OpenID)
 	if err := ctx.Cache().Get(cacheKey, instance); err == nil {
-		return instance.OpenID, nil
+		return instance.OpenID, statusCode, nil
 	}
 
 	if cfg.Services.OpenID.Mode == "local" {
@@ -31,17 +32,19 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 		}
 
 		ctx.Cache().Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
-		return instance.OpenID, nil
+		return instance.OpenID, statusCode, nil
 	}
 
 	oauth2Provider := GetProvider(ctx)
 	if provider == "" {
-		return "", fmt.Errorf("oauth2 provider is missing")
+		statusCode = 400
+		return "", statusCode, fmt.Errorf("oauth2 provider is missing")
 	}
 
 	clientCfg, err := oauth2.Get(oauth2Provider)
 	if err != nil {
-		return "", err
+		statusCode = 500
+		return "", statusCode, err
 	}
 
 	response, err := fetch.Get(cfg.Services.OpenID.Service, &fetch.Config{
@@ -59,16 +62,23 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 		},
 	})
 	if err != nil {
-		return "", err
+		statusCode = 500
+		return "", statusCode, err
+	}
+
+	if response.Status != 200 {
+		statusCode := response.Status
+		return "", statusCode, fmt.Errorf("failed to get openid: (status: %d, response: %s)", response.Status, response.String())
 	}
 
 	if response.Get("result").String() != "" {
 		if err := json.Unmarshal([]byte(response.Get("result").String()), &instance); err != nil {
-			return "", fmt.Errorf("unmarshal open_id: %s (response: %s)", err, response.String())
+			statusCode := 500
+			return "", statusCode, fmt.Errorf("failed to parse open_id with response.result: %v(response: %s)", err, response.String())
 		}
 	}
 
 	logger.Info("[service.GetOpenID][%s: %s] open_id: %s", email, provider, response.String())
 	ctx.Cache().Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
-	return instance.OpenID, nil
+	return instance.OpenID, statusCode, nil
 }

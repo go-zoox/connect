@@ -23,12 +23,13 @@ type User struct {
 	FeishuOpenID string `json:"feishu_open_id"`
 }
 
-func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error) {
+func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, error) {
 	cacheKey := fmt.Sprintf("user:%s", token)
+	statusCode := 200
 
 	user := new(User)
 	if err := ctx.Cache().Get(cacheKey, user); err == nil {
-		return user, nil
+		return user, statusCode, nil
 	}
 
 	if cfg.Services.User.Mode == "local" {
@@ -43,7 +44,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 		}
 
 		ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
-		return user, nil
+		return user, statusCode, nil
 	}
 
 	response, err := fetch.Get(cfg.Services.User.Service, &fetch.Config{
@@ -53,19 +54,26 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 		},
 	})
 	if err != nil {
-		return nil, err
+		statusCode := 500
+		return nil, statusCode, err
+	}
+
+	if response.Status != 200 {
+		statusCode := response.Status
+		return nil, statusCode, fmt.Errorf("failed to get user: (status: %d, response: %s)", response.Status, response.String())
 	}
 
 	userStr := response.Get("result").String()
 	if err := json.Unmarshal([]byte(userStr), &user); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal user(%s): %s", response.String(), err)
+		statusCode := 500
+		return nil, statusCode, fmt.Errorf("failed to parse user with response.result: %v(response: %s)", err, response.String())
 	}
 	if user.ID == "" {
 		user.ID = response.Get("result._id").String()
 	}
 
 	// Get OpenID: feishu
-	user.FeishuOpenID, err = GetOpenID(ctx, cfg, "feishu", user.Email)
+	user.FeishuOpenID, _, err = GetOpenID(ctx, cfg, "feishu", user.Email)
 	if err != nil {
 		time.Sleep(3 * time.Second)
 		ctx.Logger.Warn("[service.user] failed to get feishu open id: %#v", err)
@@ -81,7 +89,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, error)
 	logger.Info("[service.GetUser] user: %s(%s)", user.Nickname, user.Email)
 	ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
 
-	return user, nil
+	return user, statusCode, nil
 }
 
 func Login(ctx *zoox.Context, cfg *config.Config, typ string, username string, password string) (string, error) {
