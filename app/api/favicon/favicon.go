@@ -11,6 +11,8 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+const DefaultFaviconMaxAge = 7 * 24 * 60 * 60
+
 func Get(cfg *config.Config) func(*zoox.Context) {
 	return func(ctx *zoox.Context) {
 		token := service.GetToken(ctx)
@@ -39,7 +41,13 @@ func Get(cfg *config.Config) func(*zoox.Context) {
 		}
 
 		ctx.Set("Content-Type", "image/x-icon")
-		ctx.Set("Cache-Control", "public, max-age=31536000")
+		// ctx.Set("Cache-Control", "public, max-age=31536000")
+
+		var faviconMaxAge int64 = DefaultFaviconMaxAge
+		if cfg.SessionMaxAge != 0 {
+			faviconMaxAge = cfg.SessionMaxAge
+		}
+		ctx.Set("Cache-Control", fmt.Sprintf("public, max-age=%d", faviconMaxAge))
 
 		if _, err := io.Copy(ctx.Writer, response.Stream); err != nil {
 			ctx.Fail(err, 500, "failed to copy favicon")
