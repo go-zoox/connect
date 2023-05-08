@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 
 	"github.com/go-zoox/connect/app/config"
@@ -16,6 +17,7 @@ import (
 func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 	loginRegExp := regexp.MustCompile("^/login/([^/]+)$")
 	logoutRegExp := regexp.MustCompile("^/logout/([^/]+)$")
+	registerRegExp := regexp.MustCompile("^/register/([^/]+)$")
 	loginCallbackRegExp := regexp.MustCompile("^/login/([^/]+)/callback$")
 
 	return func(ctx *zoox.Context) {
@@ -115,6 +117,35 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 				ctx.Redirect(logoutURL)
 			})
+			return
+		}
+
+		// register => /register/:provider
+		if registerRegExp.MatchString(ctx.Path) {
+			provider := registerRegExp.FindStringSubmatch(ctx.Path)[1]
+			if clientCfg, err := oauth2.Get(provider); err != nil {
+				panic(err)
+			} else {
+				client, err := oc.Create(clientCfg.Name, clientCfg)
+				if err != nil {
+					panic(err)
+				}
+
+				client.Register(func(registerURL string) {
+					ur, err := url.Parse(registerURL)
+					if err != nil {
+						ctx.Redirect(fmt.Sprintf("/error?code=%d&message=%s", 500, url.QueryEscape("register url parse error")))
+					}
+
+					query := ur.Query()
+					for k, v := range ctx.Request.URL.Query() {
+						query.Add(k, v[0])
+					}
+					ur.RawQuery = query.Encode()
+
+					ctx.Redirect(ur.String())
+				})
+			}
 			return
 		}
 

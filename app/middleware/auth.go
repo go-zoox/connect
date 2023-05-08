@@ -120,6 +120,22 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 				ctx.Redirect(fmt.Sprintf("/login?from=%s&reason=%s", url.QueryEscape(from), "visit_logout"))
 			}
 			return
+		} else if ctx.Path == "/register" {
+			from := ctx.Query().Get("from").String()
+			if from != "" {
+				ctx.Session().Set("from", from)
+			}
+
+			// go to redirect register
+			// @register_1 oauth2 register
+			if cfg.Auth.Mode == "oauth2" {
+				ctx.Redirect(fmt.Sprintf("/register/%s?%s", cfg.Auth.Provider, ctx.Request.URL.RawQuery))
+				return
+			}
+
+			// @register_2 local register, fallback to register page render
+			ctx.Next()
+			return
 		}
 
 		// auth mode from oauth2 => local password
