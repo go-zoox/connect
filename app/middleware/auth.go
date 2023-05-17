@@ -125,7 +125,6 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			if from != "" {
 				ctx.Session().Set("from", from)
 			}
-
 			// go to redirect register
 			// @register_1 oauth2 register
 			if cfg.Auth.Mode == "oauth2" {
