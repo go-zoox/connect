@@ -27,8 +27,8 @@ func CreateZooxMiddleware(opts ...*CreateZooxMiddlewareOptions) zoox.Middleware 
 
 		token := ctx.Get("x-connect-token")
 		if token != "" {
-			jwtValue, err := signer.Verify(token)
-			if err != nil {
+			user := &User{}
+			if err := user.Decode(signer, token); err != nil {
 				if ctx.AcceptJSON() {
 					ctx.JSON(http.StatusUnauthorized, zoox.H{
 						"code":    401000,
@@ -40,12 +40,7 @@ func CreateZooxMiddleware(opts ...*CreateZooxMiddlewareOptions) zoox.Middleware 
 				return
 			}
 
-			ctx.User().Set(&User{
-				ID:       jwtValue.Get("user_id").String(),
-				Nickname: jwtValue.Get("user_nickname").String(),
-				Avatar:   jwtValue.Get("user_avatar").String(),
-				Email:    jwtValue.Get("user_email").String(),
-			})
+			ctx.User().Set(user)
 		}
 
 		if optsX != nil && optsX.RequireAuth {
