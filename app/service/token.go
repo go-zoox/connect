@@ -33,9 +33,9 @@ func VerifyToken(cfg *config.Config, ctx *zoox.Context, token string) bool {
 }
 
 func GetToken(ctx *zoox.Context) string {
-	cookieToken := ctx.Cookie().Get(tokenKey)
-	if cookieToken != "" {
-		return cookieToken
+	sessionToken := ctx.Session().Get(tokenKey)
+	if sessionToken != "" {
+		return sessionToken
 	}
 
 	headerToken := ctx.Get("authorization")
@@ -58,22 +58,22 @@ func GetToken(ctx *zoox.Context) string {
 }
 
 func SetToken(ctx *zoox.Context, cfg *config.Config, value string) {
-	ctx.Cookie().Set(tokenKey, value, cfg.SessionMaxAgeDuration)
+	ctx.Session().Set(tokenKey, value)
 }
 
 func DelToken(ctx *zoox.Context) {
-	ctx.Cookie().Del(tokenKey)
+	ctx.Session().Del(tokenKey)
 }
 
 // @TODO
 func GetProvider(ctx *zoox.Context) string {
-	return ctx.Cookie().Get(providerKey)
+	return ctx.Session().Get(providerKey)
 }
 
 func SetProvider(ctx *zoox.Context, cfg *config.Config, value string) {
-	ctx.Cookie().Set(providerKey, value, cfg.SessionMaxAgeDuration)
+	ctx.Session().Set(providerKey, value)
 }
 
 func DelProvider(ctx *zoox.Context) {
-	ctx.Cookie().Del(providerKey)
+	ctx.Session().Del(providerKey)
 }

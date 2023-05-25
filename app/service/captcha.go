@@ -9,7 +9,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
-var captchCookieKey = "gt_cap"
+var captchKey = "gz_cap"
 
 var encryptor, _ = aes.NewCFB(256, &aes.HexEncoding{}, nil)
 
@@ -22,7 +22,7 @@ func GenerateCaptcha(cfg *config.Config, ctx *zoox.Context) {
 		panic(err)
 	}
 
-	ctx.Session().Set(captchCookieKey, string(encrypted))
+	ctx.Session().Set(captchKey, string(encrypted))
 
 	ctx.Status(200)
 
@@ -31,12 +31,12 @@ func GenerateCaptcha(cfg *config.Config, ctx *zoox.Context) {
 
 func ValidateCaptcha(cfg *config.Config, ctx *zoox.Context, input string) bool {
 	secret := []byte(strings.Repeat(cfg.SecretKey, 16)[:32])
-	cap, err := encryptor.Decrypt([]byte(ctx.Session().Get(captchCookieKey)), secret)
+	cap, err := encryptor.Decrypt([]byte(ctx.Session().Get(captchKey)), secret)
 	if err != nil {
 		panic(err)
 	}
 
-	ctx.Session().Del(captchCookieKey)
+	ctx.Session().Del(captchKey)
 
 	if len(cap) != 0 {
 		return strings.EqualFold(string(cap), input)
