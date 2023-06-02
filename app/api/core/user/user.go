@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/errors"
@@ -17,8 +18,13 @@ func New(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		user, _, err := service.GetUser(ctx, cfg, token)
+		user, statusCode, err := service.GetUser(ctx, cfg, token)
 		if err != nil {
+			// @TODO
+			if statusCode == http.StatusUnauthorized {
+				service.DelToken(ctx)
+			}
+
 			ctx.Fail(err, errors.FailedToGetUser.Code, errors.FailedToGetUser.Message)
 			return
 		}

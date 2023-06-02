@@ -2,6 +2,7 @@ package menus
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/errors"
@@ -25,6 +26,11 @@ func New(cfg *config.Config) func(*zoox.Context) {
 
 		menus, statusCode, err := service.GetMenu(ctx, cfg, provider, token)
 		if err != nil {
+			// @TODO
+			if statusCode == http.StatusUnauthorized {
+				service.DelToken(ctx)
+			}
+
 			ctx.Fail(err, errors.FailedToGetMenus.Code, errors.FailedToGetMenus.Message, statusCode)
 			return
 		}

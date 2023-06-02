@@ -21,10 +21,10 @@ type AppSettings struct {
 	Functions any `json:"functions"`
 }
 
-func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string) (a *App, err error) {
+func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string) (*App, int, error) {
 	var app = new(App)
-	if err = ctx.Cache().Get("app", app); err == nil {
-		return app, nil
+	if err := ctx.Cache().Get("app", app); err == nil {
+		return app, 200, nil
 	}
 
 	if cfg.Services.App.Mode == "local" {
@@ -38,12 +38,12 @@ func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string
 		}
 
 		ctx.Cache().Set("app", app, cfg.SessionMaxAgeDuration)
-		return app, nil
+		return app, 200, nil
 	}
 
 	clientCfg, err := oauth2.Get(provider)
 	if err != nil {
-		return nil, err
+		return nil, 500, err
 	}
 
 	response, err := fetch.Get(cfg.Services.App.Service, &fetch.Config{
@@ -58,13 +58,18 @@ func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string
 		},
 	})
 	if err != nil {
-		return nil, err
+		return nil, 500, err
+	}
+
+	if response.Status != 200 {
+		statusCode := response.Status
+		return nil, statusCode, fmt.Errorf("failed to get user: (status: %d, response: %s)", response.Status, response.String())
 	}
 
 	if err := json.Unmarshal([]byte(response.Get("result").String()), &app); err != nil {
-		return nil, fmt.Errorf("unmarshal app: %s (response: %s)", err, response.String())
+		return nil, 500, fmt.Errorf("unmarshal app: %s (response: %s)", err, response.String())
 	}
 
 	ctx.Cache().Set("app", app, cfg.SessionMaxAgeDuration)
-	return app, nil
+	return app, 200, nil
 }

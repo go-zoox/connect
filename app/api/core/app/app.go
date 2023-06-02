@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/errors"
@@ -23,8 +24,13 @@ func New(cfg *config.Config) func(*zoox.Context) {
 			return
 		}
 
-		app, err := service.GetApp(ctx, cfg, provider, token)
+		app, statusCode, err := service.GetApp(ctx, cfg, provider, token)
 		if err != nil {
+			// @TODO
+			if statusCode == http.StatusUnauthorized {
+				service.DelToken(ctx)
+			}
+
 			ctx.Fail(err, errors.FailedToGetApps.Code, errors.FailedToGetApps.Message)
 			return
 		}
