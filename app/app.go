@@ -2,6 +2,7 @@ package app
 
 import (
 	"embed"
+	"net/http"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
@@ -66,11 +67,14 @@ func (e *Connect) handle(cfg *config.Config) {
 
 	e.cfg = cfg
 
-	e.core.LogLevel = cfg.LogLevel
+	e.core.Config.LogLevel = cfg.LogLevel
 
-	e.core.SecretKey = cfg.SecretKey
+	e.core.Config.SecretKey = cfg.SecretKey
 
-	e.core.SessionMaxAge = cfg.SessionMaxAgeDuration
+	e.core.Config.Session.MaxAge = cfg.SessionMaxAgeDuration
+	// iframe
+	e.core.Config.Session.Secure = true
+	e.core.Config.Session.SameSite = http.SameSiteNoneMode
 
 	// 1. register loading
 	e.registerLoading()
