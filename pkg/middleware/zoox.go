@@ -22,7 +22,7 @@ func CreateZooxMiddleware(opts ...*CreateZooxMiddlewareOptions) zoox.Middleware 
 
 	return func(ctx *zoox.Context) {
 		if signer == nil {
-			signer = jwt.New(ctx.App.SecretKey)
+			signer = jwt.New(ctx.App.Config.SecretKey)
 		}
 
 		token := ctx.Get("x-connect-token")
