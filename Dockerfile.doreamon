@@ -15,18 +15,18 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -v -o connect
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -v -o connect cmd/main.go
 
-# Server
-# FROM  scratch # x509: certificate signed by unknown authority
-FROM --platform=${TARGETPLATFORM:-linux/amd64} whatwewant/alpine:v3.17-1
+# # Server
+# # FROM  scratch # x509: certificate signed by unknown authority
+# FROM --platform=${TARGETPLATFORM:-linux/amd64} whatwewant/alpine:v3.17-1
 
-LABEL MAINTAINER="Zero<tobewhatwewant@gmail.com>"
+# LABEL MAINTAINER="Zero<tobewhatwewant@gmail.com>"
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY --from=builder /app/connect /bin
+# COPY --from=builder /app/connect /bin
 
-EXPOSE 8080
+# EXPOSE 8080
 
-COPY connect doreamon
+# COPY connect doreamon
