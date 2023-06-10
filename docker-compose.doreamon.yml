@@ -1,12 +1,12 @@
 services:
   app:
     restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.doreamon
-    # image: whatwewant/connect-doreamon:v1
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.doreamon
+    image: whatwewant/connect-doreamon:v1
     # command: sleep 1000000
-    platform: linux/amd64
+    # platform: linux/amd64
     ports:
       - 0.0.0.0:8080:8080 # webhook
     environment:
