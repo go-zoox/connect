@@ -29,4 +29,4 @@ COPY --from=builder /app/connect /bin
 
 EXPOSE 8080
 
-COPY connect doreamon
+CMD connect doreamon
