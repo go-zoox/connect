@@ -36,6 +36,8 @@ type Config struct {
 	//
 	LoadingHTML string `config:"loading_html"`
 	IndexHTML   string `config:"index_html"`
+	//
+	Routes []ConfigPartRoute `config:"routes"`
 }
 
 type ConfigFrontendService struct {
@@ -143,6 +145,21 @@ type ConfigPartServicesOpenID struct {
 	Service string `config:"service"`
 }
 
+type ConfigPartRoute struct {
+	Path    string                 `config:"path"`
+	Backend ConfigPartRouteBackend `config:"backend"`
+}
+
+type ConfigPartRouteBackend struct {
+	ServiceName     string `config:"service_name"`
+	ServicePort     int64  `config:"service_port"`
+	ServiceProtocol string `config:"service_protocol"`
+	//
+	DisableRewrite bool `config:"disable_rewrite"`
+	//
+	SecretKey string `config:"secret_key"`
+}
+
 type MenuItem struct {
 	ID         string `config:"id"`
 	Name       string `config:"name"`
@@ -222,6 +239,18 @@ func (s *ConfigUpstreamService) String() string {
 
 func (s *ConfigUpstreamService) IsValid() bool {
 	return s.Host != "" && s.Port != 0
+}
+
+func (s *ConfigPartRouteBackend) String() string {
+	if s.ServiceProtocol == "" {
+		s.ServiceProtocol = "http"
+	}
+
+	if s.ServicePort == 0 {
+		panic(fmt.Errorf("service_port is required"))
+	}
+
+	return fmt.Sprintf("%s://%s:%d", s.ServiceProtocol, s.ServiceName, s.ServicePort)
 }
 
 var cfg Config

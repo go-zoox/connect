@@ -14,6 +14,7 @@ import (
 	"github.com/go-zoox/connect/app/service"
 	"github.com/go-zoox/headers"
 	"github.com/go-zoox/jwt"
+	"github.com/go-zoox/proxy/utils/rewriter"
 	"github.com/go-zoox/zoox"
 	zm "github.com/go-zoox/zoox/middleware"
 
@@ -73,6 +74,58 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	// open
 	api.Any("/open/*", apiOpen.New(cfg))
+
+	// routes
+	for _, route := range cfg.Routes {
+		app.Logger.Infof("[router] load route: %s => %s", route.Path, route.Backend.String())
+
+		app.Proxy(route.Path, route.Backend.String(), func(cfgX *zoox.ProxyConfig) {
+			if !route.Backend.DisableRewrite {
+				cfgX.Rewrites = rewriter.Rewriters{
+					{
+						From: fmt.Sprintf("%s/(.*)", route.Path),
+						To:   "/$1",
+					},
+				}
+			}
+
+			cfgX.OnRequestWithContext = func(ctx *zoox.Context) error {
+				if route.Backend.SecretKey != "" {
+					signer := jwt.New(cfg.SecretKey)
+
+					token := service.GetToken(ctx)
+					user, _, err := service.GetUser(ctx, cfg, token)
+					if err != nil {
+						return fmt.Errorf("failed to get user: %w", err)
+					}
+
+					timestamp := time.Now().UnixMilli()
+					jwtToken, err := signer.Sign(map[string]interface{}{
+						"user_id":             user.ID,
+						"user_nickname":       user.Nickname,
+						"user_avatar":         user.Avatar,
+						"user_email":          user.Email,
+						"user_feishu_open_id": user.FeishuOpenID,
+					})
+					if err != nil {
+						return fmt.Errorf("failed to sign jwt token: %w", err)
+					}
+
+					ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
+					ctx.Request.Header.Set("X-Connect-Token", jwtToken)
+				}
+
+				// request id
+				ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+				return nil
+			}
+
+			cfgX.OnResponse = func(res *http.Response) error {
+				res.Header.Set(headers.XPoweredBy, "go-zoox")
+				return nil
+			}
+		})
+	}
 
 	// @TODO
 	if cfg.Upstream.IsValid() {
