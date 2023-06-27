@@ -17,7 +17,7 @@ require (
 	github.com/go-zoox/oauth2 v1.6.1
 	github.com/go-zoox/proxy v1.4.0
 	github.com/go-zoox/random v1.0.4
-	github.com/go-zoox/zoox v1.10.8
+	github.com/go-zoox/zoox v1.10.9
 )
 
 require (
@@ -74,3 +74,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+// replace github.com/go-zoox/zoox => ../zoox

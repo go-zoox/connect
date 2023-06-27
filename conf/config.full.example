@@ -70,3 +70,10 @@ services:
   open_id:
     mode: service
     service: https://api.example.com/oauth/app/user/open_id # GET
+
+routes:
+  - path: /api/ms/httpbin
+    backend:
+      serviceProtocol: https
+      serviceName: httpbin.zcorky.com
+      servicePort: 443
