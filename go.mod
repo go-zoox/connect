@@ -9,7 +9,7 @@ require (
 	github.com/go-zoox/core-utils v1.2.11
 	github.com/go-zoox/crypto v1.1.8
 	github.com/go-zoox/debug v1.0.1
-	github.com/go-zoox/fetch v1.7.6
+	github.com/go-zoox/fetch v1.7.7
 	github.com/go-zoox/fs v1.3.13
 	github.com/go-zoox/headers v1.0.6
 	github.com/go-zoox/jwt v1.3.0
@@ -17,7 +17,7 @@ require (
 	github.com/go-zoox/oauth2 v1.6.1
 	github.com/go-zoox/proxy v1.4.0
 	github.com/go-zoox/random v1.0.4
-	github.com/go-zoox/zoox v1.10.3
+	github.com/go-zoox/zoox v1.10.8
 )
 
 require (
@@ -66,11 +66,11 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/urfave/cli/v2 v2.25.5 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/crypto v0.9.0 // indirect
+	golang.org/x/crypto v0.10.0 // indirect
 	golang.org/x/image v0.7.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/net v0.11.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
