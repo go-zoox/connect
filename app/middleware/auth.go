@@ -30,6 +30,10 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		"^/api/app$",
 		"^/api/open/(.*)",
 		"^/api/qrcode/",
+		//
+		"^/css/",
+		"^/js/",
+		"^/static/",
 	}
 	excludesRe := []*regexp.Regexp{}
 	for _, exclude := range excludes {
