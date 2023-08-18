@@ -38,6 +38,8 @@ type Config struct {
 	IndexHTML   string `config:"index_html"`
 	//
 	Routes []ConfigPartRoute `config:"routes"`
+	//
+	BuiltInAPIs ConfigPartBuiltInAPIs `config:"built_in_apis"`
 }
 
 type ConfigFrontendService struct {
@@ -158,6 +160,18 @@ type ConfigPartRouteBackend struct {
 	DisableRewrite bool `config:"disable_rewrite"`
 	//
 	SecretKey string `config:"secret_key"`
+}
+
+type ConfigPartBuiltInAPIs struct {
+	App    string `config:"app"`
+	User   string `config:"user"`
+	Menus  string `config:"menus"`
+	Users  string `config:"users"`
+	Config string `config:"config"`
+	//
+	QRCode string `config:"qrcode"`
+	//
+	Login string `config:"login"`
 }
 
 type MenuItem struct {
@@ -436,6 +450,57 @@ func (c *Config) ApplyDefault() {
 	}
 
 	c.SessionMaxAgeDuration = time.Duration(c.SessionMaxAge) * time.Second
+
+	// built in apis
+	if c.BuiltInAPIs.App == "" {
+		if os.Getenv("BUILT_IN_APIS_APP") != "" {
+			c.BuiltInAPIs.App = os.Getenv("BUILT_IN_APIS_APP")
+		} else {
+			c.BuiltInAPIs.App = "/app"
+		}
+	}
+	if c.BuiltInAPIs.User == "" {
+		if os.Getenv("BUILT_IN_APIS_USER") != "" {
+			c.BuiltInAPIs.User = os.Getenv("BUILT_IN_APIS_USER")
+		} else {
+			c.BuiltInAPIs.User = "/user"
+		}
+	}
+	if c.BuiltInAPIs.Menus == "" {
+		if os.Getenv("BUILT_IN_APIS_MENUS") != "" {
+			c.BuiltInAPIs.Menus = os.Getenv("BUILT_IN_APIS_MENUS")
+		} else {
+			c.BuiltInAPIs.Menus = "/menus"
+		}
+	}
+	if c.BuiltInAPIs.Users == "" {
+		if os.Getenv("BUILT_IN_APIS_USERS") != "" {
+			c.BuiltInAPIs.Users = os.Getenv("BUILT_IN_APIS_USERS")
+		} else {
+			c.BuiltInAPIs.Users = "/users"
+		}
+	}
+	if c.BuiltInAPIs.Config == "" {
+		if os.Getenv("BUILT_IN_APIS_CONFIG") != "" {
+			c.BuiltInAPIs.Config = os.Getenv("BUILT_IN_APIS_CONFIG")
+		} else {
+			c.BuiltInAPIs.Config = "/config"
+		}
+	}
+	if c.BuiltInAPIs.QRCode == "" {
+		if os.Getenv("BUILT_IN_APIS_QRCODE") != "" {
+			c.BuiltInAPIs.QRCode = os.Getenv("BUILT_IN_APIS_QRCODE")
+		} else {
+			c.BuiltInAPIs.QRCode = "/qrcode"
+		}
+	}
+	if c.BuiltInAPIs.Login == "" {
+		if os.Getenv("BUILT_IN_APIS_LOGIN") != "" {
+			c.BuiltInAPIs.Login = os.Getenv("BUILT_IN_APIS_LOGIN")
+		} else {
+			c.BuiltInAPIs.Login = "/login"
+		}
+	}
 }
 
 // fixUpstream fix upstream url

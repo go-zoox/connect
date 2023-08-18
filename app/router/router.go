@@ -30,6 +30,11 @@ import (
 )
 
 func New(app *zoox.Application, cfg *config.Config) {
+	// manifest
+	app.Get("/api/_/built_in_apis", func(ctx *zoox.Context) {
+		ctx.JSON(http.StatusOK, cfg.BuiltInAPIs)
+	})
+
 	app.Use(middleware.OAuth2(cfg))
 	app.Use(middleware.Auth(cfg))
 
@@ -58,18 +63,24 @@ func New(app *zoox.Application, cfg *config.Config) {
 			MaxAge: 30 * time.Second,
 		}))
 
-		group.Get("/app", apiApp.New(cfg))
-		group.Get("/user", apiUser.New(cfg))
-		group.Get("/menus", apiMenus.New(cfg))
-		group.Get("/users", apiUser.GetUsers(cfg))
-		group.Get("/config", apiConfig.New(cfg))
-		// qrcode
-		group.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
-		group.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
-		group.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
-		group.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
-		//
-		group.Post("/login", apiUser.Login(cfg))
+		// /app
+		group.Get(cfg.BuiltInAPIs.App, apiApp.New(cfg))
+		// /user
+		group.Get(cfg.BuiltInAPIs.User, apiUser.New(cfg))
+		// /menus
+		group.Get(cfg.BuiltInAPIs.Menus, apiMenus.New(cfg))
+		// /users
+		group.Get(cfg.BuiltInAPIs.Users, apiUser.GetUsers(cfg))
+		// /config
+		group.Get(cfg.BuiltInAPIs.Config, apiConfig.New(cfg))
+		// /qrcode
+		qrcodeBasePath := cfg.BuiltInAPIs.QRCode
+		group.Get(fmt.Sprintf("%s/device/uuid", qrcodeBasePath), apiQRCode.GenerateDeviceUUID(cfg))
+		group.Get(fmt.Sprintf("%s/device/status", qrcodeBasePath), apiQRCode.GetDeviceStatus(cfg))
+		group.Post(fmt.Sprintf("%s/device/token", qrcodeBasePath), apiQRCode.GetDeviceToken(cfg))
+		group.Get(fmt.Sprintf("%s/device/user", qrcodeBasePath), apiQRCode.GetUser(cfg))
+		// /login
+		group.Post(cfg.BuiltInAPIs.Login, apiUser.Login(cfg))
 	})
 
 	// open

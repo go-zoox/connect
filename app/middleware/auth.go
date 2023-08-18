@@ -25,16 +25,25 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map|webmanifest)$",
 		"\\.hot-update.json$",
 		"^/manifest.json$",
-		//
-		"^/api/login$",
-		"^/api/app$",
+
+		// open api
 		"^/api/open/(.*)",
-		"^/api/qrcode/",
-		//
+
+		// built-in apis
+		"^/api/_/built_in_apis$",
+		// "^/api/login$",
+		fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.Login),
+		// "^/api/app$",
+		fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.App),
+		// "^/api/qrcode/",
+		fmt.Sprintf("^/api%s/", cfg.BuiltInAPIs.QRCode),
+
+		// static
 		"^/css/",
 		"^/js/",
 		"^/static/",
 	}
+
 	excludesRe := []*regexp.Regexp{}
 	for _, exclude := range excludes {
 		excludesRe = append(excludesRe, regexp.MustCompile(exclude))
