@@ -53,6 +53,10 @@ func Server() *cli.Command {
 				log.Fatal(fmt.Errorf("failed to load config (%s, %s)", configFile, err))
 			}
 
+			if c.IsSet("port") {
+				cfg.Port = c.Int64("port")
+			}
+
 			if err := app.Start(cfg); err != nil {
 				log.Fatal(fmt.Errorf("failed to start server(err: %s)", err))
 			}
