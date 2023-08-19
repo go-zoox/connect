@@ -12,8 +12,10 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// DefaultFaviconMaxAge ...
 const DefaultFaviconMaxAge = 7 * 24 * 60 * 60
 
+// Get ...
 func Get(cfg *config.Config) func(*zoox.Context) {
 	return func(ctx *zoox.Context) {
 		token := service.GetToken(ctx)

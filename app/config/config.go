@@ -13,6 +13,7 @@ import (
 	"github.com/go-zoox/random"
 )
 
+// Config ...
 type Config struct {
 	Port      int64  `config:"port"`
 	Mode      string `config:"mode"`
@@ -22,27 +23,28 @@ type Config struct {
 	SessionMaxAgeDuration time.Duration
 	LogLevel              string `config:"log_level"`
 	// S1: Connect => Frontend + Backend
-	Frontend ConfigFrontendService `config:"frontend"`
-	Backend  ConfigBackendService  `config:"backend"`
+	Frontend FrontendService `config:"frontend"`
+	Backend  BackendService  `config:"backend"`
 	// S2: Connect => Upstream
-	Upstream ConfigUpstreamService `config:"upstream"`
+	Upstream UpstreamService `config:"upstream"`
 	//
-	OAuth2   []ConfigPartAuthOAuth2 `config:"oauth2"`
-	Password ConfigPartAuthPassword `config:"password"`
+	OAuth2   []AuthOAuth2 `config:"oauth2"`
+	Password AuthPassword `config:"password"`
 	//
-	Auth ConfigPartAuth `config:"auth"`
+	Auth Auth `config:"auth"`
 	//
-	Services ConfigPartServices `config:"services"`
+	Services Services `config:"services"`
 	//
 	LoadingHTML string `config:"loading_html"`
 	IndexHTML   string `config:"index_html"`
 	//
-	Routes []ConfigPartRoute `config:"routes"`
+	Routes []Route `config:"routes"`
 	//
-	BuiltInAPIs ConfigPartBuiltInAPIs `config:"built_in_apis"`
+	BuiltInAPIs BuiltInAPIs `config:"built_in_apis"`
 }
 
-type ConfigFrontendService struct {
+// FrontendService ...
+type FrontendService struct {
 	Protocol string `config:"protocol"`
 	Host     string `config:"host"`
 	Port     int64  `config:"port"`
@@ -50,7 +52,8 @@ type ConfigFrontendService struct {
 	ChangeOrigin bool `config:"change_origin"`
 }
 
-type ConfigBackendService struct {
+// BackendService ...
+type BackendService struct {
 	Protocol string `config:"protocol"`
 	Host     string `config:"host"`
 	Port     int64  `config:"port"`
@@ -61,7 +64,8 @@ type ConfigBackendService struct {
 	ChangeOrigin bool `config:"change_origin"`
 }
 
-type ConfigUpstreamService struct {
+// UpstreamService ...
+type UpstreamService struct {
 	Protocol string `config:"protocol"`
 	Host     string `config:"host"`
 	Port     int64  `config:"port"`
@@ -69,23 +73,27 @@ type ConfigUpstreamService struct {
 	ChangeOrigin bool `config:"change_origin"`
 }
 
-type ConfigPartAuth struct {
+// Auth ...
+type Auth struct {
 	Mode     string `config:"mode"`
 	Provider string `config:"provider"`
 }
 
-type ConfigPartAuthPassword struct {
-	Mode    string                      `config:"mode"`
-	Local   ConfigPartAuthPasswordLocal `config:"local"`
-	Service string                      `config:"service"`
+// AuthPassword ...
+type AuthPassword struct {
+	Mode    string            `config:"mode"`
+	Local   AuthPasswordLocal `config:"local"`
+	Service string            `config:"service"`
 }
 
-type ConfigPartAuthPasswordLocal struct {
+// AuthPasswordLocal ...
+type AuthPasswordLocal struct {
 	Username string `config:"username"`
 	Password string `config:"password"`
 }
 
-type ConfigPartAuthOAuth2 struct {
+// AuthOAuth2 ...
+type AuthOAuth2 struct {
 	Name         string `config:"name"`
 	ClientID     string `config:"client_id"`
 	ClientSecret string `config:"client_secret"`
@@ -93,15 +101,17 @@ type ConfigPartAuthOAuth2 struct {
 	Scope        string `config:"scope"`
 }
 
-type ConfigPartServices struct {
-	App    ConfigPartServicesApp    `config:"app"`
-	User   ConfigPartServicesUser   `config:"user"`
-	Menus  ConfigPartServicesMenus  `config:"menus"`
-	Users  ConfigPartServicesUsers  `config:"users"`
-	OpenID ConfigPartServicesOpenID `config:"open_id"`
+// Services ...
+type Services struct {
+	App    ServicesApp    `config:"app"`
+	User   ServicesUser   `config:"user"`
+	Menus  ServicesMenus  `config:"menus"`
+	Users  ServicesUsers  `config:"users"`
+	OpenID ServicesOpenID `config:"open_id"`
 }
 
-type ConfigPartServicesApp struct {
+// ServicesApp ...
+type ServicesApp struct {
 	Mode  string `config:"mode"`
 	Local struct {
 		Name        string `config:"name"`
@@ -114,7 +124,8 @@ type ConfigPartServicesApp struct {
 	Service string `config:"service"`
 }
 
-type ConfigPartServicesUser struct {
+// ServicesUser ...
+type ServicesUser struct {
 	Mode  string `config:"mode"`
 	Local struct {
 		ID          string   `config:"id"`
@@ -127,19 +138,22 @@ type ConfigPartServicesUser struct {
 	Service string `config:"service"`
 }
 
-type ConfigPartServicesMenus struct {
+// ServicesMenus ...
+type ServicesMenus struct {
 	Mode    string     `config:"mode"`
 	Local   []MenuItem `config:"local"`
 	Service string     `config:"service"`
 }
 
-type ConfigPartServicesUsers struct {
+// ServicesUsers ...
+type ServicesUsers struct {
 	Mode    string     `config:"mode"`
 	Local   []MenuItem `config:"local"`
 	Service string     `config:"service"`
 }
 
-type ConfigPartServicesOpenID struct {
+// ServicesOpenID ...
+type ServicesOpenID struct {
 	Mode  string `config:"mode"`
 	Local struct {
 		OpenID string `config:"open_id"`
@@ -147,12 +161,14 @@ type ConfigPartServicesOpenID struct {
 	Service string `config:"service"`
 }
 
-type ConfigPartRoute struct {
-	Path    string                 `config:"path"`
-	Backend ConfigPartRouteBackend `config:"backend"`
+// Route ...
+type Route struct {
+	Path    string       `config:"path"`
+	Backend RouteBackend `config:"backend"`
 }
 
-type ConfigPartRouteBackend struct {
+// RouteBackend ...
+type RouteBackend struct {
 	ServiceName     string `config:"service_name"`
 	ServicePort     int64  `config:"service_port"`
 	ServiceProtocol string `config:"service_protocol"`
@@ -162,7 +178,8 @@ type ConfigPartRouteBackend struct {
 	SecretKey string `config:"secret_key"`
 }
 
-type ConfigPartBuiltInAPIs struct {
+// BuiltInAPIs ...
+type BuiltInAPIs struct {
 	App    string `config:"app"`
 	User   string `config:"user"`
 	Menus  string `config:"menus"`
@@ -174,6 +191,7 @@ type ConfigPartBuiltInAPIs struct {
 	Login string `config:"login"`
 }
 
+// MenuItem ...
 type MenuItem struct {
 	ID         string `config:"id"`
 	Name       string `config:"name"`
@@ -187,7 +205,8 @@ type MenuItem struct {
 	Redirect   string `config:"redirect"`
 }
 
-func (s *ConfigFrontendService) String() string {
+// String ...
+func (s *FrontendService) String() string {
 	if s.Protocol == "" {
 		s.Protocol = "http"
 	}
@@ -211,7 +230,8 @@ func (s *ConfigFrontendService) String() string {
 	return fmt.Sprintf("%s://%s:%d", s.Protocol, s.Host, s.Port)
 }
 
-func (s *ConfigBackendService) String() string {
+// String ...
+func (s *BackendService) String() string {
 	if s.Protocol == "" {
 		s.Protocol = "http"
 	}
@@ -235,7 +255,8 @@ func (s *ConfigBackendService) String() string {
 	return fmt.Sprintf("%s://%s:%d", s.Protocol, s.Host, s.Port)
 }
 
-func (s *ConfigUpstreamService) String() string {
+// String ...
+func (s *UpstreamService) String() string {
 	if s.Protocol == "" {
 		s.Protocol = "http"
 	}
@@ -251,11 +272,13 @@ func (s *ConfigUpstreamService) String() string {
 	return fmt.Sprintf("%s://%s:%d", s.Protocol, s.Host, s.Port)
 }
 
-func (s *ConfigUpstreamService) IsValid() bool {
+// IsValid ...
+func (s *UpstreamService) IsValid() bool {
 	return s.Host != "" && s.Port != 0
 }
 
-func (s *ConfigPartRouteBackend) String() string {
+// String ...
+func (s *RouteBackend) String() string {
 	if s.ServiceProtocol == "" {
 		s.ServiceProtocol = "http"
 	}
@@ -269,9 +292,10 @@ func (s *ConfigPartRouteBackend) String() string {
 
 var cfg Config
 
-func Load(config_file string) (*Config, error) {
+// Load loads config from file
+func Load(cfgFile string) (*Config, error) {
 	if err := goconfig.Load(&cfg, &goconfig.LoadOptions{
-		FilePath: config_file,
+		FilePath: cfgFile,
 	}); err != nil {
 		return nil, err
 	}
@@ -279,6 +303,7 @@ func Load(config_file string) (*Config, error) {
 	return &cfg, nil
 }
 
+// LoadFromService loads config from service
 func LoadFromService(fn func() (string, error)) (*Config, error) {
 	var cfg Config
 	if err := goconfig.LoadFromService(&cfg, fn); err != nil {
@@ -289,6 +314,7 @@ func LoadFromService(fn func() (string, error)) (*Config, error) {
 	return &cfg, nil
 }
 
+// ApplyDefault applies default config
 func (c *Config) ApplyDefault() {
 	if os.Getenv("PORT") != "" {
 		v, err := strconv.Atoi(os.Getenv("PORT"))
@@ -331,7 +357,7 @@ func (c *Config) ApplyDefault() {
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		c.Frontend = ConfigFrontendService{
+		c.Frontend = FrontendService{
 			Protocol: u.Scheme,
 			Host:     u.Hostname(),
 			Port:     int64(port),
@@ -350,7 +376,7 @@ func (c *Config) ApplyDefault() {
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		c.Backend = ConfigBackendService{
+		c.Backend = BackendService{
 			Protocol:               u.Scheme,
 			Host:                   u.Hostname(),
 			Port:                   int64(port),
@@ -371,7 +397,7 @@ func (c *Config) ApplyDefault() {
 		}
 
 		port, _ := strconv.Atoi(u.Port())
-		c.Upstream = ConfigUpstreamService{
+		c.Upstream = UpstreamService{
 			Protocol: u.Scheme,
 			Host:     u.Hostname(),
 			Port:     int64(port),

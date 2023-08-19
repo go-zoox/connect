@@ -14,9 +14,12 @@ import (
 	"github.com/go-zoox/zoox/defaults"
 )
 
+// StaticFS ...
+//
 //go:embed web
 var StaticFS embed.FS
 
+// Connect ...
 type Connect struct {
 	core *zoox.Application
 	cfg  *config.Config
@@ -25,6 +28,7 @@ type Connect struct {
 	staticHandler func(*zoox.Application) string
 }
 
+// New creates a new Connect instance.
 func New() *Connect {
 	app := defaults.Application()
 
@@ -33,10 +37,12 @@ func New() *Connect {
 	}
 }
 
-func (e *Connect) RegisterApi(fn func(*zoox.Application)) {
+// RegisterAPI registers the api handler.
+func (e *Connect) RegisterAPI(fn func(*zoox.Application)) {
 	e.apiHandler = fn
 }
 
+// RegisterStatic registers the static handler.
 func (e *Connect) RegisterStatic(fn func(*zoox.Application) string) {
 	e.staticHandler = fn
 }
@@ -84,6 +90,7 @@ func (e *Connect) handle(cfg *config.Config) {
 	router.New(e.core, e.cfg)
 }
 
+// Start starts the Connect server.
 func (e *Connect) Start(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")

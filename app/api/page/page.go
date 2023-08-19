@@ -9,21 +9,23 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
-type page struct {
+// Page ...
+type Page struct {
 	frontend string
 	cfg      *config.Config
 }
 
-func New(cfg *config.Config) *page {
+// New ...
+func New(cfg *config.Config) *Page {
 	frontend := cfg.Frontend.String()
 
-	return &page{
+	return &Page{
 		frontend: frontend,
 		cfg:      cfg,
 	}
 }
 
-func (p *page) isHealth() bool {
+func (p *Page) isHealth() bool {
 	response, err := fetch.Get(p.frontend, &fetch.Config{
 		Headers: map[string]string{
 			"accept": "text/html",
@@ -38,11 +40,13 @@ func (p *page) isHealth() bool {
 	return true
 }
 
-func (p *page) RenderStatic() func(ctx *zoox.Context) {
+// RenderStatic ...
+func (p *Page) RenderStatic() func(ctx *zoox.Context) {
 	return zoox.WrapH(proxy.NewSingleHost(p.frontend))
 }
 
-func (p *page) RenderPage() func(ctx *zoox.Context) {
+// RenderPage ...
+func (p *Page) RenderPage() func(ctx *zoox.Context) {
 	cfg := p.cfg
 
 	return func(ctx *zoox.Context) {
@@ -69,7 +73,8 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 	}
 }
 
-func (p *page) Health(cfg *config.Config) func(ctx *zoox.Context) {
+// Health ...
+func (p *Page) Health(cfg *config.Config) func(ctx *zoox.Context) {
 	return func(ctx *zoox.Context) {
 		if !p.isHealth() {
 			ctx.Status(503)

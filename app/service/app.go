@@ -10,6 +10,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// App ...
 type App struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
@@ -17,10 +18,12 @@ type App struct {
 	Settings    AppSettings `json:"settings"`
 }
 
+// AppSettings ...
 type AppSettings struct {
 	Functions any `json:"functions"`
 }
 
+// GetApp ...
 func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string) (*App, int, error) {
 	var app = new(App)
 	if err := ctx.Cache().Get("app", app); err == nil {

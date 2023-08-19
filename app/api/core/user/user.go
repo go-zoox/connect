@@ -10,6 +10,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// New ...
 func New(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
 		token := service.GetToken(ctx)
@@ -37,6 +38,7 @@ func New(cfg *config.Config) zoox.HandlerFunc {
 	}
 }
 
+// Login ...
 func Login(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
 		type UserDTO struct {
@@ -77,6 +79,7 @@ func Login(cfg *config.Config) zoox.HandlerFunc {
 	}
 }
 
+// GetUsers ...
 func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
 		page := ctx.Query().Get("page").String()

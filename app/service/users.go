@@ -12,6 +12,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// UserX ...
 type UserX struct {
 	ID       string `json:"_id"`
 	Username string `json:"username"`
@@ -20,6 +21,7 @@ type UserX struct {
 	Email    string `json:"email"`
 }
 
+// GetUsers ...
 func GetUsers(ctx *zoox.Context, cfg *config.Config, provider string, token string, page, pageSize string) ([]*User, int64, int, error) {
 	key := fmt.Sprintf("users:%s:%s:%s:%s", provider, token, page, pageSize)
 	statusCode := 200

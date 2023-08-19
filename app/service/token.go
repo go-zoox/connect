@@ -9,29 +9,33 @@ import (
 var tokenKey = "gz_ut"
 var providerKey = "gz_provider"
 
+// GenerateToken ...
 func GenerateToken(cfg *config.Config, data map[string]any) (string, error) {
 	j := jwt.New(cfg.SecretKey)
 
-	if token, err := j.Sign(data); err != nil {
+	token, err := j.Sign(data)
+	if err != nil {
 		return "", err
-	} else {
-		return token, nil
 	}
+
+	return token, nil
 }
 
+// VerifyToken ...
 func VerifyToken(cfg *config.Config, ctx *zoox.Context, token string) bool {
 	if token := GetToken(ctx); token == "" {
 		return false
-	} else {
-		j := jwt.New(cfg.SecretKey)
-		if _, err := j.Verify(token); err != nil {
-			return false
-		} else {
-			return true
-		}
 	}
+
+	j := jwt.New(cfg.SecretKey)
+	if _, err := j.Verify(token); err != nil {
+		return false
+	}
+
+	return true
 }
 
+// GetToken ...
 func GetToken(ctx *zoox.Context) string {
 	sessionToken := ctx.Session().Get(tokenKey)
 	if sessionToken != "" {
@@ -57,23 +61,27 @@ func GetToken(ctx *zoox.Context) string {
 	return ""
 }
 
+// SetToken ...
 func SetToken(ctx *zoox.Context, cfg *config.Config, value string) {
 	ctx.Session().Set(tokenKey, value)
 }
 
+// DelToken ...
 func DelToken(ctx *zoox.Context) {
 	ctx.Session().Del(tokenKey)
 }
 
-// @TODO
+// GetProvider ...
 func GetProvider(ctx *zoox.Context) string {
 	return ctx.Session().Get(providerKey)
 }
 
+// SetProvider ...
 func SetProvider(ctx *zoox.Context, cfg *config.Config, value string) {
 	ctx.Session().Set(providerKey, value)
 }
 
+// DelProvider ...
 func DelProvider(ctx *zoox.Context) {
 	ctx.Session().Del(providerKey)
 }

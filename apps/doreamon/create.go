@@ -11,6 +11,7 @@ import (
 	"github.com/go-zoox/random"
 )
 
+// Config ...
 type Config struct {
 	Port          int64
 	SecretKey     string
@@ -23,6 +24,7 @@ type Config struct {
 	Upstream      string
 }
 
+// Create ...
 func Create(cfg *Config) (*config.Config, error) {
 	if cfg.ClientID == "" || cfg.ClientSecret == "" || cfg.RedirectURI == "" {
 		return nil, fmt.Errorf("client_id, client_secret, redirect_uri are required")
@@ -53,7 +55,7 @@ func Create(cfg *Config) (*config.Config, error) {
 	cfgX.Services.OpenID.Mode = "service"
 	cfgX.Services.OpenID.Service = "https://api.zcorky.com/oauth/app/user/open_id"
 	//
-	cfgX.OAuth2 = []config.ConfigPartAuthOAuth2{
+	cfgX.OAuth2 = []config.AuthOAuth2{
 		{
 			Name:         "doreamon",
 			ClientID:     cfg.ClientID,
@@ -69,7 +71,7 @@ func Create(cfg *Config) (*config.Config, error) {
 				return nil, fmt.Errorf("upstream format error, protocol://host:port")
 			}
 
-			cfgX.Upstream = config.ConfigUpstreamService{
+			cfgX.Upstream = config.UpstreamService{
 				Protocol: u.Scheme,
 				Host:     u.Hostname(),
 				Port:     cast.ToInt64(u.Port()),
@@ -80,7 +82,7 @@ func Create(cfg *Config) (*config.Config, error) {
 				return nil, fmt.Errorf("upstream format error, host:port")
 			}
 
-			cfgX.Upstream = config.ConfigUpstreamService{
+			cfgX.Upstream = config.UpstreamService{
 				Protocol: "http",
 				Host:     parts[0],
 				Port:     cast.ToInt64(parts[1]),
@@ -98,7 +100,7 @@ func Create(cfg *Config) (*config.Config, error) {
 					return nil, fmt.Errorf("frontend format error, protocol://host:port")
 				}
 
-				cfgX.Frontend = config.ConfigFrontendService{
+				cfgX.Frontend = config.FrontendService{
 					Protocol: u.Scheme,
 					Host:     u.Hostname(),
 					Port:     cast.ToInt64(u.Port()),
@@ -109,7 +111,7 @@ func Create(cfg *Config) (*config.Config, error) {
 					return nil, fmt.Errorf("frontend format error, host:port")
 				}
 
-				cfgX.Frontend = config.ConfigFrontendService{
+				cfgX.Frontend = config.FrontendService{
 					Host: parts[0],
 					Port: cast.ToInt64(parts[1]),
 				}
@@ -123,7 +125,7 @@ func Create(cfg *Config) (*config.Config, error) {
 					return nil, fmt.Errorf("backend format error, protocol://host:port")
 				}
 
-				cfgX.Backend = config.ConfigBackendService{
+				cfgX.Backend = config.BackendService{
 					Protocol: u.Scheme,
 					Host:     u.Hostname(),
 					Port:     cast.ToInt64(u.Port()),
@@ -134,7 +136,7 @@ func Create(cfg *Config) (*config.Config, error) {
 					return nil, fmt.Errorf("backend format error, host:port")
 				}
 
-				cfgX.Backend = config.ConfigBackendService{
+				cfgX.Backend = config.BackendService{
 					Host: parts[0],
 					Port: cast.ToInt64(parts[1]),
 				}

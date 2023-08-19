@@ -11,6 +11,7 @@ import (
 	"github.com/go-zoox/fs"
 )
 
+// Server ...
 func Server() *cli.Command {
 	return &cli.Command{
 		Name:        "serve",

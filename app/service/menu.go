@@ -11,6 +11,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// MenuItem ...
 type MenuItem struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
@@ -24,6 +25,7 @@ type MenuItem struct {
 	Redirect   string `json:"redirect"`
 }
 
+// GetMenu ...
 func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token string) ([]MenuItem, int, error) {
 	cacheKey := fmt.Sprintf("menus:%s", token)
 	statusCode := 200

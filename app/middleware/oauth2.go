@@ -14,6 +14,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// OAuth2 ...
 func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 	loginRegExp := regexp.MustCompile("^/login/([^/]+)$")
 	logoutRegExp := regexp.MustCompile("^/logout/([^/]+)$")

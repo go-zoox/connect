@@ -7,6 +7,7 @@ import (
 	"github.com/go-zoox/core-utils/fmt"
 )
 
+// Doreamon ...
 func Doreamon() *cli.Command {
 	return &cli.Command{
 		Name:  "doreamon",

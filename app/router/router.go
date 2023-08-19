@@ -29,6 +29,7 @@ import (
 	apiOpen "github.com/go-zoox/connect/app/api/core/open"
 )
 
+// New ...
 func New(app *zoox.Application, cfg *config.Config) {
 	// manifest
 	app.Get("/api/_/built_in_apis", func(ctx *zoox.Context) {

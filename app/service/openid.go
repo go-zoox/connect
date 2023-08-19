@@ -11,10 +11,12 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// OpenID ...
 type OpenID struct {
 	OpenID string `json:"openID"`
 }
 
+// GetOpenID ...
 func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email string) (string, int, error) {
 	cacheKey := fmt.Sprintf("open_id:%s", email)
 	statusCode := 200

@@ -9,6 +9,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// New ...
 func New(cfg *config.Config) func(*zoox.Context) {
 	// @TODO
 	if cfg.Upstream.IsValid() {

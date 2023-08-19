@@ -10,6 +10,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// New ...
 func New(cfg *config.Config) func(*zoox.Context) {
 	return func(ctx *zoox.Context) {
 		token := service.GetToken(ctx)
