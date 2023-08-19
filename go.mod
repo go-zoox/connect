@@ -1,6 +1,6 @@
 module github.com/go-zoox/connect
 
-go 1.18
+go 1.20
 
 require (
 	github.com/go-zoox/captcha v1.0.3
