@@ -28,7 +28,7 @@ func New(cfg *config.Config) func(*zoox.Context) {
 		}
 	}
 
-	return zoox.WrapH(proxy.NewSingleTarget(backend, &proxy.SingleTargetConfig{
+	return zoox.WrapH(proxy.NewSingleHost(backend, &proxy.SingleHostConfig{
 		// Rewrites: map[string]string{
 		// 	"^/api/(.*)": "/$1",
 		// },

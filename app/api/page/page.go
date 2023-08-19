@@ -39,7 +39,7 @@ func (p *page) isHealth() bool {
 }
 
 func (p *page) RenderStatic() func(ctx *zoox.Context) {
-	return zoox.WrapH(proxy.NewSingleTarget(p.frontend))
+	return zoox.WrapH(proxy.NewSingleHost(p.frontend))
 }
 
 func (p *page) RenderPage() func(ctx *zoox.Context) {
@@ -50,7 +50,7 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 		ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
 		if cfg.Mode == "production" {
-			zoox.WrapH(proxy.NewSingleTarget(p.frontend, &proxy.SingleTargetConfig{
+			zoox.WrapH(proxy.NewSingleHost(p.frontend, &proxy.SingleHostConfig{
 				ChangeOrigin: cfg.Frontend.ChangeOrigin,
 			}))(ctx)
 			return
@@ -63,7 +63,7 @@ func (p *page) RenderPage() func(ctx *zoox.Context) {
 
 		ctx.Request.Header.Set("cache-control", "no-cache")
 
-		zoox.WrapH(proxy.NewSingleTarget(p.frontend, &proxy.SingleTargetConfig{
+		zoox.WrapH(proxy.NewSingleHost(p.frontend, &proxy.SingleHostConfig{
 			ChangeOrigin: cfg.Frontend.ChangeOrigin,
 		}))(ctx)
 	}

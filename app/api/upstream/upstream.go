@@ -18,7 +18,7 @@ type upstream struct {
 func New(cfg *config.Config) *upstream {
 	target := cfg.Upstream.String()
 
-	handler := zoox.WrapH(proxy.NewSingleTarget(target, &proxy.SingleTargetConfig{
+	handler := zoox.WrapH(proxy.NewSingleHost(target, &proxy.SingleHostConfig{
 		ChangeOrigin: cfg.Upstream.ChangeOrigin,
 	}))
 
