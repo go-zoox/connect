@@ -14,6 +14,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// Auth ...
 func Auth(cfg *config.Config) zoox.HandlerFunc {
 	excludes := []string{
 		"^/captcha$",

@@ -9,6 +9,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// New ...
 func New(cfg *config.Config) func(*zoox.Context) {
 	backend := cfg.Backend.String()
 	var rewrites rewriter.Rewriters

@@ -13,6 +13,7 @@ var captchKey = "gz_cap"
 
 var encryptor, _ = aes.NewCFB(256, &aes.HexEncoding{}, nil)
 
+// GenerateCaptcha ...
 func GenerateCaptcha(cfg *config.Config, ctx *zoox.Context) {
 	secret := []byte(strings.Repeat(cfg.SecretKey, 16)[:32])
 	cap := gocaptcha.New()
@@ -29,6 +30,7 @@ func GenerateCaptcha(cfg *config.Config, ctx *zoox.Context) {
 	cap.Write(ctx.Writer)
 }
 
+// ValidateCaptcha ...
 func ValidateCaptcha(cfg *config.Config, ctx *zoox.Context, input string) bool {
 	secret := []byte(strings.Repeat(cfg.SecretKey, 16)[:32])
 	cap, err := encryptor.Decrypt([]byte(ctx.Session().Get(captchKey)), secret)

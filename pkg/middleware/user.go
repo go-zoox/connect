@@ -4,6 +4,7 @@ import (
 	"github.com/go-zoox/crypto/jwt"
 )
 
+// User ...
 type User struct {
 	ID       string `json:"user_id"`
 	Nickname string `json:"user_nickname"`
@@ -13,6 +14,7 @@ type User struct {
 	FeishuOpenID string `json:"user_feishu_open_id"`
 }
 
+// Encode ...
 func (u *User) Encode(signer jwt.Jwt) (string, error) {
 	return signer.Sign(map[string]interface{}{
 		"user_id":             u.ID,
@@ -23,6 +25,7 @@ func (u *User) Encode(signer jwt.Jwt) (string, error) {
 	})
 }
 
+// Decode ...
 func (u *User) Decode(signer jwt.Jwt, token string) error {
 	jwtValue, err := signer.Verify(token)
 	if err != nil {

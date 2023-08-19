@@ -12,6 +12,7 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// User ...
 type User struct {
 	ID          string   `json:"id"`
 	Username    string   `json:"username"`
@@ -23,6 +24,7 @@ type User struct {
 	FeishuOpenID string `json:"feishu_open_id"`
 }
 
+// GetUser ...
 func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, error) {
 	cacheKey := fmt.Sprintf("user:%s", token)
 	statusCode := 200
@@ -92,6 +94,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 	return user, statusCode, nil
 }
 
+// Login ...
 func Login(ctx *zoox.Context, cfg *config.Config, typ string, username string, password string) (string, error) {
 	if cfg.Auth.Mode != "password" {
 		panic("unsupported auth mode in login service")

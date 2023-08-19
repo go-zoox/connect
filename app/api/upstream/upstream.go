@@ -8,21 +8,23 @@ import (
 
 // var Page = New()
 
-type upstream struct {
+// Upstream ...
+type Upstream struct {
 	upstream string
 	cfg      *config.Config
 	//
 	handler zoox.HandlerFunc
 }
 
-func New(cfg *config.Config) *upstream {
+// New ...
+func New(cfg *config.Config) *Upstream {
 	target := cfg.Upstream.String()
 
 	handler := zoox.WrapH(proxy.NewSingleHost(target, &proxy.SingleHostConfig{
 		ChangeOrigin: cfg.Upstream.ChangeOrigin,
 	}))
 
-	return &upstream{
+	return &Upstream{
 		upstream: target,
 		cfg:      cfg,
 		//
@@ -30,6 +32,7 @@ func New(cfg *config.Config) *upstream {
 	}
 }
 
-func (p *upstream) Handle(ctx *zoox.Context) {
+// Handle ...
+func (p *Upstream) Handle(ctx *zoox.Context) {
 	p.handler(ctx)
 }

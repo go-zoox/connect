@@ -10,11 +10,13 @@ import (
 	apiUser "github.com/go-zoox/connect/app/api/core/user"
 )
 
-const QRCODE_SERVER = "https://login.zcorky.com"
+// QRCodeServer ...
+const QRCodeServer = "https://login.zcorky.com"
 
+// GenerateDeviceUUID ...
 func GenerateDeviceUUID(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
-		response, err := fetch.Get(fmt.Sprintf("%s/api/qrcode/device/uuid", QRCODE_SERVER), &fetch.Config{
+		response, err := fetch.Get(fmt.Sprintf("%s/api/qrcode/device/uuid", QRCodeServer), &fetch.Config{
 			Headers: fetch.Headers{
 				"x-real-ip":       ctx.Get("x-forwarded-for"),
 				"x-forwarded-for": ctx.Get("x-forwarded-for"),
@@ -43,9 +45,10 @@ func GenerateDeviceUUID(cfg *config.Config) zoox.HandlerFunc {
 	}
 }
 
+// GetDeviceStatus ...
 func GetDeviceStatus(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
-		response, err := fetch.Get(fmt.Sprintf("%s/api/qrcode/device/status", QRCODE_SERVER), &fetch.Config{
+		response, err := fetch.Get(fmt.Sprintf("%s/api/qrcode/device/status", QRCodeServer), &fetch.Config{
 			Headers: fetch.Headers{
 				"x-real-ip":       ctx.Get("x-forwarded-for"),
 				"x-forwarded-for": ctx.Get("x-forwarded-for"),
@@ -118,11 +121,13 @@ func GetDeviceStatus(cfg *config.Config) zoox.HandlerFunc {
 	}
 }
 
+// GetDeviceTokenReq ...
 type GetDeviceTokenReq struct {
 	UUID string `json:"uuid"`
 	Code string `json:"code"`
 }
 
+// GetDeviceToken ...
 func GetDeviceToken(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
 		var body GetDeviceTokenReq
@@ -131,7 +136,7 @@ func GetDeviceToken(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
-		response, err := fetch.Post(fmt.Sprintf("%s/api/qrcode/device/token", QRCODE_SERVER), &fetch.Config{
+		response, err := fetch.Post(fmt.Sprintf("%s/api/qrcode/device/token", QRCodeServer), &fetch.Config{
 			Headers: fetch.Headers{
 				"x-real-ip":       ctx.Get("x-forwarded-for"),
 				"x-forwarded-for": ctx.Get("x-forwarded-for"),
@@ -166,6 +171,7 @@ func GetDeviceToken(cfg *config.Config) zoox.HandlerFunc {
 	}
 }
 
+// GetUser ...
 func GetUser(cfg *config.Config) zoox.HandlerFunc {
 	// return func(ctx *zoox.Context) {
 	// 	response, err := fetch.Get(fmt.Sprintf("%s/api/qrcode/device/user", QRCODE_SERVER), &fetch.Config{
