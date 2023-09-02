@@ -26,18 +26,22 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 		if loginRegExp.MatchString(ctx.Path) {
 			provider := loginRegExp.FindStringSubmatch(ctx.Path)[1]
 			if clientCfg, err := oauth2.Get(provider); err != nil {
-				panic(err)
+				panic(fmt.Errorf("failed to get oauth2 client config with provider(%s): %s", provider, err))
 			} else {
 				client, err := oc.Create(clientCfg.Name, clientCfg)
 				if err != nil {
-					panic(err)
+					panic(fmt.Errorf("failed to create oauth2 client with provider(%s): %s", provider, err))
 				}
 
 				service.SetProvider(ctx, cfg, provider)
 				state := random.String(8)
 				ctx.Session().Set("oauth2_state", state)
 
+				logger.Infof("[oauth2:start] provider(%s) - state(%s) - from(%s)", provider, state, ctx.Session().Get("from"))
+
 				client.Authorize(state, func(loginURL string) {
+					logger.Infof("[oauth2:authorize] url: %s", loginURL)
+
 					ctx.Redirect(loginURL)
 				})
 			}
@@ -50,6 +54,8 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 			state := ctx.Query().Get("state").String()
 			provider := loginCallbackRegExp.FindStringSubmatch(ctx.Path)[1]
 
+			logger.Infof("[oauth2:callback] provider(%s) - code(%s) - state(%s)", provider, code, state)
+
 			if ctx.Session().Get("oauth2_state") != state {
 				logger.Infof("state not match: expect %s, but got %s", ctx.Session().Get("oauth2_state"), state)
 
@@ -59,23 +65,24 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 			}
 
 			if clientCfg, err := oauth2.Get(provider); err != nil {
-				panic(err)
+				panic(fmt.Errorf("failed to get oauth2 client config with provider(%s): %s", provider, err))
 			} else {
 				client, err := oc.Create(clientCfg.Name, clientCfg)
 				if err != nil {
-					panic(err)
+					panic(fmt.Errorf("failed to create oauth2 client with provider(%s): %s", provider, err))
 				}
 
 				service.SetProvider(ctx, cfg, provider)
 
 				client.Callback(code, state, func(user *oauth2.User, token *oauth2.Token, err error) {
 					if err != nil {
-						panic(err)
+						panic(fmt.Errorf("failed to run oauth2 callback with provider(%s): %s", provider, err))
 					}
 
 					service.SetToken(ctx, cfg, token.AccessToken)
 
 					from := ctx.Session().Get("from")
+					logger.Infof("[oauth2:done] from %s", from)
 					if from != "" {
 						ctx.Session().Del("from")
 						ctx.Redirect(from)
