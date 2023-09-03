@@ -108,8 +108,8 @@ github.com/go-zoox/kv v1.5.1/go.mod h1:u/IbVscKbZk4AyDvvnsK9DiaWshH/Nz3twlGDRyC9
 github.com/go-zoox/logger v1.2.0/go.mod h1:mBImRV6zpbGtiIjDz/C9vWi80wWc2OTOl9N9P0SAJgk=
 github.com/go-zoox/logger v1.4.4 h1:050xlOkXfslwGuR57B0rA+toSXUo4UQqRCsyTw2n0UQ=
 github.com/go-zoox/logger v1.4.4/go.mod h1:o7ddvv/gMoMa0TomPhHoIz11ZWRbQ92pF6rwYbOY3iQ=
-github.com/go-zoox/oauth2 v1.6.1 h1:zbzAV52esteYhwCVFaOL9GlzMLdAIxWtPXLZSQNGrk0=
-github.com/go-zoox/oauth2 v1.6.1/go.mod h1:EpjPTIcNAhGot5EwJ10mxpXvRUZN+9UgYydePylXwO8=
+github.com/go-zoox/oauth2 v1.6.4 h1:vVJ118+lXKz6iP3ehgNoWssoinsVT6hsYdJQSFZ5T+I=
+github.com/go-zoox/oauth2 v1.6.4/go.mod h1:EpjPTIcNAhGot5EwJ10mxpXvRUZN+9UgYydePylXwO8=
 github.com/go-zoox/proxy v1.2.3/go.mod h1:T+gbngAtIgvambbYibAbzrjwdu8j5pduJdA2j6RYi94=
 github.com/go-zoox/proxy v1.5.1 h1:P5RH8evyNOP2ws4oi2A4FcNkBtoElP4mudxuzAU7h+8=
 github.com/go-zoox/proxy v1.5.1/go.mod h1:KLWeJqfQk1upCvEdXt3tEuM8xSu0ApbA9FNLOmyHysY=
