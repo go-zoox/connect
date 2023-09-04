@@ -89,7 +89,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	// routes
 	for _, route := range cfg.Routes {
-		app.Logger.Infof("[router] load route: %s => %s", route.Path, route.Backend.String())
+		app.Logger.Infof("[router] load route: %s => %s (secret_key: %s)", route.Path, route.Backend.String(), route.Backend.SecretKey)
 
 		app.Proxy(route.Path, route.Backend.String(), func(cfgX *zoox.ProxyConfig) {
 			if !route.Backend.DisableRewrite {
