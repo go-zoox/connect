@@ -1,4 +1,4 @@
 package connect
 
 // Version is the version of this package.
-var Version = "1.9.6"
+var Version = "1.9.7"
