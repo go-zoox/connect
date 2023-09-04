@@ -102,8 +102,10 @@ func New(app *zoox.Application, cfg *config.Config) {
 			}
 
 			cfgX.OnRequestWithContext = func(ctx *zoox.Context) error {
+				// app.Logger.Infof("[api][ms] %s => %s (secret_key: %s)", route.Path, route.Backend.String(), route.Backend.SecretKey)
+
 				if route.Backend.SecretKey != "" {
-					signer := jwt.New(cfg.SecretKey)
+					signer := jwt.New(route.Backend.SecretKey)
 
 					token := service.GetToken(ctx)
 					user, _, err := service.GetUser(ctx, cfg, token)
