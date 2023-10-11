@@ -3,6 +3,7 @@ package app
 import (
 	"embed"
 	"net/http"
+	"os"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
@@ -94,6 +95,10 @@ func (e *Connect) handle(cfg *config.Config) {
 func (e *Connect) Start(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
+	}
+
+	if os.Getenv("LOG_LEVEL") == "debug" {
+		fmt.PrintJSON("config:", cfg)
 	}
 
 	e.handle(cfg)

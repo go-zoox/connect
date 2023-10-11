@@ -22,6 +22,9 @@ type Config struct {
 	Frontend      string
 	Backend       string
 	Upstream      string
+	//
+	BackendPrefix                 string
+	BackendIsDisablePrefixRewrite bool
 }
 
 // Create ...
@@ -141,6 +144,14 @@ func Create(cfg *Config) (*config.Config, error) {
 					Port: cast.ToInt64(parts[1]),
 				}
 			}
+		}
+
+		if cfg.BackendPrefix != "" {
+			cfgX.Backend.Prefix = cfg.BackendPrefix
+		}
+
+		if cfg.BackendIsDisablePrefixRewrite {
+			cfgX.Backend.IsDisablePrefixRewrite = cfg.BackendIsDisablePrefixRewrite
 		}
 	}
 

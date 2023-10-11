@@ -349,7 +349,7 @@ func (c *Config) ApplyDefault() {
 		c.Auth.Mode = os.Getenv("AUTH_MODE")
 	}
 
-	if os.Getenv("FRONTEND") != "" {
+	if c.Frontend.Host == "" && os.Getenv("FRONTEND") != "" {
 		v := fixUpstream(os.Getenv("FRONTEND"))
 		u, err := url.Parse(v)
 		if err != nil {
@@ -368,7 +368,7 @@ func (c *Config) ApplyDefault() {
 		}
 	}
 
-	if os.Getenv("BACKEND") != "" {
+	if c.Backend.Host == "" && os.Getenv("BACKEND") != "" {
 		v := fixUpstream(os.Getenv("BACKEND"))
 		u, err := url.Parse(v)
 		if err != nil {

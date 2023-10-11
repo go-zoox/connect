@@ -67,6 +67,17 @@ func Doreamon() *cli.Command {
 				EnvVars: []string{"DEBUG"},
 				Value:   false,
 			},
+			&cli.StringFlag{
+				Name:    "backend-prefix",
+				Usage:   "backend prefix",
+				EnvVars: []string{"BACKEND_PREFIX"},
+				Value:   "",
+			},
+			&cli.BoolFlag{
+				Name:    "backend-disable-prefix-rewrite",
+				Usage:   "backend disable prefix rewrite",
+				EnvVars: []string{"BACKEND_DISABLE_PREFIX_REWRITE"},
+			},
 		},
 		Action: func(c *cli.Context) error {
 			cfg, err := doreamon.Create(&doreamon.Config{
@@ -79,6 +90,9 @@ func Doreamon() *cli.Command {
 				Frontend:      c.String("frontend"),
 				Backend:       c.String("backend"),
 				Upstream:      c.String("upstream"),
+				//
+				BackendPrefix:                 c.String("backend-prefix"),
+				BackendIsDisablePrefixRewrite: c.Bool("backend-disable-prefix-rewrite"),
 			})
 			if err != nil {
 				return err

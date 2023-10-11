@@ -58,7 +58,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 	app.Get("/captcha", captcha.New(cfg))
 
 	// api
-	api := app.Group("/api", func(group *zoox.RouterGroup) {
+	app.Group("/api", func(group *zoox.RouterGroup) {
 		group.Use(zm.CacheControl(&zm.CacheControlConfig{
 			Paths:  []string{"^/api/(app|menus|users|config)$"},
 			MaxAge: 30 * time.Second,
@@ -83,6 +83,9 @@ func New(app *zoox.Application, cfg *config.Config) {
 		// /login
 		group.Post(cfg.BuiltInAPIs.Login, apiUser.Login(cfg))
 	})
+
+	// backend api
+	api := app.Group(cfg.Backend.Prefix)
 
 	// open
 	api.Any("/open/*", apiOpen.New(cfg))
