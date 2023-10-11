@@ -7,20 +7,22 @@ import (
 
 // CreateGinMiddlewareOptions ...
 type CreateGinMiddlewareOptions struct {
-	SecretKey string
-	//
 	RequireAuth bool
 }
 
 const ContextUserKeyForGin = "zoox.connect::user"
 
 // CreateGinMiddleware ...
-func CreateGinMiddleware(cfg *CreateGinMiddlewareOptions) gin.HandlerFunc {
+func CreateGinMiddleware(secretKey string, opts ...*CreateGinMiddlewareOptions) gin.HandlerFunc {
 	var signer jwt.Jwt
+	var optsX *CreateGinMiddlewareOptions
+	if len(opts) > 0 && opts[0] != nil {
+		optsX = opts[0]
+	}
 
 	return func(ctx *gin.Context) {
 		if signer == nil {
-			signer = jwt.New(cfg.SecretKey)
+			signer = jwt.New(secretKey)
 		}
 
 		token := ctx.GetHeader("x-connect-token")
@@ -43,7 +45,7 @@ func CreateGinMiddleware(cfg *CreateGinMiddlewareOptions) gin.HandlerFunc {
 			ctx.Set(ContextUserKeyForGinMiddleware, user)
 		}
 
-		if cfg.RequireAuth {
+		if optsX != nil && optsX.RequireAuth {
 			if _, ok := ctx.Get(ContextUserKeyForGinMiddleware); !ok {
 				// if ctx.AcceptJSON() {
 				// 	ctx.JSON(http.StatusUnauthorized, gin.H{
