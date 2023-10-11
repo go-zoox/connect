@@ -26,6 +26,4 @@ main
 conf/config.yml
 *.bak
 
-connect
-
 .env
