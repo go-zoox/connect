@@ -42,11 +42,11 @@ func CreateGinMiddleware(secretKey string, opts ...*CreateGinMiddlewareOptions) 
 				return
 			}
 
-			ctx.Set(ContextUserKeyForGinMiddleware, user)
+			ctx.Set(ContextUserKeyForGin, user)
 		}
 
 		if optsX != nil && optsX.RequireAuth {
-			if _, ok := ctx.Get(ContextUserKeyForGinMiddleware); !ok {
+			if _, ok := ctx.Get(ContextUserKeyForGin); !ok {
 				// if ctx.AcceptJSON() {
 				// 	ctx.JSON(http.StatusUnauthorized, gin.H{
 				// 		"code":    401001,
