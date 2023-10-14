@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-zoox/connect/app/config"
+	"github.com/go-zoox/connect/user"
 	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/logger"
@@ -13,31 +14,22 @@ import (
 )
 
 // User ...
-type User struct {
-	ID          string   `json:"id"`
-	Username    string   `json:"username"`
-	Nickname    string   `json:"nickname"`
-	Avatar      string   `json:"avatar"`
-	Email       string   `json:"email"`
-	Permissions []string `json:"permissions"`
-	//
-	FeishuOpenID string `json:"feishu_open_id"`
-}
+type User = user.User
 
 // GetUser ...
 func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, error) {
 	cacheKey := fmt.Sprintf("user:%s", token)
 	statusCode := 200
 
-	user := new(User)
-	if err := ctx.Cache().Get(cacheKey, user); err == nil {
-		return user, statusCode, nil
+	u := new(User)
+	if err := ctx.Cache().Get(cacheKey, u); err == nil {
+		return u, statusCode, nil
 	}
 
 	if cfg.Services.User.Mode == "local" {
 		userD := cfg.Services.User.Local
 
-		user = &User{
+		u = &User{
 			ID:          userD.ID,
 			Username:    userD.Username,
 			Nickname:    userD.Nickname,
@@ -45,8 +37,8 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 			Permissions: userD.Permissions,
 		}
 
-		ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
-		return user, statusCode, nil
+		ctx.Cache().Set(cacheKey, u, cfg.SessionMaxAgeDuration)
+		return u, statusCode, nil
 	}
 
 	response, err := fetch.Get(cfg.Services.User.Service, &fetch.Config{
@@ -66,16 +58,16 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 	}
 
 	userStr := response.Get("result").String()
-	if err := json.Unmarshal([]byte(userStr), &user); err != nil {
+	if err := json.Unmarshal([]byte(userStr), &u); err != nil {
 		statusCode := 500
 		return nil, statusCode, fmt.Errorf("failed to parse user with response.result: %v(response: %s)", err, response.String())
 	}
-	if user.ID == "" {
-		user.ID = response.Get("result._id").String()
+	if u.ID == "" {
+		u.ID = response.Get("result._id").String()
 	}
 
 	// Get OpenID: feishu
-	user.FeishuOpenID, _, err = GetOpenID(ctx, cfg, "feishu", user.Email)
+	u.FeishuOpenID, _, err = GetOpenID(ctx, cfg, "feishu", u.Email)
 	if err != nil {
 		time.Sleep(3 * time.Second)
 		ctx.Logger.Warn("[service.user] failed to get feishu open id: %#v", err)
@@ -88,10 +80,10 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 	// 	ctx.Cache().Set(cacheKey, user, 30*time.Second)
 	// }
 
-	logger.Info("[service.GetUser] user: %s(%s)", user.Nickname, user.Email)
-	ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
+	logger.Info("[service.GetUser] user: %s(%s)", u.Nickname, u.Email)
+	ctx.Cache().Set(cacheKey, u, cfg.SessionMaxAgeDuration)
 
-	return user, statusCode, nil
+	return u, statusCode, nil
 }
 
 // Login ...

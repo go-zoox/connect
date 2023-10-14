@@ -111,19 +111,12 @@ func New(app *zoox.Application, cfg *config.Config) {
 					signer := jwt.New(route.Backend.SecretKey)
 
 					token := service.GetToken(ctx)
-					user, _, err := service.GetUser(ctx, cfg, token)
+					userIns, _, err := service.GetUser(ctx, cfg, token)
 					if err != nil {
 						return fmt.Errorf("failed to get user: %w", err)
 					}
-
 					timestamp := time.Now().UnixMilli()
-					jwtToken, err := signer.Sign(map[string]interface{}{
-						"user_id":             user.ID,
-						"user_nickname":       user.Nickname,
-						"user_avatar":         user.Avatar,
-						"user_email":          user.Email,
-						"user_feishu_open_id": user.FeishuOpenID,
-					})
+					jwtToken, err := userIns.Encode(signer)
 					if err != nil {
 						return fmt.Errorf("failed to sign jwt token: %w", err)
 					}
@@ -154,7 +147,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			signer := jwt.New(cfg.SecretKey)
 
 			token := service.GetToken(ctx)
-			user, _, err := service.GetUser(ctx, cfg, token)
+			userIns, _, err := service.GetUser(ctx, cfg, token)
 			if err != nil {
 				// ctx.Logger.Errorf(err)
 				fmt.Println("failed to get user:", err)
@@ -163,13 +156,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			}
 
 			timestamp := time.Now().UnixMilli()
-			jwtToken, err := signer.Sign(map[string]interface{}{
-				"user_id":             user.ID,
-				"user_nickname":       user.Nickname,
-				"user_avatar":         user.Avatar,
-				"user_email":          user.Email,
-				"user_feishu_open_id": user.FeishuOpenID,
-			})
+			jwtToken, err := userIns.Encode(signer)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, err)
 				return
@@ -201,20 +188,14 @@ func New(app *zoox.Application, cfg *config.Config) {
 			signer := jwt.New(cfg.SecretKey)
 
 			token := service.GetToken(ctx)
-			user, _, err := service.GetUser(ctx, cfg, token)
+			userIns, _, err := service.GetUser(ctx, cfg, token)
 			if err != nil {
 				ctx.JSON(http.StatusUnauthorized, err)
 				return
 			}
 
 			timestamp := time.Now().UnixMilli()
-			jwtToken, err := signer.Sign(map[string]interface{}{
-				"user_id":             user.ID,
-				"user_nickname":       user.Nickname,
-				"user_avatar":         user.Avatar,
-				"user_email":          user.Email,
-				"user_feishu_open_id": user.FeishuOpenID,
-			})
+			jwtToken, err := userIns.Encode(signer)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, err)
 				return
