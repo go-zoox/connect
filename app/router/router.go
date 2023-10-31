@@ -36,6 +36,8 @@ func New(app *zoox.Application, cfg *config.Config) {
 		ctx.JSON(http.StatusOK, cfg.BuiltInAPIs)
 	})
 
+	app.Use(middleware.Static(cfg))
+
 	app.Use(middleware.OAuth2(cfg))
 	app.Use(middleware.Auth(cfg))
 
