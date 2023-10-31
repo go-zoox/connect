@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-zoox/core-utils/strings"
+	"github.com/go-zoox/core-utils/regexp"
 
 	goconfig "github.com/go-zoox/config"
 	"github.com/go-zoox/random"
@@ -261,11 +261,19 @@ func (s *UpstreamService) String() string {
 		s.Protocol = "http"
 	}
 
-	if cfg.Upstream.Protocol == "https" && cfg.Upstream.Port == 0 {
-		cfg.Upstream.Port = 443
+	if cfg.Upstream.Port == 0 {
+		if cfg.Upstream.Protocol == "https" {
+			cfg.Upstream.Port = 443
+		} else if cfg.Upstream.Protocol == "http" {
+			cfg.Upstream.Port = 80
+		}
 	}
 
 	if s.Protocol == "https" && s.Port == 443 {
+		return fmt.Sprintf("%s://%s", s.Protocol, s.Host)
+	}
+
+	if s.Protocol == "http" && s.Port == 80 {
 		return fmt.Sprintf("%s://%s", s.Protocol, s.Host)
 	}
 
@@ -363,8 +371,13 @@ func (c *Config) ApplyDefault() {
 			Port:     int64(port),
 		}
 
-		if c.Frontend.Protocol == "https" && c.Frontend.Port == 0 {
-			c.Frontend.Port = 443
+		if c.Frontend.Port == 0 {
+			switch c.Frontend.Protocol {
+			case "http":
+				c.Frontend.Port = 80
+			case "https":
+				c.Frontend.Port = 443
+			}
 		}
 	}
 
@@ -384,8 +397,13 @@ func (c *Config) ApplyDefault() {
 			IsDisablePrefixRewrite: false,
 		}
 
-		if c.Backend.Protocol == "https" && c.Backend.Port == 0 {
-			c.Backend.Port = 443
+		if c.Backend.Port == 0 {
+			switch c.Backend.Protocol {
+			case "http":
+				c.Backend.Port = 80
+			case "https":
+				c.Backend.Port = 443
+			}
 		}
 	}
 
@@ -403,8 +421,13 @@ func (c *Config) ApplyDefault() {
 			Port:     int64(port),
 		}
 
-		if c.Upstream.Protocol == "https" && c.Upstream.Port == 0 {
-			c.Upstream.Port = 443
+		if c.Upstream.Port == 0 {
+			switch c.Upstream.Protocol {
+			case "http":
+				c.Upstream.Port = 80
+			case "https":
+				c.Upstream.Port = 443
+			}
 		}
 	}
 
@@ -532,9 +555,8 @@ func (c *Config) ApplyDefault() {
 // fixUpstream fix upstream url
 // e.g: localhost:8080 => http://localhost:8080
 func fixUpstream(upstream string) string {
-	parts := strings.Split(upstream, ":")
-	if len(parts) <= 2 {
-		return "http://" + upstream
+	if !regexp.Match("^https?://", upstream) {
+		return fmt.Sprintf("http://%s", upstream)
 	}
 
 	return upstream

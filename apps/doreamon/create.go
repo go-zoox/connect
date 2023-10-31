@@ -2,7 +2,6 @@ package doreamon
 
 import (
 	"net/url"
-	"strings"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/core-utils/cast"
@@ -68,27 +67,27 @@ func Create(cfg *Config) (*config.Config, error) {
 	}
 
 	if cfg.Upstream != "" {
-		if regexp.Match("://", cfg.Upstream) {
-			u, err := url.Parse(cfg.Upstream)
-			if err != nil {
-				return nil, fmt.Errorf("upstream format error, protocol://host:port")
-			}
+		if !regexp.Match("^https?://", cfg.Upstream) {
+			cfg.Upstream = fmt.Sprintf("http://%s", cfg.Upstream)
+		}
 
-			cfgX.Upstream = config.UpstreamService{
-				Protocol: u.Scheme,
-				Host:     u.Hostname(),
-				Port:     cast.ToInt64(u.Port()),
-			}
-		} else {
-			parts := strings.Split(cfg.Upstream, ":")
-			if len(parts) != 2 {
-				return nil, fmt.Errorf("upstream format error, host:port")
-			}
+		u, err := url.Parse(cfg.Upstream)
+		if err != nil {
+			return nil, fmt.Errorf("upstream format error, protocol://host:port")
+		}
 
-			cfgX.Upstream = config.UpstreamService{
-				Protocol: "http",
-				Host:     parts[0],
-				Port:     cast.ToInt64(parts[1]),
+		cfgX.Upstream = config.UpstreamService{
+			Protocol: u.Scheme,
+			Host:     u.Hostname(),
+			Port:     cast.ToInt64(u.Port()),
+		}
+
+		if cfgX.Upstream.Port == 0 {
+			switch cfgX.Upstream.Protocol {
+			case "http":
+				cfgX.Upstream.Port = 80
+			case "https":
+				cfgX.Upstream.Port = 443
 			}
 		}
 	} else {
@@ -97,51 +96,53 @@ func Create(cfg *Config) (*config.Config, error) {
 		}
 
 		{
-			if regexp.Match("://", cfg.Frontend) {
-				u, err := url.Parse(cfg.Frontend)
-				if err != nil {
-					return nil, fmt.Errorf("frontend format error, protocol://host:port")
-				}
+			if !regexp.Match("^https?://", cfg.Frontend) {
+				cfg.Frontend = fmt.Sprintf("http://%s", cfg.Frontend)
+			}
 
-				cfgX.Frontend = config.FrontendService{
-					Protocol: u.Scheme,
-					Host:     u.Hostname(),
-					Port:     cast.ToInt64(u.Port()),
-				}
-			} else {
-				parts := strings.Split(cfg.Frontend, ":")
-				if len(parts) != 2 {
-					return nil, fmt.Errorf("frontend format error, host:port")
-				}
+			u, err := url.Parse(cfg.Frontend)
+			if err != nil {
+				return nil, fmt.Errorf("frontend format error, protocol://host:port")
+			}
 
-				cfgX.Frontend = config.FrontendService{
-					Host: parts[0],
-					Port: cast.ToInt64(parts[1]),
+			cfgX.Frontend = config.FrontendService{
+				Protocol: u.Scheme,
+				Host:     u.Hostname(),
+				Port:     cast.ToInt64(u.Port()),
+			}
+
+			if cfgX.Frontend.Port == 0 {
+				switch cfgX.Frontend.Protocol {
+				case "http":
+					cfgX.Frontend.Port = 80
+				case "https":
+					cfgX.Frontend.Port = 443
 				}
 			}
 		}
 
 		{
-			if regexp.Match("://", cfg.Backend) {
-				u, err := url.Parse(cfg.Backend)
-				if err != nil {
-					return nil, fmt.Errorf("backend format error, protocol://host:port")
-				}
+			if !regexp.Match("^https?://", cfg.Backend) {
+				cfg.Backend = fmt.Sprintf("http://%s", cfg.Backend)
+			}
 
-				cfgX.Backend = config.BackendService{
-					Protocol: u.Scheme,
-					Host:     u.Hostname(),
-					Port:     cast.ToInt64(u.Port()),
-				}
-			} else {
-				parts := strings.Split(cfg.Backend, ":")
-				if len(parts) != 2 {
-					return nil, fmt.Errorf("backend format error, host:port")
-				}
+			u, err := url.Parse(cfg.Backend)
+			if err != nil {
+				return nil, fmt.Errorf("backend format error, protocol://host:port")
+			}
 
-				cfgX.Backend = config.BackendService{
-					Host: parts[0],
-					Port: cast.ToInt64(parts[1]),
+			cfgX.Backend = config.BackendService{
+				Protocol: u.Scheme,
+				Host:     u.Hostname(),
+				Port:     cast.ToInt64(u.Port()),
+			}
+
+			if cfgX.Backend.Port == 0 {
+				switch cfgX.Backend.Protocol {
+				case "http":
+					cfgX.Backend.Port = 80
+				case "https":
+					cfgX.Backend.Port = 443
 				}
 			}
 		}
