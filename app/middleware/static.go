@@ -8,6 +8,7 @@ import (
 	zw "github.com/go-zoox/zoox/middleware"
 )
 
+// DefaultStaticFileMaxAge ...
 const DefaultStaticFileMaxAge = 7 * 24 * 60 * 60
 
 // Static ...
