@@ -63,6 +63,8 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 
 	return func(ctx *zoox.Context) {
 		if isIgnoreAuthoried(ctx.Path) {
+			ctx.State().Set("@@ignore_auth", true)
+
 			ctx.Next()
 			return
 		}
