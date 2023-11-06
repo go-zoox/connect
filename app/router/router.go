@@ -146,17 +146,17 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 		up := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {
-			// ignore auth
-			isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
-			if isIgnoreAuthoried != nil {
-				if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
-					// request id
-					ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+			// // ignore auth
+			// isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
+			// if isIgnoreAuthoried != nil {
+			// 	if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
+			// 		// request id
+			// 		ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
-					up.Handle(ctx)
-					return
-				}
-			}
+			// 		up.Handle(ctx)
+			// 		return
+			// 	}
+			// }
 
 			signer := jwt.New(cfg.SecretKey)
 
@@ -199,17 +199,17 @@ func New(app *zoox.Application, cfg *config.Config) {
 	api.Any(
 		"/*",
 		func(ctx *zoox.Context) {
-			// ignore auth
-			isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
-			if isIgnoreAuthoried != nil {
-				if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
-					// request id
-					ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+			// // ignore auth
+			// isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
+			// if isIgnoreAuthoried != nil {
+			// 	if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
+			// 		// request id
+			// 		ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
-					ctx.Next()
-					return
-				}
-			}
+			// 		ctx.Next()
+			// 		return
+			// 	}
+			// }
 
 			signer := jwt.New(cfg.SecretKey)
 
