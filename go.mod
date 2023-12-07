@@ -17,7 +17,7 @@ require (
 	github.com/go-zoox/oauth2 v1.6.4
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
-	github.com/go-zoox/zoox v1.12.29
+	github.com/go-zoox/zoox v1.12.34
 )
 
 require (
