@@ -140,6 +140,11 @@ func New(app *zoox.Application, cfg *config.Config) {
 	}
 
 	// @TODO
+	// mode = upstream
+	//	all request => upstream
+	//		/* 					=> upstream:/*
+	//    /api/*			=> upstream:/api/*
+	//		/api/open/* => upstream:/api/open/*
 	if cfg.Upstream.IsValid() {
 		app.Logger.Infof("mode: upstream")
 		app.Logger.Infof("upstream: %s", cfg.Upstream.String())
@@ -187,6 +192,16 @@ func New(app *zoox.Application, cfg *config.Config) {
 		return
 	}
 
+	// mode = frontend + backend
+	//
+	//    /api/*			=> backend:/*
+	//		/api/open/* => backend:/open/*
+	//		/* 					=> frontend:/*
+	//
+	// if disable_prefix_rewrite = true
+	//	  /api/*			=> backend:/api/*
+	//		/api/open/* => backend:/api/open/*
+	//
 	app.Logger.Infof("mode: frontend + backend")
 	app.Logger.Infof("frontend: %s", cfg.Frontend.String())
 	app.Logger.Infof("backend: %s", cfg.Backend.String())
