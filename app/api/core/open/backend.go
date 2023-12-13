@@ -16,6 +16,9 @@ func New(cfg *config.Config) func(*zoox.Context) {
 		cfg.Backend.Protocol = cfg.Upstream.Protocol
 		cfg.Backend.Host = cfg.Upstream.Host
 		cfg.Backend.Port = cfg.Upstream.Port
+
+		// @TODO all upstream mode should disable prefix rewrite
+		cfg.Backend.IsDisablePrefixRewrite = true
 	}
 
 	backend := cfg.Backend.String()
