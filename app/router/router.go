@@ -123,6 +123,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 						return fmt.Errorf("failed to sign jwt token: %w", err)
 					}
 
+					ctx.Logger.Debugf("X-Connect-Token: %s", jwtToken)
 					ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
 					ctx.Request.Header.Set("X-Connect-Token", jwtToken)
 				}
@@ -181,6 +182,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 				return
 			}
 
+			ctx.Logger.Debugf("X-Connect-Token: %s", jwtToken)
 			ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
 			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
 
@@ -242,6 +244,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 				return
 			}
 
+			ctx.Logger.Debugf("X-Connect-Token: %s", jwtToken)
 			ctx.Request.Header.Set("X-Connect-Timestamp", fmt.Sprintf("%d", timestamp))
 			ctx.Request.Header.Set("X-Connect-Token", jwtToken)
 
