@@ -143,26 +143,29 @@ func New(app *zoox.Application, cfg *config.Config) {
 	// @TODO
 	// mode = upstream
 	//	all request => upstream
-	//		/* 					=> upstream:/*
-	//    /api/*			=> upstream:/api/*
-	//		/api/open/* => upstream:/api/open/*
+	//		api:
+	//			/api/open/* => upstream:/api/open/*
+	//    	/api/*			=> upstream:/api/*
+	//		page:
+	//    	/open/* 		=> upstream:/open/*
+	//			/* 					=> upstream:/*
 	if cfg.Upstream.IsValid() {
 		app.Logger.Infof("mode: upstream")
 		app.Logger.Infof("upstream: %s", cfg.Upstream.String())
 
 		up := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {
-			// // ignore auth
-			// isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
-			// if isIgnoreAuthoried != nil {
-			// 	if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
-			// 		// request id
-			// 		ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+			// ignore auth
+			isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
+			if isIgnoreAuthoried != nil {
+				if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
+					// request id
+					ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
 
-			// 		up.Handle(ctx)
-			// 		return
-			// 	}
-			// }
+					up.Handle(ctx)
+					return
+				}
+			}
 
 			signer := jwt.New(cfg.SecretKey)
 
@@ -195,10 +198,13 @@ func New(app *zoox.Application, cfg *config.Config) {
 	}
 
 	// mode = frontend + backend
+	//		api:
+	//    	/api/*			=> backend:/*
+	//			/api/open/* => backend:/open/*
 	//
-	//    /api/*			=> backend:/*
-	//		/api/open/* => backend:/open/*
-	//		/* 					=> frontend:/*
+	//		page:
+	//			/open/*			=> frontend:/open/*
+	//			/* 					=> frontend:/*
 	//
 	// if disable_prefix_rewrite = true
 	//	  /api/*			=> backend:/api/*
