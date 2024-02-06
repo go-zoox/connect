@@ -7,7 +7,8 @@ import (
 	"github.com/go-zoox/cache"
 )
 
-var StaticIgnoreAuthoriedPaths = []string{
+// DefaultIgnoreAuthoriedPaths is the default ignore authorized paths
+var DefaultIgnoreAuthoriedPaths = []string{
 	// static
 	"^/css/",
 	"^/js/",
@@ -55,10 +56,12 @@ var StaticIgnoreAuthoriedPaths = []string{
 	// fmt.Sprintf("^/api%s/", cfg.BuiltInAPIs.QRCode),
 }
 
-type IsPathIgnoreAuthoriedOption struct {
+// CreateIsPathIgnoreAuthoriedMatcherOption ...
+type CreateIsPathIgnoreAuthoriedMatcherOption struct {
 	Excludes []string
 }
 
+// IsPathIgnoreAuthoriedMatcher ...
 type IsPathIgnoreAuthoriedMatcher interface {
 	Match(path string) bool
 }
@@ -71,13 +74,14 @@ func (m *isPathIgnoreAuthoriedMatcher) Match(path string) bool {
 	return m.match(path)
 }
 
-func CreateIsPathIgnoreAuthoried(opts ...func(opt *IsPathIgnoreAuthoriedOption)) IsPathIgnoreAuthoriedMatcher {
-	opt := &IsPathIgnoreAuthoriedOption{}
+// CreateIsPathIgnoreAuthoriedMatcher creates the IsPathIgnoreAuthoried matcher
+func CreateIsPathIgnoreAuthoriedMatcher(opts ...func(opt *CreateIsPathIgnoreAuthoriedMatcherOption)) IsPathIgnoreAuthoriedMatcher {
+	opt := &CreateIsPathIgnoreAuthoriedMatcherOption{}
 	for _, o := range opts {
 		o(opt)
 	}
 
-	excludes := append(StaticIgnoreAuthoriedPaths, opt.Excludes...)
+	excludes := append(DefaultIgnoreAuthoriedPaths, opt.Excludes...)
 
 	excludesRe := []*regexp.Regexp{}
 	for _, exclude := range excludes {

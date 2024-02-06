@@ -16,7 +16,7 @@ import (
 
 // Auth ...
 func Auth(cfg *config.Config) zoox.HandlerFunc {
-	isIgnoreAuthoriedMatcher := utils.CreateIsPathIgnoreAuthoried(func(opt *utils.IsPathIgnoreAuthoriedOption) {
+	isIgnoreAuthoriedMatcher := utils.CreateIsPathIgnoreAuthoriedMatcher(func(opt *utils.CreateIsPathIgnoreAuthoriedMatcherOption) {
 		opt.Excludes = append([]string{
 			// "^/api/login$",
 			fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.Login),
