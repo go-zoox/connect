@@ -5,64 +5,30 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"regexp"
 	"time"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/service"
+	"github.com/go-zoox/connect/app/utils"
 	"github.com/go-zoox/logger"
 	"github.com/go-zoox/zoox"
 )
 
 // Auth ...
 func Auth(cfg *config.Config) zoox.HandlerFunc {
-	excludes := []string{
-		"^/captcha$",
-		"^/favicon.ico",
-		"^/__umi_ping$",
-		"^/__umiDev/routes$",
-		"^/robots.txt$",
-		"^/sockjs-node",
-		"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map|webmanifest)$",
-		"\\.hot-update.json$",
-		"^/manifest.json$",
-
-		// open api
-		"^/api/open/(.*)",
-
-		// built-in apis
-		"^/api/_/built_in_apis$",
-		// "^/api/login$",
-		fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.Login),
-		// "^/api/app$",
-		fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.App),
-		// "^/api/qrcode/",
-		fmt.Sprintf("^/api%s/", cfg.BuiltInAPIs.QRCode),
-
-		// static
-		"^/css/",
-		"^/js/",
-		"^/static/",
-	}
-
-	excludesRe := []*regexp.Regexp{}
-	for _, exclude := range excludes {
-		excludesRe = append(excludesRe, regexp.MustCompile(exclude))
-	}
-
-	isIgnoreAuthoried := func(path string) bool {
-		for _, exclude := range excludesRe {
-			matched := exclude.MatchString(path)
-			if matched {
-				return true
-			}
-		}
-
-		return false
-	}
+	isIgnoreAuthoriedMatcher := utils.CreateIsPathIgnoreAuthoriedMatcher(func(opt *utils.CreateIsPathIgnoreAuthoriedMatcherOption) {
+		opt.Excludes = append([]string{
+			// "^/api/login$",
+			fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.Login),
+			// "^/api/app$",
+			fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.App),
+			// "^/api/qrcode/",
+			fmt.Sprintf("^/api%s/", cfg.BuiltInAPIs.QRCode),
+		}, cfg.Auth.IgnorePaths...)
+	})
 
 	return func(ctx *zoox.Context) {
-		if isIgnoreAuthoried(ctx.Path) {
+		if isIgnoreAuthoriedMatcher.Match(ctx.Path) {
 			ctx.State().Set("@@ignore_auth", true)
 
 			ctx.Next()
