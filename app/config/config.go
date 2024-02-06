@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-zoox/core-utils/regexp"
@@ -77,6 +78,8 @@ type UpstreamService struct {
 type Auth struct {
 	Mode     string `config:"mode"`
 	Provider string `config:"provider"`
+	//
+	IgnorePaths []string `config:"ignore_paths"`
 }
 
 // AuthPassword ...
@@ -355,6 +358,14 @@ func (c *Config) ApplyDefault() {
 
 	if os.Getenv("AUTH_MODE") != "" {
 		c.Auth.Mode = os.Getenv("AUTH_MODE")
+	}
+
+	if os.Getenv("AUTH_PROVIDER") != "" {
+		c.Auth.Provider = os.Getenv("AUTH_PROVIDER")
+	}
+
+	if os.Getenv("AUTH_IGNORE_PATHS") != "" {
+		c.Auth.IgnorePaths = append(c.Auth.IgnorePaths, strings.Split(os.Getenv("AUTH_IGNORE_PATHS"), ",")...)
 	}
 
 	if c.Frontend.Host == "" && os.Getenv("FRONTEND") != "" {
