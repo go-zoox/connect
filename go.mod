@@ -15,7 +15,7 @@ require (
 	github.com/go-zoox/headers v1.0.8
 	github.com/go-zoox/jwt v1.3.0
 	github.com/go-zoox/logger v1.4.6
-	github.com/go-zoox/oauth2 v1.6.4
+	github.com/go-zoox/oauth2 v1.7.1
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
 	github.com/go-zoox/zoox v1.13.11
@@ -94,16 +94,16 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/steambap/captcha v1.4.1 // indirect
-	github.com/tidwall/gjson v1.17.0 // indirect
+	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/urfave/cli/v2 v2.25.7 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/image v0.7.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.20.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect

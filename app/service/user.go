@@ -10,6 +10,8 @@ import (
 	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/logger"
+	"github.com/go-zoox/oauth2"
+	oc "github.com/go-zoox/oauth2/create"
 	"github.com/go-zoox/zoox"
 )
 
@@ -53,6 +55,38 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 	}
 
 	if response.Status == 401 {
+		// @TODO try to refresh token with refresh_token
+		refreshToken := GetRefreshToken(ctx)
+		if refreshToken != "" {
+			logger.Infof("[service.GetUser][RefreshToken] refresh_token(%s) found, try to refresh token (1) ...", refreshToken)
+			provider := GetProvider(ctx)
+			if provider != "" {
+				logger.Infof("[service.GetUser][RefreshToken] provider(%s) found, try to refresh token (2) ...", provider)
+				clientCfg, err := oauth2.Get(provider)
+				if err == nil {
+					logger.Infof("[service.GetUser][RefreshToken] client config(%s) found, try to refresh token (3) ...", clientCfg.Name)
+					client, err := oc.Create(clientCfg.Name, clientCfg)
+					if err == nil {
+						logger.Infof("[service.GetUser][RefreshToken] client(%s) found, try to refresh token (4) ...", clientCfg.Name)
+						token, err := client.RefreshToken(refreshToken)
+						if err != nil {
+							statusCode := 401
+							return nil, statusCode, fmt.Errorf("failed to refresh token, maybe refresh token expired: %s", err)
+						}
+
+						logger.Infof("[service.GetUser][RefreshToken] token refreshed: %#v", token)
+
+						SetToken(ctx, cfg, token.AccessToken)
+						SetRefreshToken(ctx, cfg, token.RefreshToken)
+
+						time.Sleep(1 * time.Second)
+
+						return GetUser(ctx, cfg, token.AccessToken)
+					}
+				}
+			}
+		}
+
 		statusCode := 401
 		return nil, statusCode, fmt.Errorf("token expired (detail: %s)", response.String())
 	}
