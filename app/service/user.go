@@ -52,6 +52,11 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 		return nil, statusCode, err
 	}
 
+	if response.Status == 401 {
+		statusCode := 401
+		return nil, statusCode, fmt.Errorf("token expired (detail: %s)", response.String())
+	}
+
 	if response.Status != 200 {
 		statusCode := response.Status
 		return nil, statusCode, fmt.Errorf("failed to get user: (status: %d, response: %s)", response.Status, response.String())
