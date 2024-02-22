@@ -7,6 +7,7 @@ import (
 )
 
 var tokenKey = "gz_ut"
+var refreshTokenKey = "gz_rt"
 var providerKey = "gz_provider"
 
 // GenerateToken ...
@@ -69,6 +70,21 @@ func SetToken(ctx *zoox.Context, cfg *config.Config, value string) {
 // DelToken ...
 func DelToken(ctx *zoox.Context) {
 	ctx.Session().Del(tokenKey)
+}
+
+// GetRefreshToken ...
+func GetRefreshToken(ctx *zoox.Context) string {
+	return ctx.Session().Get(refreshTokenKey)
+}
+
+// SetRefreshToken ...
+func SetRefreshToken(ctx *zoox.Context, cfg *config.Config, value string) {
+	ctx.Session().Set(refreshTokenKey, value)
+}
+
+// DelRefreshToken ...
+func DelRefreshToken(ctx *zoox.Context) {
+	ctx.Session().Del(refreshTokenKey)
 }
 
 // GetProvider ...
