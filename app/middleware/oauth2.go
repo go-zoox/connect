@@ -80,7 +80,9 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 					}
 
 					service.SetToken(ctx, cfg, token.AccessToken)
-					service.SetRefreshToken(ctx, cfg, token.RefreshToken)
+					if token.RefreshToken != "" {
+						service.SetRefreshToken(ctx, cfg, token.RefreshToken)
+					}
 
 					from := ctx.Session().Get("from")
 					logger.Infof("[oauth2:done] from %s", from)
