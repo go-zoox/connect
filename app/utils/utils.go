@@ -15,7 +15,7 @@ var DefaultIgnoreAuthoriedPaths = []string{
 	"^/static/",
 	"^/public/",
 	"^/assets/",
-	"\\.(css|js|ico|jpg|png|jpeg|webp|gif|socket|ws|map|webmanifest)$",
+	"\\.(css|js|ico|jpg|png|jpeg|svg|webp|gif|socket|ws|map|webmanifest)$",
 
 	// robots.txt
 	"^/robots.txt$",
