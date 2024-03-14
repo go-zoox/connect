@@ -19,11 +19,21 @@ type User struct {
 
 // Encode ...
 func (u *User) Encode(signer jwt.Jwt) (string, error) {
+	username := u.Username
+	// @TODO compitable
+	if username == "" {
+		username = u.Email
+	}
+	if username == "" {
+		username = u.ID
+	}
+
 	return signer.Sign(map[string]interface{}{
 		"id":             u.ID,
 		"nickname":       u.Nickname,
 		"avatar":         u.Avatar,
 		"email":          u.Email,
+		"username":       username,
 		"feishu_open_id": u.FeishuOpenID,
 	})
 }
@@ -40,8 +50,16 @@ func (u *User) Decode(signer jwt.Jwt, token string) error {
 	u.Avatar = jwtValue.Get("avatar").String()
 	u.Email = jwtValue.Get("email").String()
 	u.FeishuOpenID = jwtValue.Get("feishu_open_id").String()
-	// u.Username = jwtValue.Get("username").String()
+	u.Username = jwtValue.Get("username").String()
 	// u.Permissions = jwtValue.Get("permissions").Array()
+
+	// @TODO compitable
+	if u.Username == "" {
+		u.Username = u.Email
+	}
+	if u.Username == "" {
+		u.Username = u.ID
+	}
 
 	return nil
 }
