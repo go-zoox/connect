@@ -20,6 +20,14 @@ type User = user.User
 
 // GetUser ...
 func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, error) {
+	if cfg.Auth.Mode == "none" {
+		return &User{
+			ID:       "1",
+			Username: "anonymous",
+			Email:    "anonymous@gozoox.com",
+		}, 200, nil
+	}
+
 	cacheKey := fmt.Sprintf("user:%s", token)
 	statusCode := 200
 

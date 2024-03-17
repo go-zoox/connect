@@ -15,6 +15,9 @@ func main() {
 	})
 
 	app.Register("server", commands.Server())
+
+	app.Register("none", commands.None())
+
 	app.Register("doremaon", commands.Doreamon())
 
 	app.Run()

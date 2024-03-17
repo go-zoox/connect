@@ -1,4 +1,4 @@
-package doreamon
+package none
 
 import (
 	"net/url"
@@ -12,15 +12,10 @@ import (
 
 // Config ...
 type Config struct {
-	Port          int64
-	SecretKey     string
-	SessionMaxAge int64
-	ClientID      string
-	ClientSecret  string
-	RedirectURI   string
-	Frontend      string
-	Backend       string
-	Upstream      string
+	Port     int64
+	Frontend string
+	Backend  string
+	Upstream string
 	//
 	BackendPrefix                 string
 	BackendIsDisablePrefixRewrite bool
@@ -28,10 +23,6 @@ type Config struct {
 
 // Create ...
 func Create(cfg *Config) (*config.Config, error) {
-	if cfg.ClientID == "" || cfg.ClientSecret == "" || cfg.RedirectURI == "" {
-		return nil, fmt.Errorf("client_id, client_secret, redirect_uri are required")
-	}
-
 	if cfg.Upstream != "" {
 		// ok
 	} else if cfg.Frontend != "" && cfg.Backend != "" {
@@ -41,31 +32,9 @@ func Create(cfg *Config) (*config.Config, error) {
 	}
 
 	cfgX := &config.Config{
-		Port:          cfg.Port,
-		SecretKey:     cfg.SecretKey,
-		SessionMaxAge: cfg.SessionMaxAge,
+		Port: cfg.Port,
 	}
-	cfgX.Auth.Mode = "oauth2"
-	cfgX.Auth.Provider = "doreamon"
-	cfgX.Services.App.Mode = "service"
-	cfgX.Services.App.Service = "https://api.zcorky.com/oauth/app"
-	cfgX.Services.User.Mode = "service"
-	cfgX.Services.User.Service = "https://api.zcorky.com/user"
-	cfgX.Services.Menus.Mode = "service"
-	cfgX.Services.Menus.Service = "https://api.zcorky.com/menus"
-	cfgX.Services.Users.Mode = "service"
-	cfgX.Services.Users.Service = "https://api.zcorky.com/users"
-	cfgX.Services.OpenID.Mode = "service"
-	cfgX.Services.OpenID.Service = "https://api.zcorky.com/oauth/app/user/open_id"
-	//
-	cfgX.OAuth2 = []config.AuthOAuth2{
-		{
-			Name:         "doreamon",
-			ClientID:     cfg.ClientID,
-			ClientSecret: cfg.ClientSecret,
-			RedirectURI:  cfg.RedirectURI,
-		},
-	}
+	cfgX.Auth.Mode = "none"
 
 	if cfg.Upstream != "" {
 		if !regexp.Match("^https?://", cfg.Upstream) {
