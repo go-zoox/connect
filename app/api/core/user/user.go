@@ -13,6 +13,20 @@ import (
 // New ...
 func New(cfg *config.Config) zoox.HandlerFunc {
 	return func(ctx *zoox.Context) {
+		if cfg.Auth.Mode == "none" {
+			ctx.JSON(200, zoox.H{
+				"code":    0,
+				"message": "",
+				"result": &service.User{
+					ID:       "1",
+					Nickname: "anonymous",
+					Username: "anonymous",
+					Email:    "anonymous@gozoox.com",
+				},
+			})
+			return
+		}
+
 		token := service.GetToken(ctx)
 		if token == "" {
 			ctx.Fail(fmt.Errorf("token is missing"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)

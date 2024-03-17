@@ -23,6 +23,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 	if cfg.Auth.Mode == "none" {
 		return &User{
 			ID:       "1",
+			Nickname: "anonymous",
 			Username: "anonymous",
 			Email:    "anonymous@gozoox.com",
 		}, 200, nil
