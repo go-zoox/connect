@@ -1,0 +1,9 @@
+port: 9999
+
+auth:
+  mode: none
+
+upstream:
+  protocol: https
+  host: httpbin.zcorky.com
+  port: 443

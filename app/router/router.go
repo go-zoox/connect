@@ -38,8 +38,10 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	app.Use(middleware.Static(cfg))
 
-	app.Use(middleware.OAuth2(cfg))
-	app.Use(middleware.Auth(cfg))
+	if cfg.Auth.Mode != "none" {
+		app.Use(middleware.OAuth2(cfg))
+		app.Use(middleware.Auth(cfg))
+	}
 
 	// if e.staticHandler != nil {
 	// 	e.cfg.Mode = "production"
@@ -150,6 +152,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 	//    	/open/* 		=> upstream:/open/*
 	//			/* 					=> upstream:/*
 	if cfg.Upstream.IsValid() {
+		app.Logger.Infof("auth: %s", cfg.Auth.Mode)
 		app.Logger.Infof("mode: upstream")
 		app.Logger.Infof("upstream: %s", cfg.Upstream.String())
 
@@ -210,6 +213,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 	//	  /api/*			=> backend:/api/*
 	//		/api/open/* => backend:/api/open/*
 	//
+	app.Logger.Infof("auth: %s", cfg.Auth.Mode)
 	app.Logger.Infof("mode: frontend + backend")
 	app.Logger.Infof("frontend: %s", cfg.Frontend.String())
 	app.Logger.Infof("backend: %s", cfg.Backend.String())
