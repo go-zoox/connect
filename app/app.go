@@ -83,6 +83,7 @@ func (e *Connect) handle(cfg *config.Config) {
 \___/\___/   /___/\___/\___/_\_\  \___/\___/_//_/_//_/\__/\__/\__/ 
                                                                
 The Lighweight, Powerful Auth Connect (Version: %s)
+
 ____________________________________O/_______
                                     O\
 	`, chalk.Green(connect.Version))
