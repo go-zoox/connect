@@ -175,6 +175,27 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			return
 		}
 
+		if len(cfg.Auth.AllowUsernames) > 0 {
+			user, status, err := service.GetUser(ctx, cfg, token)
+			if err != nil {
+				ctx.Fail(err, status, fmt.Sprintf("failed to get user when validate allow usernames: %s", err))
+				return
+			}
+
+			isAllowed := false
+			for _, username := range cfg.Auth.AllowUsernames {
+				if user.Username == username {
+					isAllowed = true
+					break
+				}
+			}
+
+			if !isAllowed {
+				ctx.Fail(fmt.Errorf("username(%s) is not allowed", user.Username), http.StatusForbidden, "Forbidden")
+				return
+			}
+		}
+
 		ctx.Next()
 	}
 }

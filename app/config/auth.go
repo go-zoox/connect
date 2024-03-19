@@ -11,6 +11,8 @@ type Auth struct {
 	Provider string `config:"provider"`
 	//
 	IgnorePaths []string `config:"ignore_paths"`
+	//
+	AllowUsernames []string `config:"allow_usernames"`
 }
 
 // AuthPassword ...

@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"strings"
+
 	"github.com/go-zoox/cli"
 	"github.com/go-zoox/connect/app"
 	"github.com/go-zoox/connect/apps/feishu"
@@ -81,8 +83,18 @@ func Feishu() *cli.Command {
 				Usage:   "backend disable prefix rewrite",
 				EnvVars: []string{"BACKEND_DISABLE_PREFIX_REWRITE"},
 			},
+			&cli.StringFlag{
+				Name:    "allow-usernames",
+				Usage:   "allow usernames, split by ,",
+				EnvVars: []string{"ALLOW_USERNAMES"},
+			},
 		},
 		Action: func(c *cli.Context) error {
+			allowUsernames := []string{}
+			if c.String("allow-usernames") != "" {
+				allowUsernames = strings.Split(c.String("allow-usernames"), ",")
+			}
+
 			cfg, err := feishu.Create(&feishu.Config{
 				Port:          c.Int64("port"),
 				SecretKey:     c.String("secret-key"),
@@ -96,6 +108,8 @@ func Feishu() *cli.Command {
 				//
 				BackendPrefix:                 c.String("backend-prefix"),
 				BackendIsDisablePrefixRewrite: c.Bool("backend-disable-prefix-rewrite"),
+				//
+				AllowUsernames: allowUsernames,
 			})
 			if err != nil {
 				return err
