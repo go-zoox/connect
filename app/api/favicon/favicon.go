@@ -41,6 +41,12 @@ func Get(cfg *config.Config) func(*zoox.Context) {
 			return
 		}
 
+		if app.Logo == "" {
+			ctx.Logger.Debugf("[favicon] no favicon found (app.Logo is empty url)")
+			ctx.Status(204)
+			return
+		}
+
 		logo := app.Logo
 		response, err := fetch.Stream(logo)
 		if err != nil {
