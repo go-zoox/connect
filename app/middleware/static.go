@@ -14,8 +14,8 @@ const DefaultStaticFileMaxAge = 7 * 24 * 60 * 60
 // Static ...
 func Static(cfg *config.Config) zoox.HandlerFunc {
 	var staticFileMaxAge int64 = DefaultStaticFileMaxAge
-	if cfg.SessionMaxAge != 0 {
-		staticFileMaxAge = cfg.SessionMaxAge
+	if cfg.StaticCacheControlMaxAge != 0 {
+		staticFileMaxAge = cfg.StaticCacheControlMaxAge
 	}
 
 	return zw.StaticCache(&zw.StaticCacheConfig{

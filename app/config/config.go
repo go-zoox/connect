@@ -17,7 +17,10 @@ type Config struct {
 	// SessionMaxAge is the max age of session, unit: second, default: 86400
 	SessionMaxAge         int64 `config:"session_max_age"`
 	SessionMaxAgeDuration time.Duration
-	LogLevel              string `config:"log_level"`
+	// StaticCacheControlMaxAge is the max age of static cache control, unit: second, default: 7d
+	StaticCacheControlMaxAge int64
+	//
+	LogLevel string `config:"log_level"`
 	// S1: Connect => Frontend + Backend
 	Frontend FrontendService `config:"frontend"`
 	Backend  BackendService  `config:"backend"`
