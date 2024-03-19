@@ -66,7 +66,7 @@ func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string
 
 	if response.Status != 200 {
 		statusCode := response.Status
-		return nil, statusCode, fmt.Errorf("failed to get user: (status: %d, response: %s)", response.Status, response.String())
+		return nil, statusCode, fmt.Errorf("failed to get app: (status: %d, response: %s)", response.Status, response.String())
 	}
 
 	if err := json.Unmarshal([]byte(response.Get("result").String()), &app); err != nil {
