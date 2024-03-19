@@ -26,6 +26,8 @@ type Config struct {
 	//
 	BackendPrefix                 string
 	BackendIsDisablePrefixRewrite bool
+	//
+	AllowUsernames []string
 }
 
 // Create ...
@@ -49,6 +51,7 @@ func Create(cfg *Config) (*config.Config, error) {
 	}
 	cfgX.Auth.Mode = "oauth2"
 	cfgX.Auth.Provider = "github"
+	cfgX.Auth.AllowUsernames = cfg.AllowUsernames
 	//
 	// cfgX.Services.App.Mode = "service"
 	// cfgX.Services.App.Service = "https://api.github.com/oauth/app"
