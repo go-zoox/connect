@@ -84,6 +84,48 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 						service.SetRefreshToken(ctx, cfg, token.RefreshToken)
 					}
 
+					// @TODO if provider not doreamon, cannot get user/app/menus from doreamon, so should mock them
+					if cfg.Auth.Provider != "doreamon" {
+						// @1 cache user for service.GetUser()
+						userCacheKey := fmt.Sprintf("user:%s", token.AccessToken)
+						ctx.Cache().Set(userCacheKey, &service.User{
+							ID:          user.ID,
+							Username:    user.Username,
+							Nickname:    user.Nickname,
+							Email:       user.Email,
+							Permissions: user.Permissions,
+						}, cfg.SessionMaxAgeDuration)
+
+						// @2 cache app for service.GetApp()
+						ctx.Cache().Set("app", &service.App{
+							Name:        cfg.Services.App.Local.Name,
+							Description: cfg.Services.App.Local.Description,
+							Logo:        cfg.Services.App.Local.Logo,
+							Settings:    service.AppSettings(cfg.Services.App.Local.Settings),
+						}, cfg.SessionMaxAgeDuration)
+
+						// @3 cache menu for service.GetMenu()
+						menuCacheKey := fmt.Sprintf("menus:%s", token.AccessToken)
+						var menus []service.MenuItem
+						for _, menu := range cfg.Services.Menus.Local {
+							menus = append(menus, service.MenuItem{
+								ID:         menu.Path,
+								Name:       menu.Name,
+								Path:       menu.Path,
+								Icon:       menu.Icon,
+								Sort:       menu.Sort,
+								IsHidden:   menu.IsHidden,
+								IsExpended: menu.IsExpanded,
+								Layout:     menu.Layout,
+								IFrame:     menu.IFrame,
+								Redirect:   menu.Redirect,
+							})
+						}
+						ctx.Cache().Set(menuCacheKey, &menus, cfg.SessionMaxAgeDuration)
+
+						// @4 cache users for service.GetUsers()
+					}
+
 					from := ctx.Session().Get("from")
 					logger.Infof("[oauth2:done] from %s", from)
 					if from != "" {

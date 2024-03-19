@@ -20,5 +20,7 @@ func main() {
 
 	app.Register("doremaon", commands.Doreamon())
 
+	app.Register("github", commands.GitHub())
+
 	app.Run()
 }
