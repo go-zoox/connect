@@ -58,8 +58,8 @@ func Get(cfg *config.Config) func(*zoox.Context) {
 		// ctx.Set("Cache-Control", "public, max-age=31536000")
 
 		var faviconMaxAge int64 = DefaultFaviconMaxAge
-		if cfg.SessionMaxAge != 0 {
-			faviconMaxAge = cfg.SessionMaxAge
+		if cfg.StaticCacheControlMaxAge != 0 {
+			faviconMaxAge = cfg.StaticCacheControlMaxAge
 		}
 		ctx.Set("Cache-Control", fmt.Sprintf("public, max-age=%d", faviconMaxAge))
 
