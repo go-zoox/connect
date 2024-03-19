@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-zoox/chalk"
+	"github.com/go-zoox/connect"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
 	"github.com/go-zoox/core-utils/fmt"
@@ -73,6 +75,17 @@ func (e *Connect) handle(cfg *config.Config) {
 	}
 
 	e.cfg = cfg
+
+	e.core.Config.Banner = fmt.Sprintf(`
+  _____       ____                  _____                       __ 
+ / ___/__    /_  / ___  ___ __ __  / ___/__  ___  ___  ___ ____/ /_
+/ (_ / _ \    / /_/ _ \/ _ \\ \ / / /__/ _ \/ _ \/ _ \/ -_) __/ __/
+\___/\___/   /___/\___/\___/_\_\  \___/\___/_//_/_//_/\__/\__/\__/ 
+                                                               
+The Lighweight, Powerful Auth Connect (Version: %s)
+____________________________________O/_______
+                                    O\
+	`, chalk.Green(connect.Version))
 
 	e.core.Config.LogLevel = cfg.LogLevel
 
