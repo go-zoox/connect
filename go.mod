@@ -15,7 +15,7 @@ require (
 	github.com/go-zoox/headers v1.0.8
 	github.com/go-zoox/jwt v1.3.0
 	github.com/go-zoox/logger v1.4.6
-	github.com/go-zoox/oauth2 v1.7.1
+	github.com/go-zoox/oauth2 v1.7.2
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
 	github.com/go-zoox/zoox v1.14.16
@@ -123,4 +123,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// replace github.com/go-zoox/zoox => ../zoox
+// replace github.com/go-zoox/oauth2 => ../oauth2
