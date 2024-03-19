@@ -87,7 +87,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 							logger.Infof("[service.GetUser][RefreshToken] token refreshed: %#v (failed to marshal token with json)", token)
 						} else {
 							logger.Infof("[service.GetUser][RefreshToken] token refreshed: %s", j)
-						fi
+						}
 
 						SetToken(ctx, cfg, token.AccessToken)
 						// @TODO should not change refresh token because it will not case refresh token expired
