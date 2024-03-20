@@ -23,6 +23,8 @@ FROM --platform=${TARGETPLATFORM:-linux/amd64} whatwewant/alpine:v3.17-1
 
 LABEL MAINTAINER="Zero<tobewhatwewant@gmail.com>"
 
+ENV LOG_LEVEL=error
+
 WORKDIR /app
 
 COPY --from=builder /app/connect /bin
