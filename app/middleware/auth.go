@@ -133,7 +133,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			time.Sleep(time.Second * 1)
 
 			if ctx.AcceptJSON() {
-				ctx.Fail(errors.New("token is missing"), http.StatusUnauthorized, "token is missing", http.StatusUnauthorized)
+				ctx.Fail(errors.New("[middlware.auth] token is missing"), http.StatusUnauthorized, "token is missing", http.StatusUnauthorized)
 				return
 			}
 

@@ -29,7 +29,7 @@ func New(cfg *config.Config) zoox.HandlerFunc {
 
 		token := service.GetToken(ctx)
 		if token == "" {
-			ctx.Fail(fmt.Errorf("token is missing"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
+			ctx.Fail(fmt.Errorf("[api.core.user] token is missing (1)"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
 			return
 		}
 
@@ -110,7 +110,7 @@ func GetUsers(cfg *config.Config) zoox.HandlerFunc {
 
 		token := service.GetToken(ctx)
 		if token == "" {
-			ctx.Fail(fmt.Errorf("token is missing"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
+			ctx.Fail(fmt.Errorf("[api.core.user] token is missing (2)"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
 			return
 		}
 

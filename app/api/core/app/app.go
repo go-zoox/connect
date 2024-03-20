@@ -15,7 +15,7 @@ func New(cfg *config.Config) func(*zoox.Context) {
 	return func(ctx *zoox.Context) {
 		token := service.GetToken(ctx)
 		if token == "" {
-			ctx.Fail(fmt.Errorf("token is missing"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
+			ctx.Fail(fmt.Errorf("[api.core.app] token is missing"), errors.FailedToGetToken.Code, errors.FailedToGetToken.Message)
 			return
 		}
 
