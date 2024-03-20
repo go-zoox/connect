@@ -135,9 +135,7 @@ func (c *Config) ApplyDefault() {
 	if c.Port == 0 {
 		c.Port = 8080
 	}
-	if c.LogLevel == "" {
-		c.LogLevel = "ERROR"
-	}
+
 	if c.Mode == "" {
 		c.Mode = "development"
 	}

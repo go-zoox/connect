@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/go-zoox/cache v1.0.7
 	github.com/go-zoox/captcha v1.0.3
+	github.com/go-zoox/chalk v1.0.2
 	github.com/go-zoox/cli v1.3.8
 	github.com/go-zoox/config v1.2.10
 	github.com/go-zoox/core-utils v1.3.9
@@ -14,25 +15,24 @@ require (
 	github.com/go-zoox/fs v1.3.14
 	github.com/go-zoox/headers v1.0.8
 	github.com/go-zoox/jwt v1.3.0
-	github.com/go-zoox/logger v1.4.6
+	github.com/go-zoox/logger v1.5.1
 	github.com/go-zoox/oauth2 v1.7.2
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
-	github.com/go-zoox/zoox v1.14.16
+	github.com/go-zoox/zoox v1.14.21
 )
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/distribution/reference v0.5.0 // indirect
-	github.com/docker/cli v25.0.4+incompatible // indirect
-	github.com/docker/docker v25.0.4+incompatible // indirect
+	github.com/docker/cli v25.0.5+incompatible // indirect
+	github.com/docker/docker v25.0.5+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
@@ -44,8 +44,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/validator/v10 v10.15.5 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
-	github.com/go-zoox/chalk v1.0.2 // indirect
-	github.com/go-zoox/command v1.4.7 // indirect
+	github.com/go-zoox/command v1.5.2 // indirect
 	github.com/go-zoox/commands-as-a-service v1.7.11 // indirect
 	github.com/go-zoox/compress v1.0.1 // indirect
 	github.com/go-zoox/concurrency v1.2.0 // indirect
@@ -76,6 +75,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -105,10 +105,8 @@ require (
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0 // indirect
 	go.opentelemetry.io/otel v1.24.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
-	go.opentelemetry.io/proto/otlp v1.1.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/image v0.7.0 // indirect
 	golang.org/x/mod v0.16.0 // indirect
@@ -123,4 +121,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// replace github.com/go-zoox/oauth2 => ../oauth2
+// replace github.com/go-zoox/logger => ../logger
+// replace github.com/go-zoox/zoox => ../zoox

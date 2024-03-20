@@ -133,7 +133,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			time.Sleep(time.Second * 1)
 
 			if ctx.AcceptJSON() {
-				ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
+				ctx.Fail(errors.New("token is missing"), http.StatusUnauthorized, "token is missing", http.StatusUnauthorized)
 				return
 			}
 
@@ -146,7 +146,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			time.Sleep(time.Second * 1)
 
 			if ctx.AcceptJSON() {
-				ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
+				ctx.Fail(fmt.Errorf("failed to get user (err: %s)", err), http.StatusUnauthorized, fmt.Sprintf("failed to get user (err: %s)", err), http.StatusUnauthorized)
 				return
 			}
 
@@ -163,7 +163,7 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			time.Sleep(time.Second * 1)
 
 			if ctx.AcceptJSON() {
-				ctx.Fail(errors.New("api auth failed"), http.StatusUnauthorized, "Unauthorized", http.StatusUnauthorized)
+				ctx.Fail(fmt.Errorf("failed to get app (err: %s)", err), http.StatusUnauthorized, fmt.Sprintf("failed to get app (err: %s)", err), http.StatusUnauthorized)
 				return
 			}
 

@@ -97,6 +97,8 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 
 						time.Sleep(1 * time.Second)
 
+						logger.Infof("[service.GetUser][RefreshToken] retry to get user ...")
+
 						return GetUser(ctx, cfg, token.AccessToken)
 					}
 				}
