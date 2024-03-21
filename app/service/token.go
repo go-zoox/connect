@@ -1,6 +1,8 @@
 package service
 
 import (
+	"os"
+
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/zoox"
@@ -9,6 +11,12 @@ import (
 var tokenKey = "gz_ut"
 var refreshTokenKey = "gz_rt"
 var providerKey = "gz_provider"
+
+// X_CONNECT_TOKEN_COMPITABLE_WITH_AUTHORIZATION_HEADER
+var isXConnectTokenCompitableWithAuthorizationHeader = os.Getenv("X_CONNECT_TOKEN_COMPITABLE_WITH_AUTHORIZATION_HEADER") == "true"
+
+// X_CONNECT_TOKEN_COMPITABLE_WITH_QUERY
+var isXConnectTokenCompitableWithQuery = os.Getenv("X_CONNECT_TOKEN_COMPITABLE_WITH_QUERY") == "true"
 
 // GenerateToken ...
 func GenerateToken(cfg *config.Config, data map[string]any) (string, error) {
@@ -43,20 +51,32 @@ func GetToken(ctx *zoox.Context) string {
 		return sessionToken
 	}
 
-	headerToken := ctx.Get("authorization")
-	if headerToken != "" {
-		// Bear token
-		if len(headerToken) > 6 && headerToken[:6] == "Bearer" {
-			return headerToken[7:]
-		}
-
-		// not standard
-		return headerToken
+	if ctx.Header().Get("X-Connect-Token") != "" {
+		return ctx.Header().Get("X-Connect-Token")
 	}
 
-	queryToken := ctx.Query().Get("access_token").String()
-	if queryToken != "" {
-		return queryToken
+	if ctx.Query().Get("X-Connect-Token").String() != "" {
+		return ctx.Query().Get("X-Connect-Token").String()
+	}
+
+	if isXConnectTokenCompitableWithAuthorizationHeader {
+		headerToken := ctx.Get("authorization")
+		if headerToken != "" {
+			// Bear token
+			if len(headerToken) > 6 && headerToken[:6] == "Bearer" {
+				return headerToken[7:]
+			}
+
+			// not standard
+			return headerToken
+		}
+	}
+
+	if isXConnectTokenCompitableWithQuery {
+		queryToken := ctx.Query().Get("access_token").String()
+		if queryToken != "" {
+			return queryToken
+		}
 	}
 
 	return ""
