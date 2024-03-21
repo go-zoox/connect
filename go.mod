@@ -19,7 +19,7 @@ require (
 	github.com/go-zoox/oauth2 v1.7.2
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
-	github.com/go-zoox/zoox v1.14.21
+	github.com/go-zoox/zoox v1.14.22
 )
 
 require (
@@ -31,8 +31,8 @@ require (
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/distribution/reference v0.5.0 // indirect
-	github.com/docker/cli v25.0.5+incompatible // indirect
-	github.com/docker/docker v25.0.5+incompatible // indirect
+	github.com/docker/cli v26.0.0+incompatible // indirect
+	github.com/docker/docker v26.0.0+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/validator/v10 v10.15.5 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
-	github.com/go-zoox/command v1.5.2 // indirect
+	github.com/go-zoox/command v1.5.3 // indirect
 	github.com/go-zoox/commands-as-a-service v1.7.11 // indirect
 	github.com/go-zoox/compress v1.0.1 // indirect
 	github.com/go-zoox/concurrency v1.2.0 // indirect
@@ -81,6 +81,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
+	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
