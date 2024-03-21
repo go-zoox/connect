@@ -1,6 +1,8 @@
 package service
 
 import (
+	"os"
+
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/crypto/jwt"
 	"github.com/go-zoox/zoox"
@@ -9,6 +11,12 @@ import (
 var tokenKey = "gz_ut"
 var refreshTokenKey = "gz_rt"
 var providerKey = "gz_provider"
+
+// TOKEN_BY_HEADER_AUTHORIZATION_DISABLED
+var isTokenByHeaderAuthorizationDisabled = os.Getenv("TOKEN_BY_HEADER_AUTHORIZATION_DISABLED") == "true"
+
+// TOKEN_BY_QUERY_ACCESS_TOKEN_DISABLED
+var isTokenByQueryAccessTokenDisabled = os.Getenv("TOKEN_BY_QUERY_ACCESS_TOKEN_DISABLED") == "true"
 
 // GenerateToken ...
 func GenerateToken(cfg *config.Config, data map[string]any) (string, error) {
@@ -43,20 +51,24 @@ func GetToken(ctx *zoox.Context) string {
 		return sessionToken
 	}
 
-	headerToken := ctx.Get("authorization")
-	if headerToken != "" {
-		// Bear token
-		if len(headerToken) > 6 && headerToken[:6] == "Bearer" {
-			return headerToken[7:]
-		}
+	if !isTokenByHeaderAuthorizationDisabled {
+		headerToken := ctx.Get("authorization")
+		if headerToken != "" {
+			// Bear token
+			if len(headerToken) > 6 && headerToken[:6] == "Bearer" {
+				return headerToken[7:]
+			}
 
-		// not standard
-		return headerToken
+			// not standard
+			return headerToken
+		}
 	}
 
-	queryToken := ctx.Query().Get("access_token").String()
-	if queryToken != "" {
-		return queryToken
+	if !isTokenByQueryAccessTokenDisabled {
+		queryToken := ctx.Query().Get("access_token").String()
+		if queryToken != "" {
+			return queryToken
+		}
 	}
 
 	return ""
