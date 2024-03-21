@@ -162,21 +162,24 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 		up := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {
-			// ignore auth
-			isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
-			if isIgnoreAuthoried != nil {
-				if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
-					// request id
-					ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
-
-					up.Handle(ctx)
-					return
-				}
-			}
-
 			signer := jwt.New(cfg.SecretKey)
 
 			token := service.GetToken(ctx)
+			// if no token, maybe it's a public api
+			if token == "" {
+				// ignore auth
+				isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
+				if isIgnoreAuthoried != nil {
+					if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
+						// request id
+						ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+
+						up.Handle(ctx)
+						return
+					}
+				}
+			}
+
 			userIns, _, err := service.GetUser(ctx, cfg, token)
 			if err != nil {
 				// ctx.Logger.Errorf(err)
@@ -249,6 +252,21 @@ func New(app *zoox.Application, cfg *config.Config) {
 			signer := jwt.New(cfg.SecretKey)
 
 			token := service.GetToken(ctx)
+			// if no token, maybe it's a public api
+			if token == "" {
+				// ignore auth
+				isIgnoreAuthoried := ctx.State().Get("@@ignore_auth")
+				if isIgnoreAuthoried != nil {
+					if ignored, ok := isIgnoreAuthoried.(bool); ok && ignored {
+						// request id
+						ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+
+						ctx.Next()
+						return
+					}
+				}
+			}
+
 			userIns, _, err := service.GetUser(ctx, cfg, token)
 			if err != nil {
 				ctx.JSON(http.StatusUnauthorized, err)
