@@ -12,11 +12,11 @@ var tokenKey = "gz_ut"
 var refreshTokenKey = "gz_rt"
 var providerKey = "gz_provider"
 
-// X_CONNECT_TOKEN_COMPITABLE_WITH_AUTHORIZATION_HEADER
-var isXConnectTokenCompitableWithAuthorizationHeader = os.Getenv("X_CONNECT_TOKEN_COMPITABLE_WITH_AUTHORIZATION_HEADER") == "true"
+// TOKEN_BY_HEADER_AUTHORIZATION_DISABLED
+var isTokenByHeaderAuthorizationDisabled = os.Getenv("TOKEN_BY_HEADER_AUTHORIZATION_DISABLED") == "true"
 
-// X_CONNECT_TOKEN_COMPITABLE_WITH_QUERY
-var isXConnectTokenCompitableWithQuery = os.Getenv("X_CONNECT_TOKEN_COMPITABLE_WITH_QUERY") == "true"
+// TOKEN_BY_QUERY_ACCESS_TOKEN_DISABLED
+var isTokenByQueryAccessTokenDisabled = os.Getenv("TOKEN_BY_QUERY_ACCESS_TOKEN_DISABLED") == "true"
 
 // GenerateToken ...
 func GenerateToken(cfg *config.Config, data map[string]any) (string, error) {
@@ -51,15 +51,7 @@ func GetToken(ctx *zoox.Context) string {
 		return sessionToken
 	}
 
-	if ctx.Header().Get("X-Connect-Token") != "" {
-		return ctx.Header().Get("X-Connect-Token")
-	}
-
-	if ctx.Query().Get("X-Connect-Token").String() != "" {
-		return ctx.Query().Get("X-Connect-Token").String()
-	}
-
-	if isXConnectTokenCompitableWithAuthorizationHeader {
+	if !isTokenByHeaderAuthorizationDisabled {
 		headerToken := ctx.Get("authorization")
 		if headerToken != "" {
 			// Bear token
@@ -72,7 +64,7 @@ func GetToken(ctx *zoox.Context) string {
 		}
 	}
 
-	if isXConnectTokenCompitableWithQuery {
+	if !isTokenByQueryAccessTokenDisabled {
 		queryToken := ctx.Query().Get("access_token").String()
 		if queryToken != "" {
 			return queryToken
