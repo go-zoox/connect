@@ -54,6 +54,10 @@ func (c *Config) ApplyDefault() {
 		c.Auth.IgnorePaths = append(c.Auth.IgnorePaths, strings.Split(os.Getenv("AUTH_IGNORE_PATHS"), ",")...)
 	}
 
+	if os.Getenv("IS_IGNORE_PATHS_DISABLED") == "true" {
+		c.Auth.IsIgnorePathsDisabled = true
+	}
+
 	if c.Frontend.Host == "" && os.Getenv("FRONTEND") != "" {
 		v := fixUpstream(os.Getenv("FRONTEND"))
 		u, err := url.Parse(v)

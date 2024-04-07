@@ -9,8 +9,14 @@ type Auth struct {
 	//  4. openid
 	Mode     string `config:"mode"`
 	Provider string `config:"provider"`
+
 	//
 	IgnorePaths []string `config:"ignore_paths"`
+	// IsIgnorePathsDisabled disables ignore paths, which means all need auth
+	//	this is for maybe user use path like /public/index.html as route
+	//
+	IsIgnorePathsDisabled bool `config:"is_ignore_paths_disabled"`
+
 	//
 	AllowUsernames []string `config:"allow_usernames"`
 }
