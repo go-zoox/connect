@@ -28,11 +28,13 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 	})
 
 	return func(ctx *zoox.Context) {
-		if isIgnoreAuthoriedMatcher.Match(ctx.Path) {
-			ctx.State().Set("@@ignore_auth", true)
+		if !cfg.Auth.IsIgnorePathsDisabled {
+			if isIgnoreAuthoriedMatcher.Match(ctx.Path) {
+				ctx.State().Set("@@ignore_auth", true)
 
-			ctx.Next()
-			return
+				ctx.Next()
+				return
+			}
 		}
 
 		provider := service.GetProvider(ctx)
