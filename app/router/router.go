@@ -162,6 +162,13 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 		up := upstream.New(cfg)
 		app.Fallback(func(ctx *zoox.Context) {
+			if cfg.Auth.IsIgnoreWhenHeaderAuthorizationFound {
+				if ctx.Header().Get(headers.Authorization) != "" {
+					up.Handle(ctx)
+					return
+				}
+			}
+
 			signer := jwt.New(cfg.SecretKey)
 
 			token := service.GetToken(ctx)
@@ -248,6 +255,15 @@ func New(app *zoox.Application, cfg *config.Config) {
 			// 		return
 			// 	}
 			// }
+
+			if cfg.Auth.IsIgnoreWhenHeaderAuthorizationFound {
+				if ctx.Header().Get(headers.Authorization) != "" {
+					ctx.Request.Header.Set(headers.XRequestID, ctx.RequestID())
+
+					ctx.Next()
+					return
+				}
+			}
 
 			signer := jwt.New(cfg.SecretKey)
 
