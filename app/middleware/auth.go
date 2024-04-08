@@ -10,6 +10,7 @@ import (
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/service"
 	"github.com/go-zoox/connect/app/utils"
+	"github.com/go-zoox/headers"
 	"github.com/go-zoox/logger"
 	"github.com/go-zoox/zoox"
 )
@@ -32,6 +33,13 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			if isIgnoreAuthoriedMatcher.Match(ctx.Path) {
 				ctx.State().Set("@@ignore_auth", true)
 
+				ctx.Next()
+				return
+			}
+		}
+
+		if cfg.Auth.IsIgnoreWhenHeaderAuthorizationFound {
+			if ctx.Header().Get(headers.Authorization) != "" {
 				ctx.Next()
 				return
 			}

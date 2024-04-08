@@ -54,8 +54,12 @@ func (c *Config) ApplyDefault() {
 		c.Auth.IgnorePaths = append(c.Auth.IgnorePaths, strings.Split(os.Getenv("AUTH_IGNORE_PATHS"), ",")...)
 	}
 
-	if os.Getenv("IS_IGNORE_PATHS_DISABLED") == "true" {
+	if os.Getenv("AUTH_IS_IGNORE_PATHS_DISABLED") == "true" {
 		c.Auth.IsIgnorePathsDisabled = true
+	}
+
+	if os.Getenv("AUTH_IS_IGNORE_WHEN_HEADER_AUTHORIZATION_FOUND") == "true" {
+		c.Auth.IsIgnoreWhenHeaderAuthorizationFound = true
 	}
 
 	if c.Frontend.Host == "" && os.Getenv("FRONTEND") != "" {

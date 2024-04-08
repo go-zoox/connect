@@ -17,6 +17,9 @@ type Auth struct {
 	//
 	IsIgnorePathsDisabled bool `config:"is_ignore_paths_disabled"`
 
+	// IsIgnoreWhenHeaderAuthorizationFound ignores auth when header authorization found
+	IsIgnoreWhenHeaderAuthorizationFound bool `config:"is_ignore_when_header_authorization_found"`
+
 	//
 	AllowUsernames []string `config:"allow_usernames"`
 }
