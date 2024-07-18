@@ -1,5 +1,5 @@
 # Builder
-FROM --platform=${BUILDPLATFORM:-linux/amd64} whatwewant/builder-go:v1.20-1 as builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} whatwewant/builder-go:v1.22-1 as builder
 
 ARG TARGETOS
 
