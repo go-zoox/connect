@@ -113,7 +113,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			g.Post("/login", apiUser.Login(cfg))
 
 			// metadata
-			g.Get("/login/:provider/metadata", apiPublic.GetLoginProvider(cfg))
+			g.Get("/login/:provider/metadata", apiPublic.GetLoginProviderMetedata(cfg))
 		})
 	})
 

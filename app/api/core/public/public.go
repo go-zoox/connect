@@ -8,12 +8,14 @@ import (
 	"github.com/go-zoox/zoox"
 )
 
+// LoginProviderMetadata ...
 type LoginProviderMetadata struct {
 	ClientID    string `json:"client_id"`
 	RedirectURI string `json:"redirect_uri"`
 }
 
-func GetLoginProvider(c *config.Config) func(ctx *zoox.Context) {
+// GetLoginProviderMetedata ...
+func GetLoginProviderMetedata(c *config.Config) func(ctx *zoox.Context) {
 	return func(ctx *zoox.Context) {
 		provider := ctx.Param().Get("provider").String()
 		if provider == "" {
