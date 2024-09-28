@@ -92,6 +92,26 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 		// public apis: /api/_/*
 		group.Group(cfg.BuiltInAPIs.Public, func(g *zoox.RouterGroup) {
+			// new
+
+			// /api/_/app
+			g.Get("/app", apiApp.New(cfg))
+			// /api/_/user
+			g.Get("/user", apiUser.New(cfg))
+			// /api/_/menus
+			g.Get("/menus", apiMenus.New(cfg))
+			// /api/_/users
+			g.Get("/users", apiUser.GetUsers(cfg))
+			// /api/_/config
+			g.Get("/config", apiConfig.New(cfg))
+			// /api/_/qrcode
+			g.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
+			g.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
+			g.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
+			g.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
+			// /login
+			g.Post("/login", apiUser.Login(cfg))
+
 			// metadata
 			g.Get("/login/:provider/metadata", apiPublic.GetLoginProvider(cfg))
 		})
