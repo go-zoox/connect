@@ -160,6 +160,8 @@ type BuiltInAPIs struct {
 	QRCode string `config:"qrcode"`
 	//
 	Login string `config:"login"`
+	//
+	Public string `config:"built_in"`
 }
 
 // MenuItem ...

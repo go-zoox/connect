@@ -253,4 +253,11 @@ func (c *Config) ApplyDefault() {
 			c.BuiltInAPIs.Login = "/login"
 		}
 	}
+	if c.BuiltInAPIs.Public == "" {
+		if os.Getenv("BUILT_IN_APIS_BUILT_IN") != "" {
+			c.BuiltInAPIs.Public = os.Getenv("BUILT_IN_APIS_BUILT_IN")
+		} else {
+			c.BuiltInAPIs.Public = "/_"
+		}
+	}
 }

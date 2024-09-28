@@ -26,6 +26,9 @@ import (
 	apiUser "github.com/go-zoox/connect/app/api/core/user"
 
 	//
+	apiPublic "github.com/go-zoox/connect/app/api/core/public"
+
+	//
 	apiOpen "github.com/go-zoox/connect/app/api/core/open"
 )
 
@@ -86,6 +89,12 @@ func New(app *zoox.Application, cfg *config.Config) {
 		group.Get(fmt.Sprintf("%s/device/user", qrcodeBasePath), apiQRCode.GetUser(cfg))
 		// /login
 		group.Post(cfg.BuiltInAPIs.Login, apiUser.Login(cfg))
+
+		// public apis: /api/_/*
+		group.Group(cfg.BuiltInAPIs.Public, func(g *zoox.RouterGroup) {
+			// metadata
+			g.Get("/login/:provider/metadata", apiPublic.GetLoginProvider(cfg))
+		})
 	})
 
 	// backend api

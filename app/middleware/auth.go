@@ -25,6 +25,8 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.App),
 			// "^/api/qrcode/",
 			fmt.Sprintf("^/api%s/", cfg.BuiltInAPIs.QRCode),
+			// "^/api/_/",
+			fmt.Sprintf("^/api%s/", cfg.BuiltInAPIs.Public),
 		}, cfg.Auth.IgnorePaths...)
 	})
 
