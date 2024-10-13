@@ -107,6 +107,42 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Build and push - GitHub
+        uses: zmicro-design/action-docker-build@v1
+        with:
+          build-args: |
+            VERSION=${{ steps.meta.outputs.version }}
+            BUILD_TIME=${{ steps.meta.outputs.build_time }}
+            COMMIT_HASH=${{ steps.meta.outputs.commit_hash }}
+          context: .
+          dockerfile: Dockerfile.github
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=registry,ref=${{ steps.meta.outputs.name }}:buildcache
+          cache-to: type=registry,ref=${{ steps.meta.outputs.name }}:buildcache,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push - Feishu
+        uses: zmicro-design/action-docker-build@v1
+        with:
+          build-args: |
+            VERSION=${{ steps.meta.outputs.version }}
+            BUILD_TIME=${{ steps.meta.outputs.build_time }}
+            COMMIT_HASH=${{ steps.meta.outputs.commit_hash }}
+          context: .
+          dockerfile: Dockerfile.feishu
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=registry,ref=${{ steps.meta.outputs.name }}:buildcache
+          cache-to: type=registry,ref=${{ steps.meta.outputs.name }}:buildcache,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build and push - None
         uses: zmicro-design/action-docker-build@v1
         with:
