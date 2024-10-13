@@ -13,8 +13,8 @@ backend:
 password:
   mode: local # service | local, default: local
   local:
-    username: admin
-    password: admin
+    - username: admin
+      password: admin
 
 auth:
   mode: password

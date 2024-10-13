@@ -21,8 +21,8 @@ oauth2:
 password:
   mode: local # service | local, default: local
   local:
-    username: admin
-    password: admin
+    - username: admin
+      password: admin
   service: https://api.example.com  # POST
 
 auth:

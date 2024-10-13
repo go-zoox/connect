@@ -150,7 +150,15 @@ func Login(ctx *zoox.Context, cfg *config.Config, typ string, username string, p
 	}
 
 	if cfg.Password.Mode == "local" {
-		if username != cfg.Password.Local.Username || password != cfg.Password.Local.Password {
+		ok := false
+		for _, user := range cfg.Password.Local {
+			if username == user.Username && password == user.Password {
+				ok = true
+				break
+			}
+		}
+
+		if !ok {
 			return "", fmt.Errorf("用户名或密码错误")
 		}
 

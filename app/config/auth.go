@@ -26,9 +26,16 @@ type Auth struct {
 
 // AuthPassword ...
 type AuthPassword struct {
-	Mode    string            `config:"mode"`
-	Local   AuthPasswordLocal `config:"local"`
-	Service string            `config:"service"`
+	// Mode is the auth password mode
+	//	1. local
+	//	2. service
+	Mode string `config:"mode"`
+
+	// Local is the local password
+	Local []AuthPasswordLocal `config:"local"`
+
+	// Service is the service password
+	Service string `config:"service"`
 }
 
 // AuthPasswordLocal ...

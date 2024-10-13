@@ -11,35 +11,58 @@ import (
 
 // Config ...
 type Config struct {
-	Port      int64  `config:"port"`
-	Mode      string `config:"mode"`
+	// Port is the port of the server, default: 8080
+	Port int64 `config:"port"`
+
+	// Mode is the mode of the server, default: development
+	// options: development, production
+	Mode string `config:"mode"`
+
+	// SecretKey is the secret key of the server, default: random string
 	SecretKey string `config:"secret_key"`
+
 	// SessionMaxAge is the max age of session, unit: second, default: 86400
 	SessionMaxAge int64 `config:"session_max_age"`
 	//
 	sessionMaxAgeDuration time.Duration
+
 	// StaticCacheControlMaxAge is the max age of static cache control, unit: second, default: 7d
 	StaticCacheControlMaxAge int64
-	//
+
+	// LogLevel is the log level of the server, default: info
 	LogLevel string `config:"log_level"`
+
+	// Proxy Mode:
+	// - 1. frontend + backend
+	// - 2. upstream
+
 	// S1: Connect => Frontend + Backend
 	Frontend FrontendService `config:"frontend"`
 	Backend  BackendService  `config:"backend"`
 	// S2: Connect => Upstream
 	Upstream UpstreamService `config:"upstream"`
-	//
-	OAuth2   []AuthOAuth2 `config:"oauth2"`
-	Password AuthPassword `config:"password"`
-	//
+
+	// Auth is the auth config
 	Auth Auth `config:"auth"`
-	//
+	// OAuth2 is the oauth2 config
+	OAuth2 []AuthOAuth2 `config:"oauth2"`
+	// AuthPassword is the auth password config
+	Password AuthPassword `config:"password"`
+
+	// Services is the services config, e.g: app, user, menus, users, open_id
 	Services Services `config:"services"`
-	//
+
+	// LoadingHTML is the loading html, default: <html><body>Loading...</body></html>
+	// Only used in development mode
 	LoadingHTML string `config:"loading_html"`
-	IndexHTML   string `config:"index_html"`
-	//
+
+	// IndexHTML is the index html, default: <html><body>Index...</body></html>
+	IndexHTML string `config:"index_html"`
+
+	// Routes is the routes config, e.g: /api/app, /api/user
 	Routes []Route `config:"routes"`
-	//
+
+	// BuiltInAPIs is the built in apis config, e.g: app, user, menus, users, config
 	BuiltInAPIs BuiltInAPIs `config:"built_in_apis"`
 }
 
