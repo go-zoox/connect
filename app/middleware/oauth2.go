@@ -94,7 +94,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 							Nickname:    user.Nickname,
 							Email:       user.Email,
 							Permissions: user.Permissions,
-						}, cfg.SessionMaxAgeDuration)
+						}, cfg.GetSessionMaxAgeDuration())
 
 						// @2 cache app for service.GetApp()
 						ctx.Cache().Set("app", &service.App{
@@ -102,7 +102,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 							Description: cfg.Services.App.Local.Description,
 							Logo:        cfg.Services.App.Local.Logo,
 							Settings:    service.AppSettings(cfg.Services.App.Local.Settings),
-						}, cfg.SessionMaxAgeDuration)
+						}, cfg.GetSessionMaxAgeDuration())
 
 						// @3 cache menu for service.GetMenu()
 						menuCacheKey := fmt.Sprintf("menus:%s", token.AccessToken)
@@ -121,7 +121,7 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 								Redirect:   menu.Redirect,
 							})
 						}
-						ctx.Cache().Set(menuCacheKey, &menus, cfg.SessionMaxAgeDuration)
+						ctx.Cache().Set(menuCacheKey, &menus, cfg.GetSessionMaxAgeDuration())
 
 						// @4 cache users for service.GetUsers()
 					}

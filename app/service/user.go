@@ -48,7 +48,7 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 			Permissions: userD.Permissions,
 		}
 
-		ctx.Cache().Set(cacheKey, u, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, u, cfg.GetSessionMaxAgeDuration())
 		return u, statusCode, nil
 	}
 
@@ -131,14 +131,14 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 	}
 
 	// if len(user.Permissions) != 0 {
-	// 	ctx.Cache().Set(cacheKey, user, cfg.SessionMaxAgeDuration)
+	// 	ctx.Cache().Set(cacheKey, user, cfg.GetSessionMaxAgeDuration())
 	// } else {
 	// 	// no permission => 403 => cache 30s
 	// 	ctx.Cache().Set(cacheKey, user, 30*time.Second)
 	// }
 
 	logger.Info("[service.GetUser] user: %s(%s)", u.Nickname, u.Email)
-	ctx.Cache().Set(cacheKey, u, cfg.SessionMaxAgeDuration)
+	ctx.Cache().Set(cacheKey, u, cfg.GetSessionMaxAgeDuration())
 
 	return u, statusCode, nil
 }

@@ -40,7 +40,7 @@ func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string
 			Settings:    AppSettings(appD.Settings),
 		}
 
-		ctx.Cache().Set("app", app, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set("app", app, cfg.GetSessionMaxAgeDuration())
 		return app, 200, nil
 	}
 
@@ -73,6 +73,6 @@ func GetApp(ctx *zoox.Context, cfg *config.Config, provider string, token string
 		return nil, 500, fmt.Errorf("unmarshal app: %s (response: %s)", err, response.String())
 	}
 
-	ctx.Cache().Set("app", app, cfg.SessionMaxAgeDuration)
+	ctx.Cache().Set("app", app, cfg.GetSessionMaxAgeDuration())
 	return app, 200, nil
 }

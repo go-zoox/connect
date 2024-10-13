@@ -15,8 +15,9 @@ type Config struct {
 	Mode      string `config:"mode"`
 	SecretKey string `config:"secret_key"`
 	// SessionMaxAge is the max age of session, unit: second, default: 86400
-	SessionMaxAge         int64 `config:"session_max_age"`
-	SessionMaxAgeDuration time.Duration
+	SessionMaxAge int64 `config:"session_max_age"`
+	//
+	sessionMaxAgeDuration time.Duration
 	// StaticCacheControlMaxAge is the max age of static cache control, unit: second, default: 7d
 	StaticCacheControlMaxAge int64
 	//
@@ -40,6 +41,20 @@ type Config struct {
 	Routes []Route `config:"routes"`
 	//
 	BuiltInAPIs BuiltInAPIs `config:"built_in_apis"`
+}
+
+// GetSessionMaxAgeDuration gets the session max age duration.
+func (c *Config) GetSessionMaxAgeDuration() time.Duration {
+	if c.sessionMaxAgeDuration == 0 {
+		return DefaultMaxSessionAgeInSecond * time.Second
+	}
+
+	return c.sessionMaxAgeDuration
+}
+
+// SetSessionMaxAgeDuration sets the session max age duration.
+func (c *Config) SetSessionMaxAgeDuration(d time.Duration) {
+	c.sessionMaxAgeDuration = d
 }
 
 // FrontendService ...

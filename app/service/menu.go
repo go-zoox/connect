@@ -51,7 +51,7 @@ func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token strin
 			})
 		}
 
-		ctx.Cache().Set(cacheKey, &menus, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, &menus, cfg.GetSessionMaxAgeDuration())
 		return menus, statusCode, nil
 	}
 
@@ -88,7 +88,7 @@ func GetMenu(ctx *zoox.Context, cfg *config.Config, provider string, token strin
 	}
 
 	if len(menus) != 0 {
-		ctx.Cache().Set(cacheKey, &menus, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, &menus, cfg.GetSessionMaxAgeDuration())
 	} else {
 		// no menus => 403 => cache 30s
 		ctx.Cache().Set(cacheKey, &menus, 30*time.Second)

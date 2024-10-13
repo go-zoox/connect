@@ -92,7 +92,7 @@ ____________________________________O/_______
 
 	e.core.Config.SecretKey = cfg.SecretKey
 
-	e.core.Config.Session.MaxAge = cfg.SessionMaxAgeDuration
+	e.core.Config.Session.MaxAge = cfg.GetSessionMaxAgeDuration()
 	// iframe
 	e.core.Config.Session.Secure = true
 	e.core.Config.Session.SameSite = http.SameSiteNoneMode

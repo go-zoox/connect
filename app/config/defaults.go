@@ -194,14 +194,14 @@ func (c *Config) ApplyDefault() {
 	}
 
 	if c.SessionMaxAge == 0 {
-		c.SessionMaxAge = 86400
+		c.SessionMaxAge = DefaultMaxSessionAgeInSecond
 	}
 
 	if c.Backend.Prefix == "" {
 		c.Backend.Prefix = "/api"
 	}
 
-	c.SessionMaxAgeDuration = time.Duration(c.SessionMaxAge) * time.Second
+	c.SetSessionMaxAgeDuration(time.Duration(c.SessionMaxAge) * time.Second)
 
 	// built in apis
 	if c.BuiltInAPIs.App == "" {

@@ -33,7 +33,7 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 			OpenID: appD.OpenID,
 		}
 
-		ctx.Cache().Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
+		ctx.Cache().Set(cacheKey, instance, cfg.GetSessionMaxAgeDuration())
 		return instance.OpenID, statusCode, nil
 	}
 
@@ -81,6 +81,6 @@ func GetOpenID(ctx *zoox.Context, cfg *config.Config, provider string, email str
 	}
 
 	logger.Info("[service.GetOpenID][%s: %s] open_id: %s", email, provider, response.String())
-	ctx.Cache().Set(cacheKey, instance, cfg.SessionMaxAgeDuration)
+	ctx.Cache().Set(cacheKey, instance, cfg.GetSessionMaxAgeDuration())
 	return instance.OpenID, statusCode, nil
 }
