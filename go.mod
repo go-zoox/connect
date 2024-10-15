@@ -19,7 +19,7 @@ require (
 	github.com/go-zoox/oauth2 v1.8.0
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
-	github.com/go-zoox/zoox v1.15.15
+	github.com/go-zoox/zoox v1.15.17
 )
 
 require (
