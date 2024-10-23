@@ -125,7 +125,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	// routes
 	for _, route := range cfg.Routes {
-		app.Logger.Infof("[router] load route: %s => %s (secret_key: %s)", route.Path, route.Backend.String(), route.Backend.SecretKey)
+		app.Logger().Infof("[router] load route: %s => %s (secret_key: %s)", route.Path, route.Backend.String(), route.Backend.SecretKey)
 
 		app.Proxy(route.Path, route.Backend.String(), func(cfgX *zoox.ProxyConfig) {
 			if !route.Backend.DisableRewrite {
@@ -138,7 +138,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 			}
 
 			cfgX.OnRequestWithContext = func(ctx *zoox.Context) error {
-				// app.Logger.Infof("[api][ms] %s => %s (secret_key: %s)", route.Path, route.Backend.String(), route.Backend.SecretKey)
+				// app.Logger().Infof("[api][ms] %s => %s (secret_key: %s)", route.Path, route.Backend.String(), route.Backend.SecretKey)
 
 				if route.Backend.SecretKey != "" {
 					signer := jwt.New(route.Backend.SecretKey)
@@ -181,12 +181,12 @@ func New(app *zoox.Application, cfg *config.Config) {
 	//    	/open/* 		=> upstream:/open/*
 	//			/* 					=> upstream:/*
 	if cfg.Upstream.IsValid() {
-		app.Logger.Infof("mode: upstream")
-		app.Logger.Infof("upstream: %s", cfg.Upstream.String())
+		app.Logger().Infof("mode: upstream")
+		app.Logger().Infof("upstream: %s", cfg.Upstream.String())
 		//
-		app.Logger.Infof("auth: %s", cfg.Auth.Mode)
+		app.Logger().Infof("auth: %s", cfg.Auth.Mode)
 		if cfg.Auth.Mode == "oauth2" {
-			app.Logger.Infof("provider: %s", cfg.Auth.Provider)
+			app.Logger().Infof("provider: %s", cfg.Auth.Provider)
 		}
 
 		up := upstream.New(cfg)
@@ -256,13 +256,13 @@ func New(app *zoox.Application, cfg *config.Config) {
 	//	  /api/*			=> backend:/api/*
 	//		/api/open/* => backend:/api/open/*
 	//
-	app.Logger.Infof("mode: frontend + backend")
-	app.Logger.Infof("frontend: %s", cfg.Frontend.String())
-	app.Logger.Infof("backend: %s", cfg.Backend.String())
+	app.Logger().Infof("mode: frontend + backend")
+	app.Logger().Infof("frontend: %s", cfg.Frontend.String())
+	app.Logger().Infof("backend: %s", cfg.Backend.String())
 	//
-	app.Logger.Infof("auth: %s", cfg.Auth.Mode)
+	app.Logger().Infof("auth: %s", cfg.Auth.Mode)
 	if cfg.Auth.Mode == "oauth2" {
-		app.Logger.Infof("provider: %s", cfg.Auth.Provider)
+		app.Logger().Infof("provider: %s", cfg.Auth.Provider)
 	}
 
 	// proxy pass
