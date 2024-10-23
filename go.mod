@@ -15,11 +15,11 @@ require (
 	github.com/go-zoox/fs v1.3.15
 	github.com/go-zoox/headers v1.0.8
 	github.com/go-zoox/jwt v1.4.0
-	github.com/go-zoox/logger v1.6.2
+	github.com/go-zoox/logger v1.6.3
 	github.com/go-zoox/oauth2 v1.8.0
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
-	github.com/go-zoox/zoox v1.15.17
+	github.com/go-zoox/zoox v1.15.18
 )
 
 require (
@@ -43,7 +43,6 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
-	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-zoox/command v1.7.0 // indirect
 	github.com/go-zoox/commands-as-a-service v1.7.11 // indirect
@@ -76,10 +75,9 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
-	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
@@ -119,10 +117,12 @@ require (
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
-	google.golang.org/grpc v1.62.1 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241021214115-324edc3d5d38 // indirect
+	google.golang.org/grpc v1.64.1 // indirect
+	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 // replace github.com/go-zoox/logger => ../logger
+
 // replace github.com/go-zoox/zoox => ../zoox

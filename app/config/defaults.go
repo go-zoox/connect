@@ -40,6 +40,8 @@ func (c *Config) ApplyDefault() {
 
 	if os.Getenv("LOG_LEVEL") != "" {
 		c.LogLevel = os.Getenv("LOG_LEVEL")
+	} else {
+		c.LogLevel = "error"
 	}
 
 	if os.Getenv("AUTH_MODE") != "" {
