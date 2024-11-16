@@ -181,6 +181,13 @@ func (c *Config) ApplyDefault() {
 		c.Services.Menus.Service = "https://api.zcorky.com/menus"
 	}
 
+	if c.Services.Permissions.Mode == "" {
+		c.Services.Permissions.Mode = "service"
+	}
+	if c.Services.Permissions.Service == "" {
+		c.Services.Permissions.Service = "https://api.zcorky.com/permissions"
+	}
+
 	if c.Services.Users.Mode == "" {
 		c.Services.Users.Mode = "service"
 	}
@@ -225,6 +232,13 @@ func (c *Config) ApplyDefault() {
 			c.BuiltInAPIs.Menus = os.Getenv("BUILT_IN_APIS_MENUS")
 		} else {
 			c.BuiltInAPIs.Menus = "/menus"
+		}
+	}
+	if c.BuiltInAPIs.Permissions == "" {
+		if os.Getenv("BUILT_IN_APIS_PERMISSIONS") != "" {
+			c.BuiltInAPIs.Permissions = os.Getenv("BUILT_IN_APIS_PERMISSIONS")
+		} else {
+			c.BuiltInAPIs.Permissions = "/permissions"
 		}
 	}
 	if c.BuiltInAPIs.Users == "" {

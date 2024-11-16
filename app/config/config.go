@@ -112,11 +112,12 @@ type UpstreamService struct {
 
 // Services ...
 type Services struct {
-	App    ServicesApp    `config:"app"`
-	User   ServicesUser   `config:"user"`
-	Menus  ServicesMenus  `config:"menus"`
-	Users  ServicesUsers  `config:"users"`
-	OpenID ServicesOpenID `config:"open_id"`
+	App         ServicesApp         `config:"app"`
+	User        ServicesUser        `config:"user"`
+	Menus       ServicesMenus       `config:"menus"`
+	Permissions ServicesPermissions `config:"permissions"`
+	Users       ServicesUsers       `config:"users"`
+	OpenID      ServicesOpenID      `config:"open_id"`
 }
 
 // ServicesApp ...
@@ -154,6 +155,13 @@ type ServicesMenus struct {
 	Service string     `config:"service"`
 }
 
+// ServicesPermissions ...
+type ServicesPermissions struct {
+	Mode    string           `config:"mode"`
+	Local   []PermissionItem `config:"local"`
+	Service string           `config:"service"`
+}
+
 // ServicesUsers ...
 type ServicesUsers struct {
 	Mode    string     `config:"mode"`
@@ -189,11 +197,12 @@ type RouteBackend struct {
 
 // BuiltInAPIs ...
 type BuiltInAPIs struct {
-	App    string `config:"app"`
-	User   string `config:"user"`
-	Menus  string `config:"menus"`
-	Users  string `config:"users"`
-	Config string `config:"config"`
+	App         string `config:"app"`
+	User        string `config:"user"`
+	Menus       string `config:"menus"`
+	Permissions string `config:"permissions"`
+	Users       string `config:"users"`
+	Config      string `config:"config"`
 	//
 	QRCode string `config:"qrcode"`
 	//
@@ -215,6 +224,9 @@ type MenuItem struct {
 	IFrame     string `config:"iframe"`
 	Redirect   string `config:"redirect"`
 }
+
+// PermissionItem ...
+type PermissionItem = string
 
 // String ...
 func (s *FrontendService) String() string {

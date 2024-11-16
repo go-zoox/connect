@@ -48,6 +48,9 @@ var FailedToGetUser = New(400202, "Failed to get user")
 // FailedToGetMenus means failed to get menus
 var FailedToGetMenus = New(400203, "获取菜单失败")
 
+// FailedToGetPermissions means failed to get permissions
+var FailedToGetPermissions = New(400206, "获取权限失败")
+
 // FailedToGetApps means failed to get apps
 var FailedToGetApps = New(400204, "获取应用失败")
 

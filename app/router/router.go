@@ -22,6 +22,7 @@ import (
 	apiBackend "github.com/go-zoox/connect/app/api/core/backend"
 	apiConfig "github.com/go-zoox/connect/app/api/core/config"
 	apiMenus "github.com/go-zoox/connect/app/api/core/menus"
+	apiPermissions "github.com/go-zoox/connect/app/api/core/permissions"
 	apiQRCode "github.com/go-zoox/connect/app/api/core/qrcode"
 	apiUser "github.com/go-zoox/connect/app/api/core/user"
 
@@ -67,7 +68,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 	// api
 	app.Group("/api", func(group *zoox.RouterGroup) {
 		group.Use(zm.CacheControl(&zm.CacheControlConfig{
-			Paths:  []string{"^/api/(app|menus|users|config)$"},
+			Paths:  []string{"^/api/(app|menus|permissions|users|config)$"},
 			MaxAge: 30 * time.Second,
 		}))
 
@@ -77,6 +78,8 @@ func New(app *zoox.Application, cfg *config.Config) {
 		group.Get(cfg.BuiltInAPIs.User, apiUser.New(cfg))
 		// /menus
 		group.Get(cfg.BuiltInAPIs.Menus, apiMenus.New(cfg))
+		// /permissions
+		group.Get(cfg.BuiltInAPIs.Permissions, apiPermissions.New(cfg))
 		// /users
 		group.Get(cfg.BuiltInAPIs.Users, apiUser.GetUsers(cfg))
 		// /config
@@ -100,6 +103,8 @@ func New(app *zoox.Application, cfg *config.Config) {
 			g.Get("/user", apiUser.New(cfg))
 			// /api/_/menus
 			g.Get("/menus", apiMenus.New(cfg))
+			// /api/_/permissions
+			g.Get("/permissions", apiPermissions.New(cfg))
 			// /api/_/users
 			g.Get("/users", apiUser.GetUsers(cfg))
 			// /api/_/config

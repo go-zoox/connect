@@ -53,6 +53,8 @@ func Create(cfg *Config) (*config.Config, error) {
 	cfgX.Services.User.Service = "https://api.zcorky.com/user"
 	cfgX.Services.Menus.Mode = "service"
 	cfgX.Services.Menus.Service = "https://api.zcorky.com/menus"
+	cfgX.Services.Permissions.Mode = "service"
+	cfgX.Services.Permissions.Service = "https://api.zcorky.com/permissions"
 	cfgX.Services.Users.Mode = "service"
 	cfgX.Services.Users.Service = "https://api.zcorky.com/users"
 	cfgX.Services.OpenID.Mode = "service"
