@@ -31,4 +31,6 @@ COPY --from=builder /app/connect /bin
 
 EXPOSE 8080
 
-CMD connect none
+COPY ./entrypoint.none.sh /entrypoint.sh
+
+CMD /entrypoint.sh
