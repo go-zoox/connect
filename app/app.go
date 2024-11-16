@@ -94,8 +94,10 @@ ____________________________________O/_______
 
 	e.core.Config.Session.MaxAge = cfg.GetSessionMaxAgeDuration()
 	// iframe
-	e.core.Config.Session.Secure = true
-	e.core.Config.Session.SameSite = http.SameSiteNoneMode
+	if e.core.IsProd() {
+		e.core.Config.Session.Secure = true
+		e.core.Config.Session.SameSite = http.SameSiteNoneMode
+	}
 
 	// 1. register loading
 	e.registerLoading()

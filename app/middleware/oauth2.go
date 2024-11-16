@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"time"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/service"
@@ -58,6 +59,8 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 
 			if ctx.Session().Get("oauth2_state") != state {
 				logger.Infof("state not match: expect %s, but got %s", ctx.Session().Get("oauth2_state"), state)
+
+				time.Sleep(1 * time.Second)
 
 				// panic("oauth2_state is not match")
 				ctx.Redirect(fmt.Sprintf("/login/%s", provider))

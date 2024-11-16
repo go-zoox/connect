@@ -40,7 +40,9 @@ func New(app *zoox.Application, cfg *config.Config) {
 		ctx.JSON(http.StatusOK, cfg.BuiltInAPIs)
 	})
 
-	app.Use(middleware.Static(cfg))
+	if app.IsProd() {
+		app.Use(middleware.Static(cfg))
+	}
 
 	if cfg.Auth.Mode != "none" {
 		app.Use(middleware.OAuth2(cfg))
