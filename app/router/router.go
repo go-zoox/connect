@@ -67,62 +67,64 @@ func New(app *zoox.Application, cfg *config.Config) {
 
 	app.Get("/captcha", captcha.New(cfg))
 
-	// api
-	app.Group("/api", func(group *zoox.RouterGroup) {
-		group.Use(zm.CacheControl(&zm.CacheControlConfig{
-			Paths:  []string{"^/api/(app|menus|permissions|users|config)$"},
-			MaxAge: 30 * time.Second,
-		}))
+	if cfg.Auth.Mode != "none" {
+		// api
+		app.Group("/api", func(group *zoox.RouterGroup) {
+			group.Use(zm.CacheControl(&zm.CacheControlConfig{
+				Paths:  []string{"^/api/(app|menus|permissions|users|config)$"},
+				MaxAge: 30 * time.Second,
+			}))
 
-		// /app
-		group.Get(cfg.BuiltInAPIs.App, apiApp.New(cfg))
-		// /user
-		group.Get(cfg.BuiltInAPIs.User, apiUser.New(cfg))
-		// /menus
-		group.Get(cfg.BuiltInAPIs.Menus, apiMenus.New(cfg))
-		// /permissions
-		group.Get(cfg.BuiltInAPIs.Permissions, apiPermissions.New(cfg))
-		// /users
-		group.Get(cfg.BuiltInAPIs.Users, apiUser.GetUsers(cfg))
-		// /config
-		group.Get(cfg.BuiltInAPIs.Config, apiConfig.New(cfg))
-		// /qrcode
-		qrcodeBasePath := cfg.BuiltInAPIs.QRCode
-		group.Get(fmt.Sprintf("%s/device/uuid", qrcodeBasePath), apiQRCode.GenerateDeviceUUID(cfg))
-		group.Get(fmt.Sprintf("%s/device/status", qrcodeBasePath), apiQRCode.GetDeviceStatus(cfg))
-		group.Post(fmt.Sprintf("%s/device/token", qrcodeBasePath), apiQRCode.GetDeviceToken(cfg))
-		group.Get(fmt.Sprintf("%s/device/user", qrcodeBasePath), apiQRCode.GetUser(cfg))
-		// /login
-		group.Post(cfg.BuiltInAPIs.Login, apiUser.Login(cfg))
-
-		// public apis: /api/_/*
-		group.Group(cfg.BuiltInAPIs.Public, func(g *zoox.RouterGroup) {
-			// new
-
-			// /api/_/app
-			g.Get("/app", apiApp.New(cfg))
-			// /api/_/user
-			g.Get("/user", apiUser.New(cfg))
-			// /api/_/menus
-			g.Get("/menus", apiMenus.New(cfg))
-			// /api/_/permissions
-			g.Get("/permissions", apiPermissions.New(cfg))
-			// /api/_/users
-			g.Get("/users", apiUser.GetUsers(cfg))
-			// /api/_/config
-			g.Get("/config", apiConfig.New(cfg))
-			// /api/_/qrcode
-			g.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
-			g.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
-			g.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
-			g.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
+			// /app
+			group.Get(cfg.BuiltInAPIs.App, apiApp.New(cfg))
+			// /user
+			group.Get(cfg.BuiltInAPIs.User, apiUser.New(cfg))
+			// /menus
+			group.Get(cfg.BuiltInAPIs.Menus, apiMenus.New(cfg))
+			// /permissions
+			group.Get(cfg.BuiltInAPIs.Permissions, apiPermissions.New(cfg))
+			// /users
+			group.Get(cfg.BuiltInAPIs.Users, apiUser.GetUsers(cfg))
+			// /config
+			group.Get(cfg.BuiltInAPIs.Config, apiConfig.New(cfg))
+			// /qrcode
+			qrcodeBasePath := cfg.BuiltInAPIs.QRCode
+			group.Get(fmt.Sprintf("%s/device/uuid", qrcodeBasePath), apiQRCode.GenerateDeviceUUID(cfg))
+			group.Get(fmt.Sprintf("%s/device/status", qrcodeBasePath), apiQRCode.GetDeviceStatus(cfg))
+			group.Post(fmt.Sprintf("%s/device/token", qrcodeBasePath), apiQRCode.GetDeviceToken(cfg))
+			group.Get(fmt.Sprintf("%s/device/user", qrcodeBasePath), apiQRCode.GetUser(cfg))
 			// /login
-			g.Post("/login", apiUser.Login(cfg))
+			group.Post(cfg.BuiltInAPIs.Login, apiUser.Login(cfg))
 
-			// metadata
-			g.Get("/login/:provider/metadata", apiPublic.GetLoginProviderMetedata(cfg))
+			// public apis: /api/_/*
+			group.Group(cfg.BuiltInAPIs.Public, func(g *zoox.RouterGroup) {
+				// new
+
+				// /api/_/app
+				g.Get("/app", apiApp.New(cfg))
+				// /api/_/user
+				g.Get("/user", apiUser.New(cfg))
+				// /api/_/menus
+				g.Get("/menus", apiMenus.New(cfg))
+				// /api/_/permissions
+				g.Get("/permissions", apiPermissions.New(cfg))
+				// /api/_/users
+				g.Get("/users", apiUser.GetUsers(cfg))
+				// /api/_/config
+				g.Get("/config", apiConfig.New(cfg))
+				// /api/_/qrcode
+				g.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
+				g.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
+				g.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
+				g.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
+				// /login
+				g.Post("/login", apiUser.Login(cfg))
+
+				// metadata
+				g.Get("/login/:provider/metadata", apiPublic.GetLoginProviderMetedata(cfg))
+			})
 		})
-	})
+	}
 
 	// backend api
 	api := app.Group(cfg.Backend.Prefix)
