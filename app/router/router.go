@@ -16,7 +16,6 @@ import (
 	"github.com/go-zoox/jwt"
 	"github.com/go-zoox/proxy/utils/rewriter"
 	"github.com/go-zoox/zoox"
-	zm "github.com/go-zoox/zoox/middleware"
 
 	apiApp "github.com/go-zoox/connect/app/api/core/app"
 	apiBackend "github.com/go-zoox/connect/app/api/core/backend"
@@ -70,10 +69,10 @@ func New(app *zoox.Application, cfg *config.Config) {
 	if cfg.Auth.Mode != "none" {
 		// api
 		app.Group("/api", func(group *zoox.RouterGroup) {
-			group.Use(zm.CacheControl(&zm.CacheControlConfig{
-				Paths:  []string{"^/api/(app|menus|permissions|users|config)$"},
-				MaxAge: 30 * time.Second,
-			}))
+			// group.Use(zm.CacheControl(&zm.CacheControlConfig{
+			// 	Paths:  []string{"^/api/(app|menus|permissions|users|config)$"},
+			// 	MaxAge: 30 * time.Second,
+			// }))
 
 			// /app
 			group.Get(cfg.BuiltInAPIs.App, apiApp.New(cfg))
