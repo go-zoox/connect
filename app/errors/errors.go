@@ -27,11 +27,11 @@ func (be *BusinessError) Wrap(err error) *BusinessError {
 	}
 }
 
+// FailedToGetToken means failed to get token
+var FailedToGetToken = New(401100, "Failed to get token")
+
 // InvalidJSON means invalid json
 var InvalidJSON = New(400000, "invalid json")
-
-// FailedToGetToken means failed to get token
-var FailedToGetToken = New(400100, "Failed to get token")
 
 // FailedToGetOAuth2Provider means failed to get oauth2 provider
 var FailedToGetOAuth2Provider = New(400101, "Failed to get oauth2 provider")
