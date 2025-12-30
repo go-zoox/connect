@@ -55,10 +55,11 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 			state := ctx.Query().Get("state").String()
 			provider := loginCallbackRegExp.FindStringSubmatch(ctx.Path)[1]
 
-			logger.Infof("[oauth2:callback] provider(%s) - code(%s) - state(%s)", provider, code, state)
+			expectedState := ctx.Session().Get("oauth2_state")
+			logger.Infof("[oauth2:callback] provider(%s) - code(%s) - state(%s) - expected_state(%s)", provider, code, state, expectedState)
 
-			if ctx.Session().Get("oauth2_state") != state {
-				logger.Infof("state not match: expect %s, but got %s", ctx.Session().Get("oauth2_state"), state)
+			if expectedState != state {
+				logger.Warnf("[oauth2:callback] state not match: expect '%s', but got '%s' (provider: %s, session may be expired or lost)", expectedState, state, provider)
 
 				time.Sleep(1 * time.Second)
 

@@ -3,7 +3,9 @@ package app
 import (
 	"embed"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/go-zoox/chalk"
 	"github.com/go-zoox/connect"
@@ -95,7 +97,30 @@ ____________________________________O/_______
 	e.core.Config.Session.MaxAge = cfg.GetSessionMaxAgeDuration()
 	// iframe
 	if e.core.IsProd() {
-		e.core.Config.Session.Secure = true
+		// Check if we should use secure cookies based on OAuth2 redirect URIs
+		// If all redirect URIs use HTTP, don't set Secure=true (cookies won't work over HTTP)
+		useSecure := true
+		if len(cfg.OAuth2) > 0 {
+			hasHTTPS := false
+			for _, oauth2Cfg := range cfg.OAuth2 {
+				if oauth2Cfg.RedirectURI != "" {
+					u, err := url.Parse(oauth2Cfg.RedirectURI)
+					if err == nil && strings.ToLower(u.Scheme) == "https" {
+						hasHTTPS = true
+						break
+					}
+				}
+			}
+			// Only use secure cookies if at least one redirect URI uses HTTPS
+			useSecure = hasHTTPS
+		}
+		// Allow override via environment variable
+		if os.Getenv("SESSION_SECURE") == "false" {
+			useSecure = false
+		} else if os.Getenv("SESSION_SECURE") == "true" {
+			useSecure = true
+		}
+		e.core.Config.Session.Secure = useSecure
 		e.core.Config.Session.SameSite = http.SameSiteNoneMode
 	}
 
