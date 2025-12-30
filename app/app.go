@@ -121,7 +121,12 @@ ____________________________________O/_______
 			useSecure = true
 		}
 		e.core.Config.Session.Secure = useSecure
-		e.core.Config.Session.SameSite = http.SameSiteNoneMode
+		// SameSite=None requires Secure=true, so use Lax for HTTP
+		if useSecure {
+			e.core.Config.Session.SameSite = http.SameSiteNoneMode
+		} else {
+			e.core.Config.Session.SameSite = http.SameSiteLaxMode
+		}
 	}
 
 	// 1. register loading
