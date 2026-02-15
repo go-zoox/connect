@@ -16,7 +16,7 @@ require (
 	github.com/go-zoox/headers v1.0.8
 	github.com/go-zoox/jwt v1.4.0
 	github.com/go-zoox/logger v1.6.3
-	github.com/go-zoox/oauth2 v1.8.0
+	github.com/go-zoox/oauth2 v1.9.0
 	github.com/go-zoox/proxy v1.5.6
 	github.com/go-zoox/random v1.0.4
 	github.com/go-zoox/zoox v1.16.2

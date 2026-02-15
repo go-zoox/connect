@@ -161,7 +161,12 @@ func OAuth2(cfg *config.Config) zoox.HandlerFunc {
 			if err != nil {
 				panic(err)
 			}
-			client.Logout(func(logoutURL string) {
+
+			state := random.String(8)
+			ctx.Session().Set("oauth2_state", state)
+
+			logger.Infof("[oauth2:logout] provider(%s) - state(%s) - from(%s)", provider, state, ctx.Session().Get("from"))
+			client.Logout(state, func(logoutURL string) {
 				// clear token
 				service.DelToken(ctx)
 				// clear provider
