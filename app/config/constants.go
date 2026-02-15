@@ -1,4 +1,4 @@
 package config
 
-// DefaultMaxSessionAgeInSecond means the default max session age in second.
-const DefaultMaxSessionAgeInSecond = 86400
+// DefaultMaxSessionAgeInSecond means the default max session age in second, value: 7 days
+const DefaultMaxSessionAgeInSecond = 7 * 86400
