@@ -24,7 +24,7 @@ func Bootstrap(cfg *config.Config) error {
 		return err
 	}
 
-	engine, err := adminEngine(cfg.Admin.Database.Driver)
+	engine, err := adminEngine(strings.TrimSpace(cfg.Admin.Database.Driver))
 	if err != nil {
 		return err
 	}
@@ -43,8 +43,8 @@ func Bootstrap(cfg *config.Config) error {
 	return seedRootAdmin(db, cfg)
 }
 
-func adminEngine(driver config.AdminDatabaseDriver) (string, error) {
-	d := strings.TrimSpace(strings.ToLower(string(driver)))
+func adminEngine(driver string) (string, error) {
+	d := strings.TrimSpace(strings.ToLower(driver))
 	switch d {
 	case "mysql":
 		return "mysql", nil

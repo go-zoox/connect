@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -162,5 +164,37 @@ func TestValidateAdmin_EntryAllowsSafeCustomPaths(t *testing.T) {
 	c.Admin.Entry = "/console"
 	if err := c.ValidateAdmin(); err != nil {
 		t.Fatalf("ValidateAdmin: %v", err)
+	}
+}
+
+// Regression: go-zoox/config must populate admin.database.driver from YAML (plain string field).
+func TestLoadFillsAdminDatabaseDriverFromYAML(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "cfg.yml")
+	y := `
+port: 9090
+admin:
+  enabled: true
+  entry: /admin
+  auth:
+    admin:
+      username: u
+      password: p
+  database:
+    driver: sqlite
+    dsn: file:test.db?cache=shared
+`
+	if err := os.WriteFile(path, []byte(strings.TrimSpace(y)), 0644); err != nil {
+		t.Fatal(err)
+	}
+	c, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.Admin.Database.Driver != "sqlite" {
+		t.Fatalf("admin.database.driver: want sqlite, got %q", c.Admin.Database.Driver)
+	}
+	if !strings.Contains(c.Admin.Database.DSN, "test.db") {
+		t.Fatalf("admin.database.dsn: unexpected %q", c.Admin.Database.DSN)
 	}
 }

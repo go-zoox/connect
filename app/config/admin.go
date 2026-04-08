@@ -25,13 +25,11 @@ type AdminRootCredentials struct {
 	Password string `config:"password"`
 }
 
-// AdminDatabaseDriver names the SQL driver used by the admin database.
-type AdminDatabaseDriver string
-
 // AdminDatabaseConfig holds DSN settings for the built-in admin database.
+// Driver must be a plain string (not a named string type) so go-zoox/config fills it from YAML.
 type AdminDatabaseConfig struct {
-	Driver AdminDatabaseDriver `config:"driver"`
-	DSN    string              `config:"dsn"`
+	Driver string `config:"driver"`
+	DSN    string `config:"dsn"`
 }
 
 // NormalizedAdminEntry returns the URL path prefix for the built-in admin UI: leading slash, no trailing slash.
@@ -108,7 +106,7 @@ func (c *Config) ValidateAdmin() error {
 		return fmt.Errorf("admin: when admin.enabled is true, admin.auth.admin.username and admin.auth.admin.password must both be non-empty")
 	}
 
-	driver := strings.TrimSpace(string(c.Admin.Database.Driver))
+	driver := strings.TrimSpace(c.Admin.Database.Driver)
 	if driver == "" {
 		return fmt.Errorf("admin: when admin.enabled is true, admin.database.driver must be non-empty")
 	}
