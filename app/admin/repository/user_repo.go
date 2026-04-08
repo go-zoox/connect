@@ -15,7 +15,7 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 	return &UserRepo{db: db}
 }
 
-// GetByUsername returns the active admin user with the given username, or gorm.ErrRecordNotFound.
+// GetByUsername returns the non-soft-deleted admin user with the given username, or gorm.ErrRecordNotFound.
 func (r *UserRepo) GetByUsername(username string) (*model.User, error) {
 	var u model.User
 	err := r.db.Where("username = ?", username).First(&u).Error

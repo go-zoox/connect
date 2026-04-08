@@ -19,20 +19,27 @@ func NewRBACRepo(db *gorm.DB) *RBACRepo {
 
 // EffectivePermissionCodes returns distinct permission keys for userID from:
 // direct user roles and roles inherited via group membership.
+// Soft-deleted roles and groups are ignored, so their permissions are not included.
 func (r *RBACRepo) EffectivePermissionCodes(userID uint) ([]string, error) {
 	var directRoleIDs []uint
-	if err := r.db.Model(&model.UserRole{}).Where("user_id = ?", userID).Pluck("role_id", &directRoleIDs).Error; err != nil {
+	if err := r.db.Model(&model.UserRole{}).
+		Where("user_id = ? AND role_id IN (?)", userID, r.db.Model(&model.Role{}).Select("id")).
+		Pluck("role_id", &directRoleIDs).Error; err != nil {
 		return nil, err
 	}
 
 	var groupIDs []uint
-	if err := r.db.Model(&model.GroupUser{}).Where("user_id = ?", userID).Pluck("group_id", &groupIDs).Error; err != nil {
+	if err := r.db.Model(&model.GroupUser{}).
+		Where("user_id = ? AND group_id IN (?)", userID, r.db.Model(&model.Group{}).Select("id")).
+		Pluck("group_id", &groupIDs).Error; err != nil {
 		return nil, err
 	}
 
 	var groupRoleIDs []uint
 	if len(groupIDs) > 0 {
-		if err := r.db.Model(&model.GroupRole{}).Where("group_id IN ?", groupIDs).Pluck("role_id", &groupRoleIDs).Error; err != nil {
+		if err := r.db.Model(&model.GroupRole{}).
+			Where("group_id IN ? AND role_id IN (?)", groupIDs, r.db.Model(&model.Role{}).Select("id")).
+			Pluck("role_id", &groupRoleIDs).Error; err != nil {
 			return nil, err
 		}
 	}
