@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-zoox/chalk"
 	"github.com/go-zoox/connect"
+	"github.com/go-zoox/connect/app/admin/bootstrap"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
 	"github.com/go-zoox/core-utils/fmt"
@@ -75,6 +76,10 @@ func (e *Connect) handle(cfg *config.Config) error {
 
 	if err := cfg.ValidateAdmin(); err != nil {
 		return stdfmt.Errorf("config validation failed: %w", err)
+	}
+
+	if err := bootstrap.Bootstrap(cfg); err != nil {
+		return stdfmt.Errorf("admin bootstrap failed: %w", err)
 	}
 
 	if debug.IsDebugMode() {

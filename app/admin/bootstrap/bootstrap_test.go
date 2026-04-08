@@ -31,6 +31,12 @@ func TestBootstrapAdminMode(t *testing.T) {
 	}
 
 	db := gormx.GetDB()
+	for _, m := range model.MigrateModels() {
+		if !db.Migrator().HasTable(m) {
+			t.Fatalf("after bootstrap, expected migrated table for %T", m)
+		}
+	}
+
 	var count int64
 	if err := db.Model(&model.User{}).Count(&count).Error; err != nil {
 		t.Fatalf("count users: %v", err)

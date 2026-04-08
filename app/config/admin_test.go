@@ -35,7 +35,25 @@ func TestAdminEnabledRequiresRootCredentials(t *testing.T) {
 
 	c.Admin.Auth.Admin.Username = "root"
 	c.Admin.Auth.Admin.Password = "secret"
+	err = c.ValidateAdmin()
+	if err == nil {
+		t.Fatal("expected error when admin.enabled with credentials but no database.driver")
+	}
+	if !strings.Contains(err.Error(), "admin.database.driver") {
+		t.Fatalf("expected database.driver requirement, got: %v", err)
+	}
+
+	c.Admin.Database.Driver = "sqlite"
+	err = c.ValidateAdmin()
+	if err == nil {
+		t.Fatal("expected error when admin.enabled with driver but no database.dsn")
+	}
+	if !strings.Contains(err.Error(), "admin.database.dsn") {
+		t.Fatalf("expected database.dsn requirement, got: %v", err)
+	}
+
+	c.Admin.Database.DSN = "file:validate_admin?mode=memory&cache=shared"
 	if err := c.ValidateAdmin(); err != nil {
-		t.Fatalf("ValidateAdmin with credentials: %v", err)
+		t.Fatalf("ValidateAdmin with credentials and database: %v", err)
 	}
 }

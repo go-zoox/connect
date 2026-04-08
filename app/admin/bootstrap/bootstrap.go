@@ -30,9 +30,6 @@ func Bootstrap(cfg *config.Config) error {
 	}
 
 	dsn := strings.TrimSpace(cfg.Admin.Database.DSN)
-	if dsn == "" {
-		return fmt.Errorf("admin: database.dsn is required when admin.enabled is true")
-	}
 
 	if err := gormx.LoadDB(engine, dsn); err != nil {
 		return err

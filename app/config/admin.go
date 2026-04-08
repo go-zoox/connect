@@ -33,7 +33,7 @@ type AdminDatabaseConfig struct {
 	DSN    string              `config:"dsn"`
 }
 
-// ValidateAdmin returns an error when admin is enabled but root credentials are missing.
+// ValidateAdmin returns an error when admin is enabled but required settings are missing.
 func (c *Config) ValidateAdmin() error {
 	if !c.Admin.Enabled {
 		return nil
@@ -43,6 +43,16 @@ func (c *Config) ValidateAdmin() error {
 	p := strings.TrimSpace(c.Admin.Auth.Admin.Password)
 	if u == "" || p == "" {
 		return fmt.Errorf("admin: when admin.enabled is true, admin.auth.admin.username and admin.auth.admin.password must both be non-empty")
+	}
+
+	driver := strings.TrimSpace(string(c.Admin.Database.Driver))
+	if driver == "" {
+		return fmt.Errorf("admin: when admin.enabled is true, admin.database.driver must be non-empty")
+	}
+
+	dsn := strings.TrimSpace(c.Admin.Database.DSN)
+	if dsn == "" {
+		return fmt.Errorf("admin: when admin.enabled is true, admin.database.dsn must be non-empty")
 	}
 
 	return nil
