@@ -46,6 +46,12 @@ When **`admin.enabled: true`**, Connect serves the embedded admin app under **`a
 
 See `conf/config.local.yml.example` and `conf/config.full.example` for commented YAML.
 
+Detailed docs:
+
+- Usage guide: `docs/builtin-admin-usage.md`
+- Implementation report: `docs/builtin-admin-report.md`
+- Agent workflow / experience: `AGENTS.md`
+
 ## Quick Start
 
 ### Using Command Line
