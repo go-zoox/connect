@@ -115,21 +115,27 @@ func TestAdminEnabled_RegistersRolesAndGroupsUnderAPI(t *testing.T) {
 	}
 }
 
-func TestAdminEnabled_RegistersRolesAndGroupsUnderPublicPrefix(t *testing.T) {
+func TestAdminEnabled_DoesNotExposeAdminDataUnderPublicBuiltinPrefix(t *testing.T) {
 	h, _ := newTestApp(t, true, true)
-	public := "/api" + cfgDefaultPublic() + "/roles"
-
-	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, public, nil)
-	req.Header.Set("Accept", "application/json")
-	h.ServeHTTP(rec, req)
-
-	if rec.Code == http.StatusNotFound {
-		t.Fatalf("%s: got 404, expected a registered handler", public)
-	}
-	body := getBody(t, rec)
-	if !strings.Contains(body, api.MarkerRoles) {
-		t.Fatalf("expected admin roles marker in body for public path, got %q", body)
+	pub := cfgDefaultPublic()
+	for _, suffix := range []string{
+		"/roles", "/groups", "/users", "/user", "/app", "/menus", "/permissions",
+	} {
+		path := "/api" + pub + suffix
+		rec := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, path, nil)
+		req.Header.Set("Accept", "application/json")
+		h.ServeHTTP(rec, req)
+		body := getBody(t, rec)
+		if strings.Contains(body, api.MarkerRoles) {
+			t.Fatalf("%s: must not expose admin roles handler on public prefix, body %q", path, body)
+		}
+		if strings.Contains(body, api.MarkerGroups) {
+			t.Fatalf("%s: must not expose admin groups handler on public prefix, body %q", path, body)
+		}
+		if strings.Contains(body, api.MarkerUsers) {
+			t.Fatalf("%s: must not expose admin users handler on public prefix, body %q", path, body)
+		}
 	}
 }
 

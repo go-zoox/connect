@@ -342,7 +342,11 @@ func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPubli
 		groupsPath = cfg.BuiltInAPIs.Groups
 	}
 
-	if cfg.Admin.Enabled {
+	// Admin JSON handlers must not be mounted under the public built-in prefix (e.g. /api/_/*):
+	// that prefix is intended for unauthenticated flows (QR login, OAuth metadata). Exposing
+	// roles/users/etc. there bypasses the normal auth boundary for those resources.
+	adminPublic := cfg.Admin.Enabled && underPublicPrefix
+	if cfg.Admin.Enabled && !adminPublic {
 		g.Get(appPath, adminapi.App(cfg))
 		g.Get(userPath, adminapi.User(cfg))
 		g.Get(menusPath, adminapi.Menus(cfg))
@@ -351,7 +355,7 @@ func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPubli
 		g.Get(configPath, apiConfig.New(cfg))
 		g.Get(rolesPath, adminapi.Roles(cfg))
 		g.Get(groupsPath, adminapi.Groups(cfg))
-	} else {
+	} else if !cfg.Admin.Enabled {
 		g.Get(appPath, apiApp.New(cfg))
 		g.Get(userPath, apiUser.New(cfg))
 		g.Get(menusPath, apiMenus.New(cfg))
@@ -374,7 +378,9 @@ func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPubli
 	}
 
 	if cfg.Admin.Enabled {
-		g.Post(loginPath, adminapi.Login(cfg))
+		if !underPublicPrefix {
+			g.Post(loginPath, adminapi.Login(cfg))
+		}
 	} else {
 		g.Post(loginPath, apiUser.Login(cfg))
 	}
