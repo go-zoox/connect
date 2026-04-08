@@ -2,6 +2,7 @@ package app
 
 import (
 	"embed"
+	stdfmt "fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -68,9 +69,13 @@ func (e *Connect) registerOauth2() {
 	}
 }
 
-func (e *Connect) handle(cfg *config.Config) {
+func (e *Connect) handle(cfg *config.Config) error {
 	// @TODO
 	cfg.ApplyDefault()
+
+	if err := cfg.ValidateAdmin(); err != nil {
+		return stdfmt.Errorf("config validation failed: %w", err)
+	}
 
 	if debug.IsDebugMode() {
 		fmt.PrintJSON("connect config:", cfg)
@@ -135,6 +140,7 @@ ____________________________________O/_______
 	e.registerOauth2()
 
 	router.New(e.core, e.cfg)
+	return nil
 }
 
 // Start starts the Connect server.
@@ -147,7 +153,9 @@ func (e *Connect) Start(cfg *config.Config) error {
 		fmt.PrintJSON("config:", cfg)
 	}
 
-	e.handle(cfg)
+	if err := e.handle(cfg); err != nil {
+		return err
+	}
 
 	return e.core.Run(fmt.Sprintf(":%d", e.cfg.Port))
 }
