@@ -91,6 +91,20 @@ func TestValidateAdmin_EntryRejectsAuthBypassOverlaps(t *testing.T) {
 			wantSubstr: "built-in /api",
 		},
 		{
+			name: "api_app_subpath",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "/api/app"
+			},
+			wantSubstr: "built-in /api",
+		},
+		{
+			name: "api_underscore_subpath",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "/api/_/x"
+			},
+			wantSubstr: "built-in /api",
+		},
+		{
 			name: "double_slash_normalizes_to_root",
 			mutate: func(c *Config) {
 				c.Admin.Entry = "//"

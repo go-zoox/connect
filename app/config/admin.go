@@ -77,8 +77,8 @@ func (c *Config) validateAdminEntryForAuthSafety() error {
 	if entry == "/" {
 		return fmt.Errorf("admin: admin.entry %q resolves to %q, which is not allowed: the admin auth ignore rule would treat the site root as unauthenticated", strings.TrimSpace(c.Admin.Entry), entry)
 	}
-	if entry == "/api" {
-		return fmt.Errorf("admin: admin.entry must not be %q (normalized: %q): it would skip authentication for the entire built-in /api route tree", strings.TrimSpace(c.Admin.Entry), entry)
+	if entry == "/api" || strings.HasPrefix(entry, "/api/") {
+		return fmt.Errorf("admin: admin.entry %q (normalized: %q) must not overlap the built-in /api route tree", strings.TrimSpace(c.Admin.Entry), entry)
 	}
 	backend := normalizedBackendPrefix(c)
 	if entry == backend {
