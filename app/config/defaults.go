@@ -276,4 +276,8 @@ func (c *Config) ApplyDefault() {
 			c.BuiltInAPIs.Public = "/_"
 		}
 	}
+
+	if c.Admin.Entry == "" {
+		c.Admin.Entry = "/admin"
+	}
 }

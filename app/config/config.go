@@ -64,6 +64,9 @@ type Config struct {
 
 	// BuiltInAPIs is the built in apis config, e.g: app, user, menus, users, config
 	BuiltInAPIs BuiltInAPIs `config:"built_in_apis"`
+
+	// Admin is the built-in admin UI config
+	Admin Admin `config:"admin"`
 }
 
 // GetSessionMaxAgeDuration gets the session max age duration.
