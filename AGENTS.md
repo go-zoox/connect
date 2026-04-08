@@ -11,8 +11,8 @@
 
 ### 2026-04-09 - Admin package layout
 
-- Built-in admin code lives at repository root: `admin/` (not under `app/`). Import path: `github.com/go-zoox/connect/admin/...`.
-- `app/router` and `app/app` import `admin/bootstrap`, `admin/api`, `admin/static`.
+- Built-in admin code lives under `app/admin/`. Import path: `github.com/go-zoox/connect/app/admin/...`.
+- `app/router` and `app/app` import `app/admin/bootstrap`, `app/admin/api`, `app/admin/static`.
 
 ### 2026-04-08 - Built-in Admin + DB rollout
 

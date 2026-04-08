@@ -3,7 +3,7 @@ package repository
 import (
 	"sort"
 
-	"github.com/go-zoox/connect/admin/model"
+	"github.com/go-zoox/connect/app/admin/model"
 	"gorm.io/gorm"
 )
 

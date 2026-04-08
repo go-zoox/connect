@@ -4,7 +4,7 @@
 
 **Goal:** Add an optional built-in admin mode in `connect` that uses `gormx` + local username/password auth to manage app/user/users/menus/rbac while keeping default behavior unchanged.
 
-**Architecture:** Keep existing routes and runtime defaults, then add a top-level `admin/` module that is activated only when `admin.enabled=true`. In built-in mode, core handlers delegate to DB-backed services, while default mode keeps current remote-service behavior. Frontend remains split in development and embedded for production.
+**Architecture:** Keep existing routes and runtime defaults, then add an `app/admin` module that is activated only when `admin.enabled=true`. In built-in mode, core handlers delegate to DB-backed services, while default mode keeps current remote-service behavior. Frontend remains split in development and embedded for production.
 
 **Tech Stack:** Go, `github.com/go-zoox/gormx`, Zoox router/middleware, session+cookie auth, go test
 
@@ -15,15 +15,15 @@
 - Create: `app/config/admin.go` (admin config structs + validation helpers)
 - Modify: `app/config/config.go` (add `Admin` field)
 - Modify: `app/config/defaults.go` (default values + env mapping)
-- Create: `admin/bootstrap/bootstrap.go` (init DB, auto migrate, seed admin)
-- Create: `admin/model/*.go` (users/roles/permissions/groups + relation models)
-- Create: `admin/repository/*.go` (CRUD + relation persistence)
-- Create: `admin/service/*.go` (auth, rbac resolver, entity services)
-- Create: `admin/api/*.go` (HTTP handlers for users/roles/groups/permissions/menus/app/user/login)
+- Create: `app/admin/bootstrap/bootstrap.go` (init DB, auto migrate, seed admin)
+- Create: `app/admin/model/*.go` (users/roles/permissions/groups + relation models)
+- Create: `app/admin/repository/*.go` (CRUD + relation persistence)
+- Create: `app/admin/service/*.go` (auth, rbac resolver, entity services)
+- Create: `app/admin/api/*.go` (HTTP handlers for users/roles/groups/permissions/menus/app/user/login)
 - Modify: `app/router/router.go` (mode switch and route wiring)
 - Modify: `app/middleware/auth.go` (allow built-in mode auth flow where needed)
-- Create: `admin/static/embed.go` (embedded assets mounting helper)
-- Create: `admin/*_test.go` and `app/router/*_test.go` (unit/integration tests)
+- Create: `app/admin/static/embed.go` (embedded assets mounting helper)
+- Create: `app/admin/*_test.go` and `app/router/*_test.go` (unit/integration tests)
 - Modify: `go.mod`, `go.sum` (add gormx and any direct deps)
 - Modify: `README.md`, `conf/config.full.example` (docs and sample config)
 
@@ -108,13 +108,13 @@ git commit -m "feat(config): add built-in admin config and validation gate"
 ### Task 2: Add gormx bootstrap, automigrate, and admin seeding
 
 **Files:**
-- Create: `admin/bootstrap/bootstrap.go`
-- Create: `admin/model/user.go`
-- Create: `admin/model/role.go`
-- Create: `admin/model/permission.go`
-- Create: `admin/model/group.go`
-- Create: `admin/model/relation.go`
-- Test: `admin/bootstrap/bootstrap_test.go`
+- Create: `app/admin/bootstrap/bootstrap.go`
+- Create: `app/admin/model/user.go`
+- Create: `app/admin/model/role.go`
+- Create: `app/admin/model/permission.go`
+- Create: `app/admin/model/group.go`
+- Create: `app/admin/model/relation.go`
+- Test: `app/admin/bootstrap/bootstrap_test.go`
 
 - [ ] **Step 1: Write failing bootstrap test for enabled mode**
 
@@ -137,7 +137,7 @@ func TestBootstrapAdminMode_AutoMigrateAndSeed(t *testing.T) {
 
 - [ ] **Step 2: Run bootstrap tests to confirm failure**
 
-Run: `go test ./admin/bootstrap -run TestBootstrapAdminMode -v`  
+Run: `go test ./app/admin/bootstrap -run TestBootstrapAdminMode -v`  
 Expected: FAIL because bootstrap/models do not exist.
 
 - [ ] **Step 3: Implement models, relation tables, and bootstrap init**
@@ -166,26 +166,26 @@ func Init(cfg *config.Config) (*gorm.DB, error) {
 
 - [ ] **Step 4: Run tests to verify pass**
 
-Run: `go test ./admin/bootstrap -run TestBootstrapAdminMode -v`  
+Run: `go test ./app/admin/bootstrap -run TestBootstrapAdminMode -v`  
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 Run:
 ```bash
-git add admin/bootstrap/bootstrap.go admin/model/*.go admin/bootstrap/bootstrap_test.go go.mod go.sum
+git add app/admin/bootstrap/bootstrap.go admin/model/*.go admin/bootstrap/bootstrap_test.go go.mod go.sum
 git commit -m "feat(admin): add gormx bootstrap with automigrate and admin seed"
 ```
 
 ### Task 3: Implement built-in auth and RBAC resolver services
 
 **Files:**
-- Create: `admin/service/auth.go`
-- Create: `admin/service/rbac.go`
-- Create: `admin/repository/user_repo.go`
-- Create: `admin/repository/rbac_repo.go`
-- Test: `admin/service/auth_test.go`
-- Test: `admin/service/rbac_test.go`
+- Create: `app/admin/service/auth.go`
+- Create: `app/admin/service/rbac.go`
+- Create: `app/admin/repository/user_repo.go`
+- Create: `app/admin/repository/rbac_repo.go`
+- Test: `app/admin/service/auth_test.go`
+- Test: `app/admin/service/rbac_test.go`
 
 - [ ] **Step 1: Write failing tests for login and effective permissions**
 
@@ -211,7 +211,7 @@ func TestRBACResolvePermissions_FromRolesAndGroups(t *testing.T) {
 
 - [ ] **Step 2: Run service tests to confirm failure**
 
-Run: `go test ./admin/service -run 'TestAuthLogin|TestRBACResolvePermissions' -v`  
+Run: `go test ./app/admin/service -run 'TestAuthLogin|TestRBACResolvePermissions' -v`  
 Expected: FAIL due to missing service code.
 
 - [ ] **Step 3: Implement auth + rbac service minimal pass**
@@ -239,28 +239,28 @@ func (s *RBACService) ResolveUserPermissionCodes(userID string) ([]string, error
 
 - [ ] **Step 4: Run service tests to verify pass**
 
-Run: `go test ./admin/service -run 'TestAuthLogin|TestRBACResolvePermissions' -v`  
+Run: `go test ./app/admin/service -run 'TestAuthLogin|TestRBACResolvePermissions' -v`  
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 Run:
 ```bash
-git add admin/service/auth.go admin/service/rbac.go admin/repository/*.go admin/service/*_test.go
+git add app/admin/service/auth.go admin/service/rbac.go admin/repository/*.go admin/service/*_test.go
 git commit -m "feat(admin): add built-in auth and rbac resolver services"
 ```
 
 ### Task 4: Wire built-in API handlers and route switch
 
 **Files:**
-- Create: `admin/api/login.go`
-- Create: `admin/api/users.go`
-- Create: `admin/api/roles.go`
-- Create: `admin/api/groups.go`
-- Create: `admin/api/permissions.go`
-- Create: `admin/api/menus.go`
-- Create: `admin/api/app.go`
-- Create: `admin/api/user.go`
+- Create: `app/admin/api/login.go`
+- Create: `app/admin/api/users.go`
+- Create: `app/admin/api/roles.go`
+- Create: `app/admin/api/groups.go`
+- Create: `app/admin/api/permissions.go`
+- Create: `app/admin/api/menus.go`
+- Create: `app/admin/api/app.go`
+- Create: `app/admin/api/user.go`
 - Modify: `app/router/router.go`
 - Test: `app/router/router_admin_mode_test.go`
 
@@ -313,14 +313,14 @@ Expected: PASS.
 
 Run:
 ```bash
-git add admin/api/*.go app/router/router.go app/router/router_admin_mode_test.go
+git add app/admin/api/*.go app/router/router.go app/router/router_admin_mode_test.go
 git commit -m "feat(router): switch to built-in admin handlers when enabled"
 ```
 
 ### Task 5: Embed admin frontend and configurable entry mount
 
 **Files:**
-- Create: `admin/static/embed.go`
+- Create: `app/admin/static/embed.go`
 - Modify: `app/router/router.go`
 - Modify: `conf/config.full.example`
 - Test: `app/router/router_admin_static_test.go`
@@ -367,7 +367,7 @@ Expected: PASS.
 
 Run:
 ```bash
-git add admin/static/embed.go app/router/router.go conf/config.full.example app/router/router_admin_static_test.go
+git add app/admin/static/embed.go app/router/router.go conf/config.full.example app/router/router_admin_static_test.go
 git commit -m "feat(admin-ui): embed admin frontend and mount at configurable entry"
 ```
 
@@ -415,7 +415,7 @@ admin:
 
 - [ ] **Step 4: Run full targeted verification**
 
-Run: `go test ./app/config ./admin/... ./app/router -v`  
+Run: `go test ./app/config ./app/admin/... ./app/router -v`  
 Expected: PASS.
 
 - [ ] **Step 5: Commit**

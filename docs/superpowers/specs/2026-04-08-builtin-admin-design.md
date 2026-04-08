@@ -74,11 +74,11 @@ Rules:
 
 Introduce internal admin module boundaries:
 
-- `admin/model`: entity models and relation models.
-- `admin/repository`: DB CRUD and relation operations.
-- `admin/service`: domain logic for auth, users, groups, roles, permissions.
-- `admin/api`: HTTP handlers for built-in admin endpoints.
-- `admin/bootstrap`: DB init, AutoMigrate, seed admin account.
+- `app/admin/model`: entity models and relation models.
+- `app/admin/repository`: DB CRUD and relation operations.
+- `app/admin/service`: domain logic for auth, users, groups, roles, permissions.
+- `app/admin/api`: HTTP handlers for built-in admin endpoints.
+- `app/admin/bootstrap`: DB init, AutoMigrate, seed admin account.
 
 Router integration:
 

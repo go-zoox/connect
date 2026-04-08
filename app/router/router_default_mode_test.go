@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-zoox/connect/admin/api"
+	"github.com/go-zoox/connect/app/admin/api"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/errors"
 	"github.com/go-zoox/connect/app/router"

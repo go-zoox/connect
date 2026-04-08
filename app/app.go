@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-zoox/chalk"
 	"github.com/go-zoox/connect"
-	"github.com/go-zoox/connect/admin/bootstrap"
+	"github.com/go-zoox/connect/app/admin/bootstrap"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
 	"github.com/go-zoox/core-utils/fmt"
