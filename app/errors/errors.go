@@ -42,6 +42,9 @@ var InvalidCaptcha = New(400200, "验证码无效")
 // UserLoginFailed means user login failed
 var UserLoginFailed = New(400201, "登录失败")
 
+// AdminLoginInvalid means built-in admin login failed (bad username or password)
+var AdminLoginInvalid = New(401201, "Invalid username or password")
+
 // FailedToGetUser means failed to get user
 var FailedToGetUser = New(400202, "Failed to get user")
 

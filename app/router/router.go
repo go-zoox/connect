@@ -314,7 +314,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 // mounted under cfg.BuiltInAPIs.Public (e.g. /api/_); otherwise g is the /api group and paths use
 // cfg.BuiltInAPIs.*.
 func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPublicPrefix bool) {
-	var appPath, userPath, menusPath, permissionsPath, usersPath, configPath, loginPath string
+	var appPath, userPath, menusPath, permissionsPath, usersPath, configPath, loginPath, rolesPath, groupsPath string
 	if underPublicPrefix {
 		appPath = "/app"
 		userPath = "/user"
@@ -323,6 +323,8 @@ func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPubli
 		usersPath = "/users"
 		configPath = "/config"
 		loginPath = "/login"
+		rolesPath = "/roles"
+		groupsPath = "/groups"
 	} else {
 		appPath = cfg.BuiltInAPIs.App
 		userPath = cfg.BuiltInAPIs.User
@@ -331,6 +333,8 @@ func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPubli
 		usersPath = cfg.BuiltInAPIs.Users
 		configPath = cfg.BuiltInAPIs.Config
 		loginPath = cfg.BuiltInAPIs.Login
+		rolesPath = cfg.BuiltInAPIs.Roles
+		groupsPath = cfg.BuiltInAPIs.Groups
 	}
 
 	if cfg.Admin.Enabled {
@@ -340,8 +344,8 @@ func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPubli
 		g.Get(permissionsPath, adminapi.Permissions(cfg))
 		g.Get(usersPath, adminapi.Users(cfg))
 		g.Get(configPath, apiConfig.New(cfg))
-		g.Get("/roles", adminapi.Roles(cfg))
-		g.Get("/groups", adminapi.Groups(cfg))
+		g.Get(rolesPath, adminapi.Roles(cfg))
+		g.Get(groupsPath, adminapi.Groups(cfg))
 	} else {
 		g.Get(appPath, apiApp.New(cfg))
 		g.Get(userPath, apiUser.New(cfg))

@@ -269,6 +269,20 @@ func (c *Config) ApplyDefault() {
 			c.BuiltInAPIs.Login = "/login"
 		}
 	}
+	if c.BuiltInAPIs.Roles == "" {
+		if os.Getenv("BUILT_IN_APIS_ROLES") != "" {
+			c.BuiltInAPIs.Roles = os.Getenv("BUILT_IN_APIS_ROLES")
+		} else {
+			c.BuiltInAPIs.Roles = "/roles"
+		}
+	}
+	if c.BuiltInAPIs.Groups == "" {
+		if os.Getenv("BUILT_IN_APIS_GROUPS") != "" {
+			c.BuiltInAPIs.Groups = os.Getenv("BUILT_IN_APIS_GROUPS")
+		} else {
+			c.BuiltInAPIs.Groups = "/groups"
+		}
+	}
 	if c.BuiltInAPIs.Public == "" {
 		if os.Getenv("BUILT_IN_APIS_BUILT_IN") != "" {
 			c.BuiltInAPIs.Public = os.Getenv("BUILT_IN_APIS_BUILT_IN")

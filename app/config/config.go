@@ -211,6 +211,9 @@ type BuiltInAPIs struct {
 	//
 	Login string `config:"login"`
 	//
+	Roles  string `config:"roles"`
+	Groups string `config:"groups"`
+	//
 	Public string `config:"built_in"`
 }
 

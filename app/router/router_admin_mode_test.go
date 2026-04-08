@@ -1,6 +1,7 @@
 package router_test
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -8,35 +9,66 @@ import (
 	"testing"
 
 	"github.com/go-zoox/connect/app/admin/api"
+	"github.com/go-zoox/connect/app/admin/bootstrap"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/router"
 	"github.com/go-zoox/zoox/defaults"
 )
 
-func testBuiltInIgnorePaths() []string {
+func testBuiltInIgnorePaths(cfg *config.Config) []string {
 	return []string{
-		`^/api/roles$`,
-		`^/api/groups$`,
-		`^/api/_/roles$`,
-		`^/api/_/groups$`,
+		fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.Roles),
+		fmt.Sprintf("^/api%s$", cfg.BuiltInAPIs.Groups),
+		fmt.Sprintf("^/api%s%s$", cfg.BuiltInAPIs.Public, cfg.BuiltInAPIs.Roles),
+		fmt.Sprintf("^/api%s%s$", cfg.BuiltInAPIs.Public, cfg.BuiltInAPIs.Groups),
 	}
 }
 
 func newTestApp(t *testing.T, adminEnabled bool, ignoreRolesAndGroups bool) (http.Handler, *config.Config) {
 	t.Helper()
 
-	app := defaults.Application()
-	auth := config.Auth{Mode: "password"}
-	if ignoreRolesAndGroups {
-		auth.IgnorePaths = testBuiltInIgnorePaths()
-	}
 	cfg := &config.Config{
-		Auth: auth,
+		Auth: config.Auth{Mode: "password"},
 		Admin: config.Admin{
 			Enabled: adminEnabled,
 		},
 	}
 	cfg.ApplyDefault()
+	if ignoreRolesAndGroups {
+		cfg.Auth.IgnorePaths = append(cfg.Auth.IgnorePaths, testBuiltInIgnorePaths(cfg)...)
+	}
+	app := defaults.Application()
+	router.New(app, cfg)
+	return app, cfg
+}
+
+func newTestAppWithAdminBootstrap(t *testing.T) (http.Handler, *config.Config) {
+	t.Helper()
+	dsn := "file:" + strings.ReplaceAll(strings.ReplaceAll(t.Name(), "/", "_"), " ", "_") + "?mode=memory&cache=shared"
+	cfg := &config.Config{
+		Auth: config.Auth{Mode: "password"},
+		Admin: config.Admin{
+			Enabled: true,
+			Auth: config.AdminAuthConfig{
+				Admin: config.AdminRootCredentials{
+					Username: "root",
+					Password: "secret-root-pass",
+				},
+			},
+			Database: config.AdminDatabaseConfig{
+				Driver: "sqlite",
+				DSN:    dsn,
+			},
+		},
+	}
+	cfg.ApplyDefault()
+	cfg.Auth.IgnorePaths = append(cfg.Auth.IgnorePaths, testBuiltInIgnorePaths(cfg)...)
+
+	if err := bootstrap.Bootstrap(cfg); err != nil {
+		t.Fatalf("bootstrap: %v", err)
+	}
+
+	app := defaults.Application()
 	router.New(app, cfg)
 	return app, cfg
 }
@@ -105,6 +137,39 @@ func cfgDefaultPublic() string {
 	c := &config.Config{}
 	c.ApplyDefault()
 	return c.BuiltInAPIs.Public
+}
+
+func TestAdminEnabled_LoginRejectsInvalidCredentials(t *testing.T) {
+	h, _ := newTestAppWithAdminBootstrap(t)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/login", strings.NewReader(`{"username":"root","password":"wrong-password"}`))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected 401 for bad password, got %d body %q", rec.Code, getBody(t, rec))
+	}
+	body := getBody(t, rec)
+	if !strings.Contains(body, "Invalid username or password") {
+		t.Fatalf("expected invalid-credentials message in body, got %q", body)
+	}
+}
+
+func TestAdminEnabled_LoginAcceptsSeededRoot(t *testing.T) {
+	h, cfg := newTestAppWithAdminBootstrap(t)
+	loginPath := "/api" + cfg.BuiltInAPIs.Login
+
+	payload := fmt.Sprintf(`{"username":%q,"password":%q}`, "root", "secret-root-pass")
+	req := httptest.NewRequest(http.MethodPost, loginPath, strings.NewReader(payload))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200 for valid admin login, got %d body %q", rec.Code, getBody(t, rec))
+	}
 }
 
 func TestAdminDisabled_DoesNotRegisterBuiltinRolesHandler(t *testing.T) {
