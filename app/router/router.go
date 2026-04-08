@@ -6,6 +6,7 @@ import (
 	"time"
 
 	adminapi "github.com/go-zoox/connect/app/admin/api"
+	adminstatic "github.com/go-zoox/connect/app/admin/static"
 	"github.com/go-zoox/connect/app/api/captcha"
 	"github.com/go-zoox/connect/app/api/favicon"
 	"github.com/go-zoox/connect/app/api/page"
@@ -139,6 +140,10 @@ func New(app *zoox.Application, cfg *config.Config) {
 				return nil
 			}
 		})
+	}
+
+	if err := adminstatic.Mount(app, cfg); err != nil {
+		panic(fmt.Errorf("failed to mount admin static: %w", err))
 	}
 
 	// @TODO

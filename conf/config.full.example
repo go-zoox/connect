@@ -71,6 +71,18 @@ services:
     mode: service
     service: https://api.example.com/oauth/app/user/open_id # GET
 
+# Built-in admin UI (JSON APIs + embedded static). When enabled, the UI is served under admin.entry (default /admin).
+admin:
+  enabled: false
+  entry: /admin   # URL prefix for embedded admin UI (no trailing slash); only active when enabled: true
+  auth:
+    admin:
+      username: root
+      password: change-me
+  database:
+    driver: sqlite
+    dsn: file:admin.db?cache=shared
+
 routes:
   - path: /api/ms/httpbin
     backend:

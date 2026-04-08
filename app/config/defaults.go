@@ -294,4 +294,8 @@ func (c *Config) ApplyDefault() {
 	if c.Admin.Entry == "" {
 		c.Admin.Entry = "/admin"
 	}
+
+	if c.Admin.Enabled {
+		c.Auth.IgnorePaths = append(c.Auth.IgnorePaths, AdminStaticAuthIgnorePattern(c.Admin.Entry))
+	}
 }

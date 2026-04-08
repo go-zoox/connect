@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -31,6 +32,28 @@ type AdminDatabaseDriver string
 type AdminDatabaseConfig struct {
 	Driver AdminDatabaseDriver `config:"driver"`
 	DSN    string              `config:"dsn"`
+}
+
+// NormalizedAdminEntry returns the URL path prefix for the built-in admin UI: leading slash, no trailing slash.
+func NormalizedAdminEntry(entry string) string {
+	e := strings.TrimSpace(entry)
+	if e == "" {
+		return "/admin"
+	}
+	if !strings.HasPrefix(e, "/") {
+		e = "/" + e
+	}
+	e = strings.TrimSuffix(e, "/")
+	if e == "" {
+		return "/admin"
+	}
+	return e
+}
+
+// AdminStaticAuthIgnorePattern is a regex matching the admin UI entry path so auth middleware allows the static shell without a session.
+func AdminStaticAuthIgnorePattern(entry string) string {
+	p := NormalizedAdminEntry(entry)
+	return "^" + regexp.QuoteMeta(p) + "(?:/|$)"
 }
 
 // ValidateAdmin returns an error when admin is enabled but required settings are missing.
