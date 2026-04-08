@@ -1,6 +1,6 @@
 package service
 
-import "github.com/go-zoox/connect/app/admin/repository"
+import "github.com/go-zoox/connect/admin/repository"
 
 // RBACService resolves effective permission codes for admin users.
 type RBACService struct {

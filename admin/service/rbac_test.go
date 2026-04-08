@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/go-zoox/connect/app/admin/model"
-	"github.com/go-zoox/connect/app/admin/repository"
+	"github.com/go-zoox/connect/admin/model"
+	"github.com/go-zoox/connect/admin/repository"
 )
 
 func TestRBACResolvePermissions(t *testing.T) {

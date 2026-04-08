@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-zoox/connect/app/admin/repository"
-	adminsvc "github.com/go-zoox/connect/app/admin/service"
+	"github.com/go-zoox/connect/admin/repository"
+	adminsvc "github.com/go-zoox/connect/admin/service"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/errors"
 	"github.com/go-zoox/connect/app/service"

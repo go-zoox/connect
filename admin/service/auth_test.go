@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-zoox/connect/app/admin/model"
-	"github.com/go-zoox/connect/app/admin/repository"
+	"github.com/go-zoox/connect/admin/model"
+	"github.com/go-zoox/connect/admin/repository"
 	"github.com/go-zoox/gormx"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

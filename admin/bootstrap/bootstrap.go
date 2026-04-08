@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-zoox/connect/app/admin/model"
+	"github.com/go-zoox/connect/admin/model"
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/gormx"
 	"golang.org/x/crypto/bcrypt"
