@@ -105,6 +105,7 @@ Password is stored as bcrypt hash.
 
 ## Verification Checklist
 
+- Automated: `go test ./...` (unit + router), then `go test -tags=integration ./...` (includes full-app `Connect.Setup` tests; Go uses **`-tags`**, not `-tag`).
 - Start with `admin.enabled: false` and verify existing flow is unchanged
 - Start with `admin.enabled: true` and verify:
   - admin login works
