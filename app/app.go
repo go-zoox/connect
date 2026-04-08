@@ -148,8 +148,10 @@ ____________________________________O/_______
 	return nil
 }
 
-// Start starts the Connect server.
-func (e *Connect) Start(cfg *config.Config) error {
+// Setup validates config, runs optional admin bootstrap, registers OAuth2 providers, and mounts
+// routes. It does not listen on a port. Use for embedding or integration tests; production entry
+// is usually Start.
+func (e *Connect) Setup(cfg *config.Config) error {
 	if cfg == nil {
 		return fmt.Errorf("config is nil")
 	}
@@ -158,7 +160,12 @@ func (e *Connect) Start(cfg *config.Config) error {
 		fmt.PrintJSON("config:", cfg)
 	}
 
-	if err := e.handle(cfg); err != nil {
+	return e.handle(cfg)
+}
+
+// Start starts the Connect server.
+func (e *Connect) Start(cfg *config.Config) error {
+	if err := e.Setup(cfg); err != nil {
 		return err
 	}
 

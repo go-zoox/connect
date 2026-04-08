@@ -8,14 +8,14 @@ import (
 	"github.com/go-zoox/connect/app/config"
 )
 
-// Ensures Connect.Start runs the same validation path as production (after ApplyDefault),
+// Ensures Connect.Setup runs the same validation path as production (after ApplyDefault),
 // not only direct unit tests on Config.ValidateAdmin.
-func TestStart_RejectsAdminEnabledWithoutCredentials(t *testing.T) {
+func TestSetup_RejectsAdminEnabledWithoutCredentials(t *testing.T) {
 	c := app.New()
 	cfg := &config.Config{
 		Admin: config.Admin{Enabled: true},
 	}
-	err := c.Start(cfg)
+	err := c.Setup(cfg)
 	if err == nil {
 		t.Fatal("expected startup to fail when admin is enabled without credentials")
 	}
