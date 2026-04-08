@@ -48,3 +48,15 @@ services:
         path: /i/dns
         icon: appstore
         layout: header
+
+# Built-in admin UI (optional). Omit this block or keep enabled: false for legacy behavior.
+admin:
+  enabled: false
+  entry: /admin
+  auth:
+    admin:
+      username: root
+      password: change-me
+  database:
+    driver: sqlite
+    dsn: file:admin.db?cache=shared
