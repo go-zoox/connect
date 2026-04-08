@@ -57,3 +57,96 @@ func TestAdminEnabledRequiresRootCredentials(t *testing.T) {
 		t.Fatalf("ValidateAdmin with credentials and database: %v", err)
 	}
 }
+
+func validAdminEnabledConfig(t *testing.T) Config {
+	t.Helper()
+	var c Config
+	c.ApplyDefault()
+	c.Admin.Enabled = true
+	c.Admin.Auth.Admin.Username = "root"
+	c.Admin.Auth.Admin.Password = "secret"
+	c.Admin.Database.Driver = "sqlite"
+	c.Admin.Database.DSN = "file:" + strings.ReplaceAll(strings.ReplaceAll(t.Name(), "/", "_"), " ", "_") + "?mode=memory&cache=shared"
+	return c
+}
+
+func TestValidateAdmin_EntryRejectsAuthBypassOverlaps(t *testing.T) {
+	tests := []struct {
+		name       string
+		mutate     func(*Config)
+		wantSubstr string
+	}{
+		{
+			name: "api_prefix",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "/api"
+			},
+			wantSubstr: "built-in /api",
+		},
+		{
+			name: "api_prefix_trailing_slash",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "/api/"
+			},
+			wantSubstr: "built-in /api",
+		},
+		{
+			name: "double_slash_normalizes_to_root",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "//"
+			},
+			wantSubstr: "site root",
+		},
+		{
+			name: "login_reserved",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "/login"
+			},
+			wantSubstr: "reserved",
+		},
+		{
+			name: "logout_reserved",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "/logout"
+			},
+			wantSubstr: "reserved",
+		},
+		{
+			name: "register_reserved",
+			mutate: func(c *Config) {
+				c.Admin.Entry = "/register"
+			},
+			wantSubstr: "reserved",
+		},
+		{
+			name: "equals_backend_prefix",
+			mutate: func(c *Config) {
+				c.Backend.Prefix = "/internal-api"
+				c.Admin.Entry = "/internal-api"
+			},
+			wantSubstr: "backend.prefix",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := validAdminEnabledConfig(t)
+			tt.mutate(&c)
+			err := c.ValidateAdmin()
+			if err == nil {
+				t.Fatal("expected ValidateAdmin error for unsafe admin.entry")
+			}
+			if !strings.Contains(err.Error(), tt.wantSubstr) {
+				t.Fatalf("error %q should contain %q", err.Error(), tt.wantSubstr)
+			}
+		})
+	}
+}
+
+func TestValidateAdmin_EntryAllowsSafeCustomPaths(t *testing.T) {
+	c := validAdminEnabledConfig(t)
+	c.Admin.Entry = "/console"
+	if err := c.ValidateAdmin(); err != nil {
+		t.Fatalf("ValidateAdmin: %v", err)
+	}
+}

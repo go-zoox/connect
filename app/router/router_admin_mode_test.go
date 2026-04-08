@@ -186,7 +186,34 @@ func TestAdminDisabled_DoesNotRegisterBuiltinRolesHandler(t *testing.T) {
 	if strings.Contains(body, api.MarkerRoles) {
 		t.Fatalf("did not expect admin roles marker when admin is disabled, got body %q", body)
 	}
-	if rec.Code == http.StatusOK {
-		t.Fatalf("expected non-200 without admin roles route (auth or proxy), got 200 body %q", body)
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("without session, want %d for protected built-in API when admin disabled, got %d body %q", http.StatusUnauthorized, rec.Code, body)
+	}
+}
+
+func TestAdminStatic_WithPasswordAuth_AdminShellWithoutSession_ProtectedAPIStillUnauthorized(t *testing.T) {
+	h, _ := newTestAppWithAdminBootstrap(t)
+
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/admin/", nil)
+	h.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("GET /admin/ without session: want %d, got %d body %q", http.StatusOK, rec.Code, getBody(t, rec))
+	}
+	shell := getBody(t, rec)
+	if !strings.Contains(shell, `data-connect-builtin-admin="1"`) {
+		snippetLen := 200
+		if len(shell) < snippetLen {
+			snippetLen = len(shell)
+		}
+		t.Fatalf("expected built-in admin HTML marker in body, got snippet %q", shell[:snippetLen])
+	}
+
+	rec2 := httptest.NewRecorder()
+	req2 := httptest.NewRequest(http.MethodGet, "/api/users", nil)
+	req2.Header.Set("Accept", "application/json")
+	h.ServeHTTP(rec2, req2)
+	if rec2.Code != http.StatusUnauthorized {
+		t.Fatalf("GET /api/users without session: want %d (must not be ignored like admin entry), got %d body %q", http.StatusUnauthorized, rec2.Code, getBody(t, rec2))
 	}
 }
