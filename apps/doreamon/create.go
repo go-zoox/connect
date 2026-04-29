@@ -164,7 +164,7 @@ func Create(cfg *Config) (*config.Config, error) {
 	}
 
 	if cfgX.SessionMaxAge == 0 {
-		cfgX.SessionMaxAge = 1 * 24 * 60 * 60
+		cfgX.SessionMaxAge = config.DefaultMaxSessionAgeInSecond
 	}
 
 	return cfgX, nil
