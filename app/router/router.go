@@ -119,6 +119,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 					if err != nil {
 						return fmt.Errorf("failed to get user: %w", err)
 					}
+					fillPermissions(ctx, cfg, userIns)
 					timestamp := time.Now().UnixMilli()
 					jwtToken, err := userIns.Encode(signer)
 					if err != nil {
@@ -198,6 +199,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 				ctx.Fail(err, 401002, "user not found", http.StatusUnauthorized)
 				return
 			}
+			fillPermissions(ctx, cfg, userIns)
 
 			timestamp := time.Now().UnixMilli()
 			jwtToken, err := userIns.Encode(signer)
@@ -292,6 +294,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 				ctx.JSON(http.StatusUnauthorized, err)
 				return
 			}
+			fillPermissions(ctx, cfg, userIns)
 
 			timestamp := time.Now().UnixMilli()
 			jwtToken, err := userIns.Encode(signer)
@@ -384,4 +387,29 @@ func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPubli
 	} else {
 		g.Post(loginPath, apiUser.Login(cfg))
 	}
+}
+
+// fillPermissions makes sure the permissions of the current user are carried inside X-Connect-Token,
+// so upstream services resolve authorization without calling back into the permissions service.
+// The user service usually answers the permissions of the connected application already (doreamon
+// returns them with result.permissions), they are kept as is and the permissions service is only
+// asked when the user service did not provide any. A lookup failure is logged and leaves permissions
+// empty, which upstream services must treat as deny-by-default.
+func fillPermissions(ctx *zoox.Context, cfg *config.Config, userIns *service.User) {
+	if len(userIns.Permissions) != 0 {
+		return
+	}
+
+	token := service.GetToken(ctx)
+	if token == "" && cfg.Services.Permissions.Mode != "local" {
+		return
+	}
+
+	permissions, _, err := service.GetPermission(ctx, cfg, service.GetProvider(ctx), token)
+	if err != nil {
+		ctx.Logger.Errorf("[router] failed to get permissions: %v", err)
+		return
+	}
+
+	userIns.Permissions = permissions
 }

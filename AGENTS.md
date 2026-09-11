@@ -80,3 +80,23 @@ Default `go test ./...` still runs unit + router tests; tagged tests are skipped
   - `admin.enabled=true` (admin behavior active)
 - Public-prefix APIs should only expose explicitly safe endpoints.
 - Document user-facing changes in `README.md` and add focused docs under `docs/`.
+
+### 2026-09-11 - Permissions inside X-Connect-Token
+
+#### What worked
+
+- `user.User.Encode/Decode` now carries the `permissions` claim, so upstream services behind the gateway resolve authorization from the token instead of calling back into the permissions service.
+- Permissions are filled by `fillPermissions` right before each `X-Connect-Token` is signed (routes with `backend.secret_key`, upstream mode, frontend + backend mode), reusing the cached `service.GetPermission`.
+- Tests: `user/user_test.go` locks the claim round trip; `app/router/router_upstream_token_test.go` asserts the header received by the upstream really contains the permissions.
+
+#### Pitfalls found and fixed
+
+- A permissions lookup failure must not break the request: it is logged and leaves permissions empty, which upstream services treat as deny-by-default.
+- Proxy handlers cannot be exercised with `httptest.NewRecorder()` — the proxy needs a `http.CloseNotifier` capable `ResponseWriter`, use `httptest.NewServer`.
+
+### 2026-09-11 - Where permissions come from
+
+- `user.User.Permissions` was already filled by `service.GetUser`: the user service response (`result`) is unmarshalled into the user struct, and doreamon's resource service answers `result.permissions` (its `/oauth/user`, reached as `api.zcorky.com/user`, returns `{...user, permissions}`).
+- The permissions service (`services.permissions.service`, default `https://api.zcorky.com/permissions`) is a second source and is only asked when the user service answered no permission. In the doreamon gateway (`config/gateway.yml`) no `permissions` service is mounted at all, so that default URL 404s; the app scoped endpoint is `https://api.zcorky.com/oauth/app/permissions` (gateway `oauth` service -> resource `/oauth`).
+- The doreamon permission values are application scoped codes built from `role.permissions` + `role.menuPermissions` (for example `global.system.permissions`), not literals like `ADMIN`.
+- `@znode/connect` (the Node side decoding `x-connect-token`, used by the doreamon resource service) only reads `id/nickname/avatar/email/username`, the extra `permissions` claim is additive and does not break it.
