@@ -71,6 +71,20 @@ services:
     mode: service
     service: https://api.example.com/oauth/app/user/open_id # GET
 
+# Built-in admin: embedded UI + admin-backed /api handlers. Default mode is enabled: false (core APIs only).
+# When enabled: true — UI at admin.entry; POST /api/login (and built-in paths) use the admin DB; set root + DSN.
+# admin.entry must not be under /api, must not equal backend.prefix, and must not be /login|/logout|/register.
+admin:
+  enabled: false
+  entry: /admin
+  auth:
+    admin:
+      username: root
+      password: change-me
+  database:
+    driver: sqlite
+    dsn: file:admin.db?cache=shared
+
 routes:
   - path: /api/ms/httpbin
     backend:

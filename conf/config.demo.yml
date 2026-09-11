@@ -1,0 +1,62 @@
+# Local demo: built-in admin ON. Do not use in production.
+#
+# Listen port: ApplyDefault reads env PORT (overrides this file and -p). Example:
+#   PORT=18080 env -u UPSTREAM go run ./cmd/connect serve -c conf/config.demo.yml
+# (Unset UPSTREAM unless you intend upstream proxy mode.)
+#
+# Open http://127.0.0.1:<port>/admin/ — POST /api/login with seeded user below.
+
+port: 8080
+secret_key: demo-connect-secret-change-me
+
+frontend:
+  host: 127.0.0.1
+  port: 8000
+
+backend:
+  host: 127.0.0.1
+  port: 8001
+
+password:
+  mode: local
+  local:
+    - username: legacy
+      password: legacy
+
+auth:
+  mode: password
+
+services:
+  app:
+    mode: local
+    local:
+      name: Connect Demo
+      logo: https://avatars.githubusercontent.com/u/7463687?v=4
+      description: Demo
+
+  user:
+    mode: local
+    local:
+      id: "1"
+      username: legacy
+      nickname: Legacy user
+      avatar: https://avatars.githubusercontent.com/u/7463687?v=4
+      permissions: []
+
+  menus:
+    mode: local
+    local:
+      - name: Home
+        path: /
+        icon: appstore
+
+admin:
+  enabled: true
+  entry: /admin
+  auth:
+    admin:
+      username: demo
+      password: demo123
+  database:
+    driver: sqlite
+    dsn: file:./data/connect-demo.db?cache=shared

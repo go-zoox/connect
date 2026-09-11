@@ -35,6 +35,7 @@ func (u *User) Encode(signer jwt.Jwt) (string, error) {
 		"email":          u.Email,
 		"username":       username,
 		"feishu_open_id": u.FeishuOpenID,
+		"permissions":    u.Permissions,
 	})
 }
 
@@ -51,7 +52,7 @@ func (u *User) Decode(signer jwt.Jwt, token string) error {
 	u.Email = jwtValue.Get("email").String()
 	u.FeishuOpenID = jwtValue.Get("feishu_open_id").String()
 	u.Username = jwtValue.Get("username").String()
-	// u.Permissions = jwtValue.Get("permissions").Array()
+	u.Permissions = decodePermissions(jwtValue.Data["permissions"])
 
 	// @TODO compitable
 	if u.Username == "" {
@@ -62,4 +63,21 @@ func (u *User) Decode(signer jwt.Jwt, token string) error {
 	}
 
 	return nil
+}
+
+// decodePermissions reads the permissions claim, a missing or malformed claim means no permission.
+func decodePermissions(value interface{}) []string {
+	items, ok := value.([]interface{})
+	if !ok {
+		return nil
+	}
+
+	permissions := make([]string, 0, len(items))
+	for _, item := range items {
+		if permission, ok := item.(string); ok && permission != "" {
+			permissions = append(permissions, permission)
+		}
+	}
+
+	return permissions
 }

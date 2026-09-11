@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	adminapi "github.com/go-zoox/connect/app/admin/api"
+	adminstatic "github.com/go-zoox/connect/app/admin/static"
 	"github.com/go-zoox/connect/app/api/captcha"
 	"github.com/go-zoox/connect/app/api/favicon"
 	"github.com/go-zoox/connect/app/api/page"
@@ -74,50 +76,11 @@ func New(app *zoox.Application, cfg *config.Config) {
 			// 	MaxAge: 30 * time.Second,
 			// }))
 
-			// /app
-			group.Get(cfg.BuiltInAPIs.App, apiApp.New(cfg))
-			// /user
-			group.Get(cfg.BuiltInAPIs.User, apiUser.New(cfg))
-			// /menus
-			group.Get(cfg.BuiltInAPIs.Menus, apiMenus.New(cfg))
-			// /permissions
-			group.Get(cfg.BuiltInAPIs.Permissions, apiPermissions.New(cfg))
-			// /users
-			group.Get(cfg.BuiltInAPIs.Users, apiUser.GetUsers(cfg))
-			// /config
-			group.Get(cfg.BuiltInAPIs.Config, apiConfig.New(cfg))
-			// /qrcode
-			qrcodeBasePath := cfg.BuiltInAPIs.QRCode
-			group.Get(fmt.Sprintf("%s/device/uuid", qrcodeBasePath), apiQRCode.GenerateDeviceUUID(cfg))
-			group.Get(fmt.Sprintf("%s/device/status", qrcodeBasePath), apiQRCode.GetDeviceStatus(cfg))
-			group.Post(fmt.Sprintf("%s/device/token", qrcodeBasePath), apiQRCode.GetDeviceToken(cfg))
-			group.Get(fmt.Sprintf("%s/device/user", qrcodeBasePath), apiQRCode.GetUser(cfg))
-			// /login
-			group.Post(cfg.BuiltInAPIs.Login, apiUser.Login(cfg))
+			mountBuiltInAPIHandlers(group, cfg, false)
 
 			// public apis: /api/_/*
 			group.Group(cfg.BuiltInAPIs.Public, func(g *zoox.RouterGroup) {
-				// new
-
-				// /api/_/app
-				g.Get("/app", apiApp.New(cfg))
-				// /api/_/user
-				g.Get("/user", apiUser.New(cfg))
-				// /api/_/menus
-				g.Get("/menus", apiMenus.New(cfg))
-				// /api/_/permissions
-				g.Get("/permissions", apiPermissions.New(cfg))
-				// /api/_/users
-				g.Get("/users", apiUser.GetUsers(cfg))
-				// /api/_/config
-				g.Get("/config", apiConfig.New(cfg))
-				// /api/_/qrcode
-				g.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
-				g.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
-				g.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
-				g.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
-				// /login
-				g.Post("/login", apiUser.Login(cfg))
+				mountBuiltInAPIHandlers(g, cfg, true)
 
 				// metadata
 				g.Get("/login/:provider/metadata", apiPublic.GetLoginProviderMetedata(cfg))
@@ -156,6 +119,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 					if err != nil {
 						return fmt.Errorf("failed to get user: %w", err)
 					}
+					fillPermissions(ctx, cfg, userIns)
 					timestamp := time.Now().UnixMilli()
 					jwtToken, err := userIns.Encode(signer)
 					if err != nil {
@@ -177,6 +141,10 @@ func New(app *zoox.Application, cfg *config.Config) {
 				return nil
 			}
 		})
+	}
+
+	if err := adminstatic.Mount(app, cfg); err != nil {
+		panic(fmt.Errorf("failed to mount admin static: %w", err))
 	}
 
 	// @TODO
@@ -231,6 +199,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 				ctx.Fail(err, 401002, "user not found", http.StatusUnauthorized)
 				return
 			}
+			fillPermissions(ctx, cfg, userIns)
 
 			timestamp := time.Now().UnixMilli()
 			jwtToken, err := userIns.Encode(signer)
@@ -325,6 +294,7 @@ func New(app *zoox.Application, cfg *config.Config) {
 				ctx.JSON(http.StatusUnauthorized, err)
 				return
 			}
+			fillPermissions(ctx, cfg, userIns)
 
 			timestamp := time.Now().UnixMilli()
 			jwtToken, err := userIns.Encode(signer)
@@ -346,4 +316,100 @@ func New(app *zoox.Application, cfg *config.Config) {
 	)
 	// proxy pass => frontend
 	app.Fallback(pg.RenderPage())
+}
+
+// mountBuiltInAPIHandlers registers built-in JSON APIs on g. When underPublicPrefix is true, g is
+// mounted under cfg.BuiltInAPIs.Public (e.g. /api/_); otherwise g is the /api group and paths use
+// cfg.BuiltInAPIs.*.
+func mountBuiltInAPIHandlers(g *zoox.RouterGroup, cfg *config.Config, underPublicPrefix bool) {
+	var appPath, userPath, menusPath, permissionsPath, usersPath, configPath, loginPath, rolesPath, groupsPath string
+	if underPublicPrefix {
+		appPath = "/app"
+		userPath = "/user"
+		menusPath = "/menus"
+		permissionsPath = "/permissions"
+		usersPath = "/users"
+		configPath = "/config"
+		loginPath = "/login"
+		rolesPath = "/roles"
+		groupsPath = "/groups"
+	} else {
+		appPath = cfg.BuiltInAPIs.App
+		userPath = cfg.BuiltInAPIs.User
+		menusPath = cfg.BuiltInAPIs.Menus
+		permissionsPath = cfg.BuiltInAPIs.Permissions
+		usersPath = cfg.BuiltInAPIs.Users
+		configPath = cfg.BuiltInAPIs.Config
+		loginPath = cfg.BuiltInAPIs.Login
+		rolesPath = cfg.BuiltInAPIs.Roles
+		groupsPath = cfg.BuiltInAPIs.Groups
+	}
+
+	// Admin JSON handlers must not be mounted under the public built-in prefix (e.g. /api/_/*):
+	// that prefix is intended for unauthenticated flows (QR login, OAuth metadata). Exposing
+	// roles/users/etc. there bypasses the normal auth boundary for those resources.
+	adminPublic := cfg.Admin.Enabled && underPublicPrefix
+	if cfg.Admin.Enabled && !adminPublic {
+		g.Get(appPath, adminapi.App(cfg))
+		g.Get(userPath, adminapi.User(cfg))
+		g.Get(menusPath, adminapi.Menus(cfg))
+		g.Get(permissionsPath, adminapi.Permissions(cfg))
+		g.Get(usersPath, adminapi.Users(cfg))
+		g.Get(configPath, apiConfig.New(cfg))
+		g.Get(rolesPath, adminapi.Roles(cfg))
+		g.Get(groupsPath, adminapi.Groups(cfg))
+	} else if !cfg.Admin.Enabled {
+		g.Get(appPath, apiApp.New(cfg))
+		g.Get(userPath, apiUser.New(cfg))
+		g.Get(menusPath, apiMenus.New(cfg))
+		g.Get(permissionsPath, apiPermissions.New(cfg))
+		g.Get(usersPath, apiUser.GetUsers(cfg))
+		g.Get(configPath, apiConfig.New(cfg))
+	}
+
+	if underPublicPrefix {
+		g.Get("/qrcode/device/uuid", apiQRCode.GenerateDeviceUUID(cfg))
+		g.Get("/qrcode/device/status", apiQRCode.GetDeviceStatus(cfg))
+		g.Post("/qrcode/device/token", apiQRCode.GetDeviceToken(cfg))
+		g.Get("/qrcode/device/user", apiQRCode.GetUser(cfg))
+	} else {
+		qrcodeBasePath := cfg.BuiltInAPIs.QRCode
+		g.Get(fmt.Sprintf("%s/device/uuid", qrcodeBasePath), apiQRCode.GenerateDeviceUUID(cfg))
+		g.Get(fmt.Sprintf("%s/device/status", qrcodeBasePath), apiQRCode.GetDeviceStatus(cfg))
+		g.Post(fmt.Sprintf("%s/device/token", qrcodeBasePath), apiQRCode.GetDeviceToken(cfg))
+		g.Get(fmt.Sprintf("%s/device/user", qrcodeBasePath), apiQRCode.GetUser(cfg))
+	}
+
+	if cfg.Admin.Enabled {
+		if !underPublicPrefix {
+			g.Post(loginPath, adminapi.Login(cfg))
+		}
+	} else {
+		g.Post(loginPath, apiUser.Login(cfg))
+	}
+}
+
+// fillPermissions makes sure the permissions of the current user are carried inside X-Connect-Token,
+// so upstream services resolve authorization without calling back into the permissions service.
+// The user service usually answers the permissions of the connected application already (doreamon
+// returns them with result.permissions), they are kept as is and the permissions service is only
+// asked when the user service did not provide any. A lookup failure is logged and leaves permissions
+// empty, which upstream services must treat as deny-by-default.
+func fillPermissions(ctx *zoox.Context, cfg *config.Config, userIns *service.User) {
+	if len(userIns.Permissions) != 0 {
+		return
+	}
+
+	token := service.GetToken(ctx)
+	if token == "" && cfg.Services.Permissions.Mode != "local" {
+		return
+	}
+
+	permissions, _, err := service.GetPermission(ctx, cfg, service.GetProvider(ctx), token)
+	if err != nil {
+		ctx.Logger.Errorf("[router] failed to get permissions: %v", err)
+		return
+	}
+
+	userIns.Permissions = permissions
 }

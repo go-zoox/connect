@@ -36,6 +36,21 @@ zmicro package install connect
 - [ ] 支持 BearToken 认证
 - [x] 使用Docker容器化部署
 - [x] 支持私有化部署
+- [x] Optional built-in admin UI (off by default; see below)
+
+## Built-in admin (optional)
+
+By default, `admin.enabled` is **false**: routing matches pre-admin releases (core JSON APIs under `/api`, password login still goes through the core handler with captcha, and no embedded admin UI is mounted).
+
+When **`admin.enabled: true`**, Connect serves the embedded admin app under **`admin.entry`** (default `/admin`), registers admin-backed handlers for the built-in JSON API paths (including `POST` login against the admin database), and requires **`admin.auth.admin`** (bootstrap root) plus **`admin.database`** (for example SQLite `driver: sqlite` and a `dsn`). Validate config with your normal startup path; `admin.entry` must not overlap `/api`, `backend.prefix`, or auth routes (`/login`, `/logout`, `/register`).
+
+See `conf/config.local.yml.example` and `conf/config.full.example` for commented YAML.
+
+Detailed docs:
+
+- Usage guide: `docs/builtin-admin-usage.md`
+- Implementation report: `docs/builtin-admin-report.md`
+- Agent workflow / experience: `AGENTS.md`
 
 ## Quick Start
 

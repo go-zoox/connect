@@ -29,3 +29,4 @@ conf/config.yml
 *.bak
 
 .env
+.worktrees/

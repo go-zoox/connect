@@ -66,3 +66,4 @@ jobs:
         run: goveralls -service=github
         env:
           COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOFLAGS: -tags=integration
