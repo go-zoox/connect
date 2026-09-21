@@ -30,3 +30,5 @@ conf/config.yml
 
 .env
 .worktrees/
+
+app/admin/ui/node_modules/
