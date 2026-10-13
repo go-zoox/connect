@@ -14,14 +14,45 @@ import (
 // PermissionItem ...
 type PermissionItem = string
 
+// permissionFailureCacheTTL is how long a failed permissions lookup is remembered.
+//
+// A lookup is an external network round trip, and it sits on the hot path of every proxied
+// request (fillPermissions resolves the permissions whenever the user service answered none),
+// so retrying it on every request turns a broken permissions service into a per-request
+// latency tax. Remember the failure for a short window instead.
+const permissionFailureCacheTTL = 30 * time.Second
+
+// permissionFailure is the cache entry of a failed permissions lookup.
+type permissionFailure struct {
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+}
+
 // GetPermission ...
 func GetPermission(ctx *zoox.Context, cfg *config.Config, provider string, token string) ([]PermissionItem, int, error) {
 	cacheKey := fmt.Sprintf("permissions:%s", token)
+	failureCacheKey := fmt.Sprintf("permissions:failed:%s", token)
 	statusCode := 200
 
 	var permissions []PermissionItem
 	if err := ctx.Cache().Get(cacheKey, &permissions); err == nil {
 		return permissions, statusCode, nil
+	}
+
+	// a recent failure is answered from the cache, see permissionFailureCacheTTL
+	if failure := new(permissionFailure); ctx.Cache().Get(failureCacheKey, failure) == nil {
+		return nil, failure.StatusCode, fmt.Errorf("%s", failure.Message)
+	}
+
+	// fail returns the error and remembers it, so the remote lookup is not retried on
+	// every request while it keeps failing.
+	fail := func(statusCode int, err error) ([]PermissionItem, int, error) {
+		ctx.Cache().Set(failureCacheKey, &permissionFailure{
+			StatusCode: statusCode,
+			Message:    err.Error(),
+		}, permissionFailureCacheTTL)
+
+		return nil, statusCode, err
 	}
 
 	if cfg.Services.Permissions.Mode == "local" {
@@ -52,17 +83,17 @@ func GetPermission(ctx *zoox.Context, cfg *config.Config, provider string, token
 	})
 	if err != nil {
 		statusCode := 500
-		return nil, statusCode, err
+		return fail(statusCode, err)
 	}
 
 	if response.Status != 200 {
 		statusCode := response.Status
-		return nil, statusCode, fmt.Errorf("failed to get permissions: (status: %d, response: %s)", response.Status, response.String())
+		return fail(statusCode, fmt.Errorf("failed to get permissions: (status: %d, response: %s)", response.Status, response.String()))
 	}
 
 	if err := json.Unmarshal([]byte(response.Get("result").String()), &permissions); err != nil {
 		statusCode := 500
-		return nil, statusCode, fmt.Errorf("failed to parse permissions with response.result: %v(response: %s)", err, response.String())
+		return fail(statusCode, fmt.Errorf("failed to parse permissions with response.result: %v(response: %s)", err, response.String()))
 	}
 
 	if len(permissions) != 0 {

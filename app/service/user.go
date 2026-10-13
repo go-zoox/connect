@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/user"
@@ -95,8 +94,6 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 						// 	SetRefreshToken(ctx, cfg, token.RefreshToken)
 						// }
 
-						time.Sleep(1 * time.Second)
-
 						logger.Infof("[service.GetUser][RefreshToken] retry to get user ...")
 
 						return GetUser(ctx, cfg, token.AccessToken)
@@ -124,10 +121,16 @@ func GetUser(ctx *zoox.Context, cfg *config.Config, token string) (*User, int, e
 	}
 
 	// Get OpenID: feishu
-	u.FeishuOpenID, _, err = GetOpenID(ctx, cfg, "feishu", u.Email)
-	if err != nil {
-		time.Sleep(3 * time.Second)
-		ctx.Logger.Warn("[service.user] failed to get feishu open id: %#v", err)
+	//
+	// The lookup needs the client credentials of the oauth2 provider of the session, so it can
+	// only work when the session was created by an oauth2 login. A missing provider is not a
+	// failure worth retrying, and a failed lookup must never block the request path: this used
+	// to sleep 3 seconds on the first (uncached) request of every token.
+	if GetProvider(ctx) != "" {
+		u.FeishuOpenID, _, err = GetOpenID(ctx, cfg, "feishu", u.Email)
+		if err != nil {
+			ctx.Logger.Warn("[service.user] failed to get feishu open id: %#v", err)
+		}
 	}
 
 	// if len(user.Permissions) != 0 {

@@ -140,6 +140,17 @@ http(s)://<connect-host>:<port>/login/<name>/callback
 
 未在 YAML 中填写时，`ApplyDefault()` 会为 Doreamon 生态补上默认的 `api.zcorky.com` 系列地址（可在自有部署中整体替换）。
 
+### 请求路径上的查询与缓存
+
+`services.user` / `services.permissions` / `services.menus` / `services.open_id` 的结果会按 token / email 缓存在进程内（默认 memory，TTL 取 `session_max_age`）。排障时要知道：
+
+- **`X-Connect-Token` 里的 permissions 从哪来**：优先用 `user` 服务返回的 `result.permissions`；为空时才回查 `services.permissions`，而这条回查发生在**每一个**代理请求上。所以账号 permissions 为空 + `services.permissions` 不可用时，表现为「只有这个账号每个请求都慢」。
+- **查询失败也会被缓存 30 秒**（负缓存）：权限服务挂掉时，最多每个 token 每 30 秒付一次外部查询，而不是每个请求一次。
+- **`services.open_id` 只在会话来自 OAuth2 登录时才解析**（需要 provider 的 client 凭据），没有 provider 直接跳过，不再在请求路径上阻塞。
+- 请求路径上没有任何 `time.Sleep` 限流：慢请求请查上面几条查询，而不是等固定几秒。
+
+常用降延迟手段：`services.permissions.mode: local`（或把 `service` 指向真正可用的端点）、`services.open_id.mode: local`。
+
 ---
 
 ## 自定义路由：`routes`

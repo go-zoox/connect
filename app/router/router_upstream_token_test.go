@@ -11,6 +11,7 @@ import (
 	"github.com/go-zoox/connect/app/router"
 	"github.com/go-zoox/connect/user"
 	"github.com/go-zoox/crypto/jwt"
+	"github.com/go-zoox/zoox"
 	"github.com/go-zoox/zoox/defaults"
 )
 
@@ -19,7 +20,9 @@ const testSecretKey = "test-secret-key"
 
 // startConnect starts an upstream which captures X-Connect-Token and a connect app proxying to it.
 // A real server is required, the upstream proxy needs a http.CloseNotifier capable ResponseWriter.
-func startConnect(t *testing.T, cfg *config.Config) (connectURL string, capturedToken func() string) {
+// options can add routes/configuration to the app before the router is mounted (tests that need
+// e.g. a session).
+func startConnect(t *testing.T, cfg *config.Config, options ...func(app *zoox.Application)) (connectURL string, capturedToken func() string) {
 	t.Helper()
 
 	captured := ""
@@ -42,6 +45,10 @@ func startConnect(t *testing.T, cfg *config.Config) (connectURL string, captured
 	cfg.ApplyDefault()
 
 	app := defaults.Application()
+	for _, option := range options {
+		option(app)
+	}
+
 	router.New(app, cfg)
 
 	server := httptest.NewServer(app)

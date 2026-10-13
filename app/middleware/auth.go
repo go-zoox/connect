@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/go-zoox/connect/app/config"
 	"github.com/go-zoox/connect/app/service"
@@ -140,10 +139,6 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 		// visit real path
 		// [visit real path] @1 check token
 		if token == "" {
-			// @TODO
-			// sleep for a while to avoid too many requests
-			time.Sleep(time.Second * 1)
-
 			if ctx.AcceptJSON() {
 				ctx.Fail(errors.New("[middlware.auth] token is missing"), http.StatusUnauthorized, "token is missing", http.StatusUnauthorized)
 				return
@@ -153,10 +148,6 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			return
 		} else if user, _, err := service.GetUser(ctx, cfg, token); err != nil && user == nil {
 			// [visit real path] @2 check user
-			// @TODO
-			// sleep for a while to avoid too many requests
-			time.Sleep(time.Second * 1)
-
 			if ctx.AcceptJSON() {
 				ctx.Fail(fmt.Errorf("failed to get user (err: %s)", err), http.StatusUnauthorized, fmt.Sprintf("failed to get user (err: %s)", err), http.StatusUnauthorized)
 				return
@@ -170,10 +161,6 @@ func Auth(cfg *config.Config) zoox.HandlerFunc {
 			return
 		} else if app, _, err := service.GetApp(ctx, cfg, provider, service.GetToken(ctx)); err != nil || app == nil {
 			// [visit real path] @2 check app
-			// @TODO
-			// sleep for a while to avoid too many requests
-			time.Sleep(time.Second * 1)
-
 			if ctx.AcceptJSON() {
 				ctx.Fail(fmt.Errorf("failed to get app (err: %s)", err), http.StatusUnauthorized, fmt.Sprintf("failed to get app (err: %s)", err), http.StatusUnauthorized)
 				return

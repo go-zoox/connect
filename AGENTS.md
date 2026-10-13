@@ -20,6 +20,7 @@
 
 - **Config**: `app/config/*_test.go` — validation, defaults, admin entry safety.
 - **Admin domain**: `app/admin/bootstrap/*_test.go`, `app/admin/service/*_test.go` — DB bootstrap, auth, RBAC resolution in isolation.
+- **Service lookups**: `app/service/*_test.go` — `httptest` fakes for the `services.*` backends (permissions/open_id), asserting call counts and that the request path never blocks on `time.Sleep`.
 
 ### Integration tests
 
@@ -100,3 +101,23 @@ Default `go test ./...` still runs unit + router tests; tagged tests are skipped
 - The permissions service (`services.permissions.service`, default `https://api.zcorky.com/permissions`) is a second source and is only asked when the user service answered no permission. In the doreamon gateway (`config/gateway.yml`) no `permissions` service is mounted at all, so that default URL 404s; the app scoped endpoint is `https://api.zcorky.com/oauth/app/permissions` (gateway `oauth` service -> resource `/oauth`).
 - The doreamon permission values are application scoped codes built from `role.permissions` + `role.menuPermissions` (for example `global.system.permissions`), not literals like `ADMIN`.
 - `@znode/connect` (the Node side decoding `x-connect-token`, used by the doreamon resource service) only reads `id/nickname/avatar/email/username`, the extra `permissions` claim is additive and does not break it.
+
+### 2026-10-13 - Request path latency: permission negative cache + no sleeps
+
+#### Context (measured on a production gateway)
+
+- On a connect gateway in upstream mode, connect's own endpoints (`/api/user`, `/api/config`, `/api/_/built_in_apis`) answered in 52-68ms, while **every** request going through the upstream fallback took 0.6-0.7s. `/api/permissions` (which only performs the permissions lookup) took 0.57-0.69s and failed with 401 every time.
+- Root cause: that account answered `permissions: []` from the user service, so `fillPermissions` resolved permissions for every proxied request, and a **failed lookup was never cached** — one extra external round trip per request. Accounts with inline permissions short-circuit at `router.fillPermissions` and never pay it ("only my account is slow").
+
+#### What worked
+
+- `service.GetPermission` now negative-caches failures (`permissions:failed:<token>`, `permissionFailureCacheTTL` = 30s): a broken permissions service costs at most one external lookup per token per window instead of one per request.
+- `service.GetUser` no longer `time.Sleep(3s)` on the request path, and skips the feishu open id lookup when the session has no oauth2 provider (`GetProvider(ctx) == ""`, password/none mode) — that lookup could never succeed there. The lookup is kept for oauth2 sessions.
+- Removed the three 1s sleeps in `app/middleware/auth.go` (token/user/app check failures) and the 1s sleep in `app/middleware/oauth2.go` (state mismatch): throttling sleeps must not live on the request path.
+- Tests (all three fail on the previous code): `app/service/permission_test.go` (one external call for 3 lookups, failure and success), `app/service/user_test.go` (open id skipped without provider, still resolved with one, `GetUser` does not block), `app/router/router_permission_lookup_test.go` (3 proxied requests of one account => 1 permissions call).
+- `startConnect` in `app/router/router_upstream_token_test.go` now accepts `options ...func(*zoox.Application)`, so tests can inject session setup/SecretKey before the router is mounted.
+
+#### Pitfalls found and fixed
+
+- Only remote failures are negative-cached (`fetch` error, non-200, unmarshal error). A local `oauth2.Get(provider)` error stays uncached: it is instant and caching it could hide a provider registered later.
+- When probing a live gateway, `/api/permissions` returning 401 makes the handler call `service.DelToken(ctx)` and invalidate that session — do not reuse a real browser session for repeated probes of that endpoint.
